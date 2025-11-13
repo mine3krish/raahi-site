@@ -1,0 +1,20 @@
+{
+  "name": "Raahi Auction - Real Estate Platform",
+  "short_name": "Raahi Auction",
+  "description": "India's leading real estate auction platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["business", "finance", "shopping"],
+  "lang": "en-IN",
+  "dir": "ltr"
+}

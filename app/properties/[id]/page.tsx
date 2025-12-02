@@ -6,6 +6,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { MapPin, Calendar, Home, IndianRupee, FileText, Heart, ArrowLeft } from "lucide-react";
 import { useWishlist } from "@/context/WishlistContext";
+import ShareButton from "@/components/ui/ShareButton";
+import { formatIndianPrice } from "@/lib/constants";
 
 export default function PropertyDetailPage() {
   const params = useParams();
@@ -64,8 +66,8 @@ export default function PropertyDetailPage() {
     );
   }
 
-  const auctionDate = new Date(property.AuctionDate);
-  const isUpcoming = auctionDate > new Date();
+  // AuctionDate is stored as string (DD-MM-YYYY format)
+  const auctionDate = property.AuctionDate;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -98,21 +100,37 @@ export default function PropertyDetailPage() {
                 <div className="absolute top-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
                   #{property.id}
                 </div>
-                <button
-                  onClick={() => toggleWishlist(property.id)}
-                  disabled={wishlistLoading}
-                  className={`absolute top-4 right-4 p-3 rounded-full transition-all ${
-                    inWishlist 
-                      ? "bg-red-500 text-white" 
-                      : "bg-white/90 text-gray-600 hover:bg-red-500 hover:text-white"
-                  }`}
-                >
-                  <Heart 
-                    size={24} 
-                    fill={inWishlist ? "currentColor" : "none"}
-                    strokeWidth={2}
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <ShareButton
+                    propertyId={property.id}
+                    propertyName={property.name}
+                    location={property.location}
+                    price={formatIndianPrice(property.reservePrice)}
+                    image={property.images[0] || "/image.png"}
+                    compact
+                    propertyType={property.type}
+                    emd={formatIndianPrice(property.EMD)}
+                    auctionDate={property.AuctionDate}
+                    state={property.state}
+                    area={property.area?.toString()}
+                    assetAddress={property.assetAddress}
                   />
-                </button>
+                  <button
+                    onClick={() => toggleWishlist(property.id)}
+                    disabled={wishlistLoading}
+                    className={`p-3 rounded-full transition-all ${
+                      inWishlist 
+                        ? "bg-red-500 text-white" 
+                        : "bg-white/90 text-gray-600 hover:bg-red-500 hover:text-white"
+                    }`}
+                  >
+                    <Heart 
+                      size={24} 
+                      fill={inWishlist ? "currentColor" : "none"}
+                      strokeWidth={2}
+                    />
+                  </button>
+                </div>
               </div>
 
               {/* Image Thumbnails */}
@@ -190,20 +208,16 @@ export default function PropertyDetailPage() {
                 )}
               </div>
 
-              {property.notice && (
-                <div className="border border-blue-200 bg-blue-50 p-4 rounded-lg mb-6">
-                  <div className="flex items-center text-blue-700 mb-2">
-                    <FileText size={18} className="mr-2" />
-                    <span className="font-semibold">Notice Document</span>
+              {property.assetAddress && (
+                <div className="border border-gray-200 bg-gray-50 p-4 rounded-lg mb-6">
+                  <div className="flex items-center text-gray-700 mb-2">
+                    <MapPin size={18} className="mr-2" />
+                    <span className="font-semibold">Asset Address</span>
                   </div>
-                  <a
-                    href={property.notice}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline text-sm"
-                  >
-                    View/Download Notice →
-                  </a>
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    {console.log(property)}
+                    {property.assetAddress == "Property Details" ? property.location : property.assetAddress}
+                  </p>
                 </div>
               )}
             </motion.div>
@@ -223,9 +237,8 @@ export default function PropertyDetailPage() {
               <div className="mb-6">
                 <p className="text-sm text-gray-600 mb-1">Reserve Price</p>
                 <div className="flex items-center">
-                  <IndianRupee size={24} className="text-blue-600" />
                   <span className="text-3xl font-bold text-blue-600">
-                    {(property.reservePrice / 10000000).toFixed(2)} Cr
+                    {formatIndianPrice(property.reservePrice)}
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
@@ -248,33 +261,57 @@ export default function PropertyDetailPage() {
                   <span className="text-sm font-medium">Auction Date</span>
                 </div>
                 <p className="text-lg font-semibold text-gray-800">
-                  {auctionDate.toLocaleDateString('en-IN', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                  })}
+                  {auctionDate}
                 </p>
-                <p className="text-sm text-gray-600">
-                  {auctionDate.toLocaleTimeString('en-IN', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </p>
-                {isUpcoming && (
-                  <div className="mt-2 bg-green-50 text-green-700 px-3 py-1 rounded-lg text-sm inline-block">
-                    Upcoming Auction
-                  </div>
+                {property.auctionStartDate && (
+                  <p className="text-sm text-gray-600 mt-1">
+                    Start: {property.auctionStartDate}
+                  </p>
+                )}
+                {property.auctionEndTime && (
+                  <p className="text-sm text-gray-600">
+                    End: {property.auctionEndTime}
+                  </p>
                 )}
               </div>
 
+              {/* Application Deadline */}
+              {property.applicationSubmissionDate && (
+                <div className="mb-6 bg-orange-50 p-4 rounded-lg">
+                  <div className="flex items-center text-orange-700 mb-2">
+                    <Calendar size={18} className="mr-2" />
+                    <span className="text-sm font-semibold">Application Deadline</span>
+                  </div>
+                  <p className="text-sm text-orange-900">
+                    {property.applicationSubmissionDate}
+                  </p>
+                </div>
+              )}
+
               {/* CTA Buttons */}
-              <div className="space-y-3">
-                <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
-                  +91 123 456 7890
-                </button>
-                <button className="w-full border-2 border-blue-600 text-blue-600 py-3 rounded-lg font-semibold hover:bg-blue-50 transition">
-                  Whatsapp Us
-                </button>
+              <div className="space-y-3 mb-6">
+                <a href="tel:+918488848874" className="block w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition text-center">
+                  +91 84888 48874
+                </a>
+                <a href="https://wa.me/918488848874" target="_blank" rel="noopener noreferrer" className="block w-full border-2 border-green-600 text-green-600 py-3 rounded-lg font-semibold hover:bg-green-50 transition text-center">
+                  WhatsApp Us
+                </a>
+              </div>
+
+              {/* Additional Details */}
+              <div className="border-t pt-4 space-y-4 text-sm">
+                {property.assetCategory && (
+                  <div>
+                    <span className="text-gray-600">Asset Category:</span>
+                    <p className="font-medium text-gray-800">{property.assetCategory}</p>
+                  </div>
+                )}
+                {property.publicationDate && (
+                  <div>
+                    <span className="text-gray-600">Publication Date:</span>
+                    <p className="font-medium text-gray-800">{property.publicationDate}</p>
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>

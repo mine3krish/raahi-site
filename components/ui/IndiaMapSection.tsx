@@ -13,6 +13,12 @@ export default function IndiaMapSection() {
   const [geoData, setGeoData] = useState<any>(null);
   const [propertyData, setPropertyData] = useState<Record<string, number>>({});
 
+  // Normalize state names
+  const normalizeStateName = (name: string) => {
+    if (name === "NCT of Delhi") return "Delhi";
+    return name;
+  };
+
   // Fetch GeoJSON data
   useEffect(() => {
     fetch(
@@ -58,8 +64,8 @@ export default function IndiaMapSection() {
       .append("path")
       .attr("d", path as any)
       .attr("fill", (d: any) => {
-        const name =
-          d.properties.st_nm || d.properties.ST_NM || "Unknown";
+        const rawName = d.properties.st_nm || d.properties.ST_NM || "Unknown";
+        const name = normalizeStateName(rawName);
         const count = propertyData[name] || 0;
         if (count > 120) return "#1e3a8a"; // dark blue
         if (count > 80) return "#3b82f6"; // mid blue
@@ -70,8 +76,8 @@ export default function IndiaMapSection() {
       .attr("stroke-width", 0.6)
       .style("cursor", "pointer")
       .on("mouseenter", function (event: any, d: any) {
-        const name =
-          d.properties.st_nm || d.properties.ST_NM || "Unknown";
+        const rawName = d.properties.st_nm || d.properties.ST_NM || "Unknown";
+        const name = normalizeStateName(rawName);
         const count = propertyData[name] || 0;
         setHoveredState(name);
         setHoveredCount(count);
@@ -80,8 +86,8 @@ export default function IndiaMapSection() {
       .on("mouseleave", function (event: any, d: any) {
         setHoveredState(null);
         setHoveredCount(null);
-        const name =
-          d.properties.st_nm || d.properties.ST_NM || "Unknown";
+        const rawName = d.properties.st_nm || d.properties.ST_NM || "Unknown";
+        const name = normalizeStateName(rawName);
         const count = propertyData[name] || 0;
         d3.select(this).attr("fill", () => {
           if (count > 120) return "#1e3a8a";
@@ -91,8 +97,8 @@ export default function IndiaMapSection() {
         });
       })
       .on("click", (event: any, d: any) => {
-        const name =
-          d.properties.st_nm || d.properties.ST_NM || "Unknown";
+        const rawName = d.properties.st_nm || d.properties.ST_NM || "Unknown";
+        const name = normalizeStateName(rawName);
         const count = propertyData[name] || 0;
         if (count > 0) {
           router.push(`/properties?state=${encodeURIComponent(name)}`);

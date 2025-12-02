@@ -35,7 +35,7 @@ export default function PropertyGrid({ properties, total }: PropertyGridProps) {
               sm:grid-cols-2 
               lg:grid-cols-3 
               xl:grid-cols-4
-              gap-8 
+              gap-4 
               place-items-stretch
             "
           >

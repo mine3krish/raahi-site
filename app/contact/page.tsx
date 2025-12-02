@@ -253,7 +253,7 @@ export default function ContactPage() {
                       href="tel:+919876543210"
                       className="text-gray-600 hover:text-blue-600 transition"
                     >
-                      +91 98765 43210
+                      +91 84888 48874
                     </a>
                   </div>
                 </div>
@@ -265,8 +265,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Office</h3>
                     <p className="text-gray-600">
-                      Raahi Auction Headquarters<br />
-                      Mumbai, Maharashtra, India
+                       BG Tower, A/701, Delhi Darwaja Gate, Hatisingwadi, Bardolpura, Madhupura, Ahmedabad, Gujarat 380016
                     </p>
                   </div>
                 </div>

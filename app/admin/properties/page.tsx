@@ -22,6 +22,13 @@ export default function Properties() {
   const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "");
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
   const [total, setTotal] = useState(0);
+  
+  // Import modal state
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [excelFile, setExcelFile] = useState<File | null>(null);
+  const [zipFile, setZipFile] = useState<File | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<any>(null);
 
   // Update URL with filters
   const updateURL = (filters: any) => {
@@ -137,6 +144,61 @@ export default function Properties() {
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
+  // Handle import
+  const handleImport = async () => {
+    if (!excelFile) {
+      alert("Please select an Excel file");
+      return;
+    }
+    
+    setImporting(true);
+    setImportResult(null);
+    
+    try {
+      const formData = new FormData();
+      formData.append("excel", excelFile);
+      if (zipFile) {
+        formData.append("images", zipFile);
+      }
+      
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/admin/properties/import", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        body: formData,
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Import failed");
+      }
+      
+      setImportResult(data);
+      
+      // Refresh properties list after successful import
+      if (data.results?.success > 0) {
+        // Trigger refetch by updating a filter temporarily
+        setSearch((prev) => prev);
+      }
+    } catch (err: any) {
+      setImportResult({
+        error: err.message || "Failed to import properties"
+      });
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const closeImportModal = () => {
+    setShowImportModal(false);
+    setExcelFile(null);
+    setZipFile(null);
+    setImportResult(null);
+  };
+
   return (
     <section className="max-w-7xl mx-auto p-6">
       {/* Header */}
@@ -148,16 +210,28 @@ export default function Properties() {
         >
           Properties Management
         </motion.h1>
-        <motion.button
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
-          onClick={() => router.push("/admin/properties/new")}
-        >
-          + Add Property
-        </motion.button>
+        <div className="flex gap-3">
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-green-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-green-700 transition"
+            onClick={() => setShowImportModal(true)}
+          >
+            📤 Import Excel
+          </motion.button>
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
+            onClick={() => router.push("/admin/properties/new")}
+          >
+            + Add Property
+          </motion.button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -352,6 +426,137 @@ export default function Properties() {
       {!loading && properties.length > 0 && (
         <div className="text-center mt-4 text-sm text-gray-600">
           Showing {((page - 1) * PAGE_SIZE) + 1} to {Math.min(page * PAGE_SIZE, total)} of {total} properties
+        </div>
+      )}
+
+      {/* Import Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          >
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Import Properties from Excel</h2>
+            
+            {!importResult ? (
+              <>
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Excel File <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="file"
+                      accept=".xlsx,.xls"
+                      onChange={(e) => setExcelFile(e.target.files?.[0] || null)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Upload Excel file with property details
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Images ZIP (Optional)
+                    </label>
+                    <input
+                      type="file"
+                      accept=".zip"
+                      onChange={(e) => setZipFile(e.target.files?.[0] || null)}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Upload ZIP file containing property images (jpg, png, webp)
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                  <h3 className="font-semibold text-blue-900 mb-2">Excel Format Requirements:</h3>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• <strong>Required columns:</strong> type, location, state, reservePrice, AuctionDate</li>
+                    <li>• <strong>Optional columns:</strong> schemaName (custom name), newListingId (custom ID), EMD, area, images (filenames), description, notice</li>
+                    <li>• Images column should contain filenames separated by commas (e.g., "img1.jpg, img2.png")</li>
+                    <li>• If schemaName is provided, it will be used as the property name</li>
+                    <li>• Otherwise, AI will generate a name based on description, type, and location</li>
+                    <li>• If newListingId is not provided, a random ID will be generated</li>
+                  </ul>
+                </div>
+                
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={closeImportModal}
+                    disabled={importing}
+                    className="px-5 py-2.5 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleImport}
+                    disabled={importing || !excelFile}
+                    className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {importing ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                        Importing...
+                      </>
+                    ) : (
+                      "Import Properties"
+                    )}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-4 mb-6">
+                  {importResult.error ? (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <h3 className="font-semibold text-red-900 mb-2">Import Failed</h3>
+                      <p className="text-red-800">{importResult.error}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h3 className="font-semibold text-green-900 mb-2">Import Summary</h3>
+                        <div className="text-sm text-green-800 space-y-1">
+                          <p>✓ Successfully imported: <strong>{importResult.results.success}</strong> properties</p>
+                          {importResult.results.duplicates > 0 && (
+                            <p>⚠ Duplicates skipped: <strong>{importResult.results.duplicates}</strong></p>
+                          )}
+                          {importResult.results.failed > 0 && (
+                            <p>✗ Failed: <strong>{importResult.results.failed}</strong></p>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {importResult.results.errors.length > 0 && (
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-h-60 overflow-y-auto">
+                          <h3 className="font-semibold text-yellow-900 mb-2">Errors & Warnings:</h3>
+                          <ul className="text-sm text-yellow-800 space-y-1">
+                            {importResult.results.errors.map((error: string, idx: number) => (
+                              <li key={idx}>• {error}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+                
+                <div className="flex justify-end">
+                  <button
+                    onClick={closeImportModal}
+                    className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+                  >
+                    Close
+                  </button>
+                </div>
+              </>
+            )}
+          </motion.div>
         </div>
       )}
     </section>

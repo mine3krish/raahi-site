@@ -52,3 +52,22 @@ export const PROPERTY_STATUSES = [
   "Sold",
   "Pending",
 ] as const;
+
+// Format price in Indian number system
+export function formatIndianPrice(amount: number): string {
+  if (amount >= 10000000) {
+    // Crores
+    const crores = amount / 10000000;
+    return `₹${crores.toFixed(2)}Cr`;
+  } else if (amount >= 100000) {
+    // Lakhs
+    const lakhs = amount / 100000;
+    return `₹${lakhs.toFixed(2)}L`;
+  } else if (amount >= 1000) {
+    // Thousands
+    const thousands = amount / 1000;
+    return `₹${thousands.toFixed(2)}K`;
+  } else {
+    return `₹${amount.toLocaleString('en-IN')}`;
+  }
+}

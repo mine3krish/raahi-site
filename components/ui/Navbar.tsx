@@ -59,9 +59,11 @@ export default function Navbar() {
           {/* Left: Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <span className="text-xl md:text-2xl font-bold text-gray-800 tracking-tight">
-                Raahi Auction
-              </span>
+              <img 
+                src="/logo.png" 
+                alt="Raahi Auction Logo" 
+                className="h-10 w-auto md:h-12"
+              />
             </Link>
           </div>
 

@@ -8,7 +8,11 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10">
         {/* Brand */}
         <div>
-          <h3 className="text-2xl font-bold text-black mb-3">Raahi Aunction</h3>
+          <img 
+            src="/logo.png" 
+            alt="Raahi Auction Logo" 
+            className="h-12 w-auto mb-4"
+          />
           <p className="text-gray-600 text-sm leading-relaxed">
             Discover, bid, and own verified properties across India.
             Bank-financed listings with transparent auctions and trusted agents.
@@ -21,19 +25,8 @@ export default function Footer() {
           <ul className="space-y-2 text-gray-600 text-sm">
             <li><a href="/" className="hover:text-blue-600 transition">Home</a></li>
             <li><a href="/properties" className="hover:text-blue-600 transition">Properties</a></li>
-            <li><a href="/auctions" className="hover:text-blue-600 transition">Auctions</a></li>
+            <li><a href="/join" className="hover:text-blue-600 transition">Join as a agent</a></li>
             <li><a href="/contact" className="hover:text-blue-600 transition">Contact</a></li>
-          </ul>
-        </div>
-
-        {/* Resources */}
-        <div>
-          <h4 className="text-gray-800 font-semibold mb-3">Resources</h4>
-          <ul className="space-y-2 text-gray-600 text-sm">
-            <li><a href="/about" className="hover:text-blue-600 transition">About Us</a></li>
-            <li><a href="/faqs" className="hover:text-blue-600 transition">FAQs</a></li>
-            <li><a href="/privacy" className="hover:text-blue-600 transition">Privacy Policy</a></li>
-            <li><a href="/terms" className="hover:text-blue-600 transition">Terms of Use</a></li>
           </ul>
         </div>
       </div>

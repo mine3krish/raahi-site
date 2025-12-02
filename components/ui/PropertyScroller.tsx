@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 import PropertyCard from "./PropertyCard";
+import { formatIndianPrice } from "@/lib/constants";
 
 interface Property {
   id: string;
@@ -100,7 +101,7 @@ export default function PropertyScroller() {
                       id={p.id}
                       title={p.name}
                       location={`${p.location}, ${p.state}`}
-                      price={`₹${(p.reservePrice / 10000000).toFixed(2)}Cr`}
+                      price={formatIndianPrice(p.reservePrice)}
                       image={p.images[0] || "/image.png"}
                     />
                   </div>

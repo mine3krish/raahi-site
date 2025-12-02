@@ -50,21 +50,21 @@ export async function PUT(
     // Handle image upload
     const imageFile = formData.get("image_file") as File;
     const existingImage = formData.get("existingImage") as string;
+    const CDN_DIR = "/var/www/cdn";
 
     if (imageFile) {
       const buffer = Buffer.from(await imageFile.arrayBuffer());
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "communities");
 
       try {
-        await mkdir(uploadDir, { recursive: true });
+        await mkdir(CDN_DIR, { recursive: true });
       } catch (err) {
         // Directory might already exist
       }
 
-      const filename = `${Date.now()}-${imageFile.name}`;
-      const filepath = path.join(uploadDir, filename);
+      const unique = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+      const filepath = path.join(CDN_DIR, unique);
       await writeFile(filepath, buffer);
-      updateData.image = `/uploads/communities/${filename}`;
+      updateData.image = `https://raahiauctions.cloud/cdn/${unique}`;
     } else if (existingImage) {
       updateData.image = existingImage;
     }

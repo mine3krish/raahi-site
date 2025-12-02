@@ -39,22 +39,22 @@ export async function POST(req: NextRequest) {
     // Handle image upload
     let imageUrl = "";
     const imageFile = formData.get("image_file") as File;
+    const CDN_DIR = "/var/www/cdn";
 
     if (imageFile) {
       const buffer = Buffer.from(await imageFile.arrayBuffer());
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "communities");
 
       // Create directory if it doesn't exist
       try {
-        await mkdir(uploadDir, { recursive: true });
+        await mkdir(CDN_DIR, { recursive: true });
       } catch (err) {
         // Directory might already exist
       }
 
-      const filename = `${Date.now()}-${imageFile.name}`;
-      const filepath = path.join(uploadDir, filename);
+      const unique = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+      const filepath = path.join(CDN_DIR, unique);
       await writeFile(filepath, buffer);
-      imageUrl = `/uploads/communities/${filename}`;
+      imageUrl = `https://raahiauctions.cloud/cdn/${unique}`;
     }
 
     // Create community

@@ -45,14 +45,14 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const PLACEHOLDER_IMAGE = "/uploads/properties/placeholder.jpg";
+const PLACEHOLDER_IMAGE = "https://raahiauctions.cloud/cdn/placeholder.jpg";
 const VALID_IMAGE_FORMATS = ["jpg", "jpeg", "png", "webp"];
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "properties");
+const CDN_DIR = "/var/www/cdn";
 
 // Ensure upload directory exists
 async function ensureUploadDir() {
-  if (!existsSync(UPLOAD_DIR)) {
-    await fs.mkdir(UPLOAD_DIR, { recursive: true });
+  if (!existsSync(CDN_DIR)) {
+    await fs.mkdir(CDN_DIR, { recursive: true });
   }
 }
 
@@ -129,17 +129,16 @@ async function processImage(buffer: Buffer, filename: string): Promise<string> {
     await ensureUploadDir();
     
     // Generate unique filename
-    const ext = path.extname(filename) || '.jpg';
-    const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(7)}${ext}`;
-    const outputPath = path.join(UPLOAD_DIR, uniqueName);
+    const unique = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+    const savePath = path.join(CDN_DIR, unique);
     
     // Process image with sharp (optimize and resize if needed)
     await sharp(buffer)
       .resize(1200, 900, { fit: "inside", withoutEnlargement: true })
       .jpeg({ quality: 85 })
-      .toFile(outputPath);
+      .toFile(savePath);
     
-    return `/uploads/properties/${uniqueName}`;
+    return `https://raahiauctions.cloud/cdn/${unique}`;
   } catch (error) {
     console.error("Error processing image:", error);
     return PLACEHOLDER_IMAGE;

@@ -78,10 +78,10 @@ export async function POST(req: NextRequest) {
 
     // Handle image uploads
     const imageUrls: string[] = [];
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "properties");
+    const CDN_DIR = "/var/www/cdn";
     
     try {
-      await mkdir(uploadDir, { recursive: true });
+      await mkdir(CDN_DIR, { recursive: true });
     } catch (err) {
       // Directory might already exist
     }
@@ -90,14 +90,14 @@ export async function POST(req: NextRequest) {
     for (const [key, value] of formData.entries()) {
       if (key.startsWith("image_") && value instanceof File) {
         const file = value;
-        const filename = `${propertyData.id}_${Date.now()}_${file.name}`;
-        const filepath = path.join(uploadDir, filename);
+        const unique = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+        const filepath = path.join(CDN_DIR, unique);
         
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
         await writeFile(filepath, buffer);
         
-        imageUrls.push(`/uploads/properties/${filename}`);
+        imageUrls.push(`https://raahiauctions.cloud/cdn/${unique}`);
       }
     }
 
@@ -105,21 +105,20 @@ export async function POST(req: NextRequest) {
     let noticeUrl = "";
     const noticeFile = formData.get("notice_file") as File;
     if (noticeFile && noticeFile.size > 0) {
-      const noticeDir = path.join(process.cwd(), "public", "uploads", "notices");
       try {
-        await mkdir(noticeDir, { recursive: true });
+        await mkdir(CDN_DIR, { recursive: true });
       } catch (err) {
         // Directory might already exist
       }
       
-      const noticeFilename = `${propertyData.id}_notice_${Date.now()}_${noticeFile.name}`;
-      const noticeFilepath = path.join(noticeDir, noticeFilename);
+      const unique = `notice-${Date.now()}-${Math.random().toString(36).substring(7)}.pdf`;
+      const noticeFilepath = path.join(CDN_DIR, unique);
       
       const noticeBytes = await noticeFile.arrayBuffer();
       const noticeBuffer = Buffer.from(noticeBytes);
       await writeFile(noticeFilepath, noticeBuffer);
       
-      noticeUrl = `/uploads/notices/${noticeFilename}`;
+      noticeUrl = `https://raahiauctions.cloud/cdn/${unique}`;
     }
 
     // Create property with image URLs and notice

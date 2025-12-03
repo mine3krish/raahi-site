@@ -40,8 +40,6 @@ export default function ShareButton({
   assetAddress = "",
 }: ShareButtonProps) {
   const [showShareModal, setShowShareModal] = useState(false);
-  const [generating, setGenerating] = useState(false);
-  const [posterUrl, setPosterUrl] = useState<string>("");
   
   const generateCaption = () => {
     const locationParts = location.split(',');
@@ -58,8 +56,7 @@ Auction Date: ${auctionDate}` : ''}
 Listing ID: ${propertyId}
 
 Property Details:${assetAddress ? `
-- Location: ${assetAddress}` : ''}${area ? `
-- Area: ${area} sq ft` : ''}
+- Location: ${assetAddress}` : ''}
 
 Don't miss out on this fantastic opportunity to own a prime property in ${city}! 
 
@@ -78,203 +75,7 @@ visit: www.raahiauction.com`;
 
   const handleShareClick = async () => {
     setShowShareModal(true);
-    if (!posterUrl) {
-      await generatePoster();
-    }
   };
-
-  const generatePoster = async () => {
-    setGenerating(true);
-    try {
-      // Create a canvas for the poster
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      // Set canvas size (High resolution for Instagram)
-      canvas.width = 2160;  // 2x for better quality
-      canvas.height = 2700;
-
-      // White background
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Load and draw property image
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = image.startsWith("http") ? image : `${window.location.origin}${image}`;
-      
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-      });
-
-      // Draw image with shadow and rounded corners (scaled 2x)
-      const imgHeight = 1400;
-      const imgY = 120;
-      const imgX = 80;
-      const imgWidth = canvas.width - 160;
-      
-      // Shadow
-      ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
-      ctx.shadowBlur = 40;
-      ctx.shadowOffsetY = 20;
-      
-      ctx.save();
-      roundRect(ctx, imgX, imgY, imgWidth, imgHeight, 40);
-      ctx.clip();
-      
-      // Calculate image dimensions to cover the area
-      const imgAspect = img.width / img.height;
-      const boxAspect = imgWidth / imgHeight;
-      let drawWidth, drawHeight, drawX, drawY;
-      
-      if (imgAspect > boxAspect) {
-        drawHeight = imgHeight;
-        drawWidth = imgHeight * imgAspect;
-        drawX = imgX - (drawWidth - imgWidth) / 2;
-        drawY = imgY;
-      } else {
-        drawWidth = imgWidth;
-        drawHeight = drawWidth / imgAspect;
-        drawX = imgX;
-        drawY = imgY - (drawHeight - imgHeight) / 2;
-      }
-      
-      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
-      ctx.restore();
-      
-      // Reset shadow
-      ctx.shadowColor = "transparent";
-      ctx.shadowBlur = 0;
-      ctx.shadowOffsetY = 0;
-
-      // Property ID badge (scaled 2x)
-      const boxY = imgY + imgHeight + 100;
-      ctx.fillStyle = "#2563eb";
-      ctx.beginPath();
-      ctx.roundRect(140, boxY - 20, 400, 100, 50);
-      ctx.fill();
-      
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 56px Arial, sans-serif";
-      ctx.fillText(`#${propertyId}`, 180, boxY + 46);
-
-      // Property Name (scaled 2x)
-      ctx.fillStyle = "#1f2937";
-      ctx.font = "bold 88px Arial, sans-serif";
-      wrapText(ctx, propertyName, 140, boxY + 200, canvas.width - 280, 104);
-
-      // Location with icon background (scaled 2x)
-      ctx.fillStyle = "#f3f4f6";
-      ctx.beginPath();
-      ctx.roundRect(140, boxY + 360, canvas.width - 280, 100, 20);
-      ctx.fill();
-      
-      ctx.fillStyle = "#6b7280";
-      ctx.font = "60px Arial, sans-serif";
-      ctx.fillText(location, 180, boxY + 430);
-
-      // Price with background (scaled 2x)
-      ctx.fillStyle = "#eff6ff";
-      ctx.beginPath();
-      ctx.roundRect(140, boxY + 520, canvas.width - 280, 140, 20);
-      ctx.fill();
-      
-      ctx.fillStyle = "#2563eb";
-      ctx.font = "bold 100px Arial, sans-serif";
-      ctx.fillText(price, 180, boxY + 620);
-
-      // Footer divider (scaled 2x)
-      ctx.strokeStyle = "#e5e7eb";
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(140, boxY + 760);
-      ctx.lineTo(canvas.width - 140, boxY + 760);
-      ctx.stroke();
-
-      // Footer (scaled 2x)
-      ctx.fillStyle = "#1f2937";
-      ctx.font = "bold 76px Arial, sans-serif";
-      ctx.fillText("Raahi Auction", 140, boxY + 880);
-      
-      ctx.fillStyle = "#2563eb";
-      ctx.font = "bold 64px Arial, sans-serif";
-      ctx.fillText("+91 84888 48874", 140, boxY + 980);
-
-      // Convert to blob and create URL
-      canvas.toBlob(async (blob) => {
-        if (!blob) return;
-
-        const url = URL.createObjectURL(blob);
-        setPosterUrl(url);
-      }, "image/png");
-    } catch (error) {
-      console.error("Error generating poster:", error);
-      alert("Failed to generate poster. Please try again.");
-    } finally {
-      setGenerating(false);
-    }
-  };
-
-  // Helper function for rounded rectangles
-  function roundRect(
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    radius: number
-  ) {
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  // Helper function for text wrapping
-  function wrapText(
-    ctx: CanvasRenderingContext2D,
-    text: string,
-    x: number,
-    y: number,
-    maxWidth: number,
-    lineHeight: number
-  ) {
-    const words = text.split(" ");
-    let line = "";
-    let lines = [];
-
-    for (let i = 0; i < words.length; i++) {
-      const testLine = line + words[i] + " ";
-      const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxWidth && i > 0) {
-        lines.push(line);
-        line = words[i] + " ";
-      } else {
-        line = testLine;
-      }
-    }
-    lines.push(line);
-
-    // Only show first 2 lines
-    lines = lines.slice(0, 2);
-    if (text.length > 50 && lines.length === 2) {
-      lines[1] = lines[1].trim() + "...";
-    }
-
-    lines.forEach((line, i) => {
-      ctx.fillText(line, x, y + i * lineHeight);
-    });
-  }
 
   return (
     <>
@@ -285,10 +86,7 @@ visit: www.raahiauction.com`;
             e.stopPropagation();
             handleShareClick();
           }}
-          disabled={generating}
-          className={`p-2 rounded-full bg-white/90 text-gray-600 hover:bg-green-500 hover:text-white transition-all ${
-            generating ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className="p-2 rounded-full bg-white/90 text-gray-600 hover:bg-green-500 hover:text-white transition-all"
           title="Share Property"
         >
           <Share2 size={18} strokeWidth={2} />
@@ -296,13 +94,10 @@ visit: www.raahiauction.com`;
       ) : (
         <button
           onClick={handleShareClick}
-          disabled={generating}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-green-600 text-green-600 font-semibold hover:bg-green-50 transition ${
-            generating ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-green-600 text-green-600 font-semibold hover:bg-green-50 transition"
         >
           <Share2 size={20} />
-          {generating ? "Generating..." : "Share"}
+          Share
         </button>
       )}
 
@@ -339,24 +134,15 @@ visit: www.raahiauction.com`;
                   </button>
                 </div>
 
-                {generating && (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-green-600"></div>
-                    <span className="ml-3 text-gray-600">Generating poster...</span>
-                  </div>
-                )}
+                {/* Property Info */}
+                <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+                  <h4 className="font-semibold text-gray-800 mb-1">{propertyName}</h4>
+                  <p className="text-sm text-gray-600">{location}</p>
+                  <p className="text-lg font-bold text-green-600 mt-2">{price}</p>
+                </div>
 
-                {!generating && (
-                  <>
-                    {/* Property Info */}
-                    <div className="mb-6 p-4 bg-gray-50 rounded-xl">
-                      <h4 className="font-semibold text-gray-800 mb-1">{propertyName}</h4>
-                      <p className="text-sm text-gray-600">{location}</p>
-                      <p className="text-lg font-bold text-green-600 mt-2">{price}</p>
-                    </div>
-
-                    {/* Share Buttons */}
-                    <div className="grid grid-cols-5 gap-4 mb-6">
+                {/* Share Buttons */}
+                <div className="grid grid-cols-5 gap-4 mb-6">
                       <button
                         onClick={async () => {
                           try {
@@ -439,37 +225,14 @@ visit: www.raahiauction.com`;
                         </div>
                         <span className="text-xs text-gray-600">Instagram</span>
                       </button>
-                    </div>
+                </div>
 
-                    {/* Download Poster Button */}
-                    {posterUrl && (
-                      <button
-                        onClick={() => {
-                          const a = document.createElement("a");
-                          a.href = posterUrl;
-                          a.download = `raahi-auction-${propertyId}.png`;
-                          a.click();
-                        }}
-                        className="w-full py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition mb-4"
-                      >
-                        Download Poster Image
-                      </button>
-                    )}
-
-                    {/* Info Message */}
-                    <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-                      <p className="text-sm text-green-800">
-                        <strong>How to share:</strong>
-                      </p>
-                      <ol className="text-sm text-green-800 mt-2 ml-4 list-decimal space-y-1">
-                        <li>Download the poster image using the button above</li>
-                        <li>Click on your preferred social media platform</li>
-                        <li>The caption will be copied automatically</li>
-                        <li>Attach the downloaded image and paste the caption</li>
-                      </ol>
-                    </div>
-                  </>
-                )}
+                {/* Info Message */}
+                <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                  <p className="text-sm text-green-800">
+                    <strong>Caption copied!</strong> Simply click any platform above and paste to share.
+                  </p>
+                </div>
               </div>
             </motion.div>
           </>

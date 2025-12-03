@@ -298,17 +298,20 @@ async function parseExcelFile(
       const areaRaw = row.area || row.Area || row.sqft;
       const area = areaRaw ? parseFloat(String(areaRaw)) : undefined;
       
-      // Check for schemaName field
-      const schemaName = row.schemaName || row.SchemaName || row.name || row.Name;
-      
-      // Generate property name
-      const propertyName = await generatePropertyName(
-        String(description), 
-        String(type), 
-        String(location), 
-        schemaName ? String(schemaName) : undefined
-      );
-      
+      let propertyName = "";
+      // Check for schemeName field (case-insensitive)
+      const schemeName = row.schemeName || row.SchemeName;
+      if (schemeName) {
+        propertyName = String(schemeName);
+      } else {
+        propertyName = await generatePropertyName(
+          String(description), 
+          String(type), 
+          String(location), 
+          row.name ? String(row.name) : undefined
+        );
+      }
+
       // Process images
       const images: string[] = [];
       const imageField = row.images || row.image || row.Image || row.Images;

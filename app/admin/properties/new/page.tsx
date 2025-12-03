@@ -221,12 +221,13 @@ export default function AddPropertyPage() {
         <div>
           <label className="block text-sm text-gray-700 mb-1">Auction Date *</label>
           <input
-            type="datetime-local"
+            type="text"
             name="AuctionDate"
             value={formData.AuctionDate}
             onChange={handleChange}
             required
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+            placeholder="DD-MM-YYYY or any format"
           />
         </div>
 

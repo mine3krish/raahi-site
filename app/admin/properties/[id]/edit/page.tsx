@@ -66,7 +66,7 @@ export default function EditPropertyPage() {
           type: property.type,
           reservePrice: property.reservePrice.toString(),
           EMD: property.EMD.toString(),
-          AuctionDate: new Date(property.AuctionDate).toISOString().slice(0, 16),
+          AuctionDate: property.AuctionDate || "",
           area: property.area?.toString() || "",
           featured: property.featured,
           status: property.status,

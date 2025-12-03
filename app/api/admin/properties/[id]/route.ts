@@ -51,7 +51,7 @@ export async function PUT(
       type: formData.get("type") as string,
       reservePrice: parseFloat(formData.get("reservePrice") as string),
       EMD: parseFloat(formData.get("EMD") as string),
-      AuctionDate: new Date(formData.get("AuctionDate") as string),
+      AuctionDate: formData.get("AuctionDate") as string,
       area: formData.get("area") ? parseFloat(formData.get("area") as string) : undefined,
       featured: formData.get("featured") === "true",
       status: formData.get("status") as string || "Active",

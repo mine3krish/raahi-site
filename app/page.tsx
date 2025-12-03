@@ -27,9 +27,9 @@ export default function Home() {
   return (
     <div>
       <Hero/>
+      <PropertyScroller />
       <WhyChooseUs />
       <JoinCommunity />
-      <PropertyScroller />
       <IndiaMapSection />
       <StateWiseProperties />
     </div>

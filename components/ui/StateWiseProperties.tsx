@@ -39,7 +39,7 @@ export default function StateWiseProperties() {
     return (
       <section className="py-20 px-4 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto" />
         </div>
       </section>
     );
@@ -64,16 +64,16 @@ export default function StateWiseProperties() {
             >
               <Link
                 href={`/properties?state=${encodeURIComponent(item.state)}`}
-                className="group block bg-white rounded-2xl transition-all duration-300 p-6 border-2 border-gray-100 hover:border-blue-500"
+                className="group block bg-white rounded-2xl transition-all duration-300 p-6 border-2 border-gray-100 hover:border-green-500"
               >
                 {/* State Name with Icon */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-3 bg-blue-100 rounded-xl group-hover:bg-blue-600 transition-colors">
-                      <MapPin className="text-blue-600 group-hover:text-white transition-colors" size={24} />
+                    <div className="p-3 bg-green-100 rounded-xl group-hover:bg-green-600 transition-colors">
+                      <MapPin className="text-green-600 group-hover:text-white transition-colors" size={24} />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                      <h3 className="text-lg font-bold text-gray-900 group-hover:text-green-600 transition-colors line-clamp-2">
                         {item.state}
                       </h3>
                     </div>
@@ -103,11 +103,11 @@ export default function StateWiseProperties() {
 
                 {/* View Link */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                  <span className="text-sm font-medium text-blue-600 group-hover:text-blue-700">
+                  <span className="text-sm font-medium text-green-600 group-hover:text-green-700">
                     View Properties
                   </span>
                   <ArrowRight 
-                    className="text-blue-600 group-hover:translate-x-1 transition-transform" 
+                    className="text-green-600 group-hover:translate-x-1 transition-transform" 
                     size={20} 
                   />
                 </div>
@@ -125,7 +125,7 @@ export default function StateWiseProperties() {
         >
           <Link
             href="/properties"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all font-semibold text-lg"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-4 rounded-xl hover:from-green-700 hover:to-green-800 transition-all font-semibold text-lg"
           >
             View All Properties
             <ArrowRight size={20} />

@@ -31,7 +31,7 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
             ) : (
               <a
                 href={item.url}
-                className="hover:text-blue-600 transition"
+                className="hover:text-green-600 transition"
               >
                 {item.name}
               </a>

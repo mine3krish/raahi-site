@@ -81,7 +81,7 @@ export default function SignupPage() {
                             className={`w-full border ${error && name.trim().length < 3
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                } rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600`}
+                                } rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600`}
                             placeholder="John Doe"
                             required
                             value={name}
@@ -94,7 +94,7 @@ export default function SignupPage() {
                         <input
                             type="email"
                             className={`w-full border ${error?.includes("email") ? "border-red-500" : "border-gray-300"
-                                } rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600`}
+                                } rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600`}
                             placeholder="you@example.com"
                             required
                             value={email}
@@ -107,7 +107,7 @@ export default function SignupPage() {
                         <input
                             type="password"
                             className={`w-full border ${error?.includes("Password") ? "border-red-500" : "border-gray-300"
-                                } rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600`}
+                                } rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600`}
                             placeholder="••••••••"
                             required
                             value={password}
@@ -124,7 +124,7 @@ export default function SignupPage() {
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+                        className="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition"
                     >
                         Create Account
                     </button>
@@ -136,7 +136,7 @@ export default function SignupPage() {
                     Already have an account?{" "}
                     <Link
                         href="/login"
-                        className="text-blue-600 hover:underline font-medium"
+                        className="text-green-600 hover:underline font-medium"
                     >
                         Log in
                     </Link>

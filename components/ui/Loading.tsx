@@ -24,7 +24,7 @@ export default function LoadingOverlay({ show, text }: LoadingOverlayProps) {
             transition={{ delay: 0.1, duration: 0.4 }}
             className="flex flex-col items-center"
           >
-            <Loader2 className="h-10 w-10 text-blue-600 animate-spin mb-3" />
+            <Loader2 className="h-10 w-10 text-green-600 animate-spin mb-3" />
             <p className="text-gray-700 font-medium text-sm">
               {text || "Loading..."}
             </p>

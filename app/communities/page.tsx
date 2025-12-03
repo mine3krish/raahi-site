@@ -63,7 +63,7 @@ export default function CommunitiesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
+      <section className="bg-gradient-to-r from-green-600 to-green-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -76,7 +76,7 @@ export default function CommunitiesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-xl text-blue-100 max-w-2xl mx-auto"
+            className="text-xl text-green-100 max-w-2xl mx-auto"
           >
             Connect with property investors and enthusiasts across India. Share insights, discuss opportunities, and grow together.
           </motion.p>
@@ -101,7 +101,7 @@ export default function CommunitiesPage() {
             <select
               value={stateFilter}
               onChange={(e) => setStateFilter(e.target.value)}
-              className="md:w-64 border border-gray-200 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="md:w-64 border border-gray-200 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-600"
             >
               <option value="">All States</option>
               {INDIAN_STATES.map((state) => (
@@ -136,7 +136,7 @@ export default function CommunitiesPage() {
                 >
                   {/* State Header */}
                   <div className="flex items-center gap-3 mb-6">
-                    <MapPin className="text-blue-600" size={24} />
+                    <MapPin className="text-green-600" size={24} />
                     <h2 className="text-2xl font-bold text-gray-800">{state}</h2>
                     <span className="text-sm text-gray-500">
                       ({groupedCommunities[state].length} {groupedCommunities[state].length === 1 ? 'community' : 'communities'})
@@ -165,14 +165,14 @@ export default function CommunitiesPage() {
                             />
                           </div>
                         ) : (
-                          <div className="h-48 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                          <div className="h-48 bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center">
                             <Users size={48} className="text-white opacity-50" />
                           </div>
                         )}
 
                         {/* Content */}
                         <div className="p-6">
-                          <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition">
+                          <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-green-600 transition">
                             {community.name}
                           </h3>
 
@@ -212,15 +212,15 @@ export default function CommunitiesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-blue-600 text-white py-16">
+      <section className="bg-green-600 text-white py-16">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-4">Don't see your community?</h2>
-          <p className="text-blue-100 mb-6">
+          <p className="text-green-100 mb-6">
             Help us grow by suggesting a new community for your area
           </p>
           <Link
             href="/contact"
-            className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition"
+            className="inline-block bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-green-50 transition"
           >
             Contact Us
           </Link>
@@ -229,3 +229,4 @@ export default function CommunitiesPage() {
     </div>
   );
 }
+

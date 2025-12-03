@@ -226,7 +226,7 @@ export default function Properties() {
             animate={{ opacity: 1, scale: 1 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
+            className="bg-green-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-green-700 transition"
             onClick={() => router.push("/admin/properties/new")}
           >
             + Add Property
@@ -246,12 +246,12 @@ export default function Properties() {
             placeholder="Search by name, ID, location..."
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
           />
           <select
             value={stateFilter}
             onChange={(e) => handleStateChange(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
           >
             <option value="">All States</option>
             {INDIAN_STATES.map(state => (
@@ -261,7 +261,7 @@ export default function Properties() {
           <select
             value={typeFilter}
             onChange={(e) => handleTypeChange(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
           >
             <option value="">All Types</option>
             {PROPERTY_TYPES.map(type => (
@@ -271,7 +271,7 @@ export default function Properties() {
           <select
             value={statusFilter}
             onChange={(e) => handleStatusFilterChange(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
           >
             <option value="">All Statuses</option>
             {PROPERTY_STATUSES.map(status => (
@@ -333,7 +333,7 @@ export default function Properties() {
                   <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">{property.location}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">{property.state}</td>
                   <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                       {property.type}
                     </span>
                   </td>
@@ -341,7 +341,7 @@ export default function Properties() {
                     <select
                       value={property.status}
                       onChange={(e) => handleStatusChange(property.id, e.target.value)}
-                      className={`border rounded-md px-2 py-1 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      className={`border rounded-md px-2 py-1 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-green-500 ${
                         property.status === "Active" ? "border-green-300 bg-green-50 text-green-700" :
                         property.status === "Sold" ? "border-red-300 bg-red-50 text-red-700" :
                         "border-yellow-300 bg-yellow-50 text-yellow-700"
@@ -355,7 +355,7 @@ export default function Properties() {
                   <td className="px-4 py-3 text-sm font-medium text-gray-900">₹{property.reservePrice?.toLocaleString('en-IN')}</td>
                   <td className="px-4 py-3">
                     <button
-                      className="text-blue-600 hover:text-blue-800 font-medium text-sm hover:underline"
+                      className="text-green-600 hover:text-green-800 font-medium text-sm hover:underline"
                       onClick={() => router.push(`/admin/properties/${property.id}/edit`)}
                     >
                       Edit
@@ -401,7 +401,7 @@ export default function Properties() {
                   key={pageNum}
                   className={`px-3 py-2 rounded-lg font-medium text-sm transition ${
                     page === pageNum
-                      ? "bg-blue-600 text-white"
+                      ? "bg-green-600 text-white"
                       : "border border-gray-300 bg-white hover:bg-gray-50"
                   }`}
                   onClick={() => handlePageChange(pageNum)}
@@ -450,7 +450,7 @@ export default function Properties() {
                       type="file"
                       accept=".xlsx,.xls"
                       onChange={(e) => setExcelFile(e.target.files?.[0] || null)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       Upload Excel file with property details
@@ -465,7 +465,7 @@ export default function Properties() {
                       type="file"
                       accept=".zip"
                       onChange={(e) => setZipFile(e.target.files?.[0] || null)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
                     />
                     <p className="text-xs text-gray-500 mt-1">
                       Upload ZIP file containing property images (jpg, png, webp)
@@ -473,9 +473,9 @@ export default function Properties() {
                   </div>
                 </div>
                 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                  <h3 className="font-semibold text-blue-900 mb-2">Excel Format Requirements:</h3>
-                  <ul className="text-sm text-blue-800 space-y-1">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <h3 className="font-semibold text-green-900 mb-2">Excel Format Requirements:</h3>
+                  <ul className="text-sm text-green-800 space-y-1">
                     <li>• <strong>Required columns:</strong> type, location, state, reservePrice, AuctionDate</li>
                     <li>• <strong>Optional columns:</strong> schemaName (custom name), newListingId (custom ID), EMD, area, images (filenames), description, notice</li>
                     <li>• Images column should contain filenames separated by commas (e.g., "img1.jpg, img2.png")</li>
@@ -496,7 +496,7 @@ export default function Properties() {
                   <button
                     onClick={handleImport}
                     disabled={importing || !excelFile}
-                    className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 flex items-center gap-2"
+                    className="px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50 flex items-center gap-2"
                   >
                     {importing ? (
                       <>
@@ -549,7 +549,7 @@ export default function Properties() {
                 <div className="flex justify-end">
                   <button
                     onClick={closeImportModal}
-                    className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
+                    className="px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition"
                   >
                     Close
                   </button>
@@ -562,3 +562,4 @@ export default function Properties() {
     </section>
   );
 }
+

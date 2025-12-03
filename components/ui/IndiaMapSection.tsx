@@ -67,9 +67,9 @@ export default function IndiaMapSection() {
         const rawName = d.properties.st_nm || d.properties.ST_NM || "Unknown";
         const name = normalizeStateName(rawName);
         const count = propertyData[name] || 0;
-        if (count > 120) return "#1e3a8a"; // dark blue
-        if (count > 80) return "#3b82f6"; // mid blue
-        if (count > 0) return "#bfdbfe"; // light blue
+        if (count > 120) return "#166534"; // dark green
+        if (count > 80) return "#22c55e"; // mid green
+        if (count > 0) return "#bbf7d0"; // light green
         return "#e5e7eb"; // gray
       })
       .attr("stroke", "#d1d5db")
@@ -81,7 +81,7 @@ export default function IndiaMapSection() {
         const count = propertyData[name] || 0;
         setHoveredState(name);
         setHoveredCount(count);
-        d3.select(this).attr("fill", "#2563eb");
+        d3.select(this).attr("fill", "#16a34a");
       })
       .on("mouseleave", function (event: any, d: any) {
         setHoveredState(null);
@@ -90,9 +90,9 @@ export default function IndiaMapSection() {
         const name = normalizeStateName(rawName);
         const count = propertyData[name] || 0;
         d3.select(this).attr("fill", () => {
-          if (count > 120) return "#1e3a8a";
-          if (count > 80) return "#3b82f6";
-          if (count > 0) return "#bfdbfe";
+          if (count > 120) return "#166534";
+          if (count > 80) return "#22c55e";
+          if (count > 0) return "#bbf7d0";
           return "#e5e7eb";
         });
       })

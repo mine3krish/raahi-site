@@ -54,7 +54,7 @@ export default function WhyChooseUs() {
               viewport={{ once: true }}
               className="bg-white rounded-2xl border border-gray-200 transition p-6 flex flex-col items-center text-center"
             >
-              <item.icon className="h-10 w-10 text-blue-600 mb-4" />
+              <item.icon className="h-10 w-10 text-green-600 mb-4" />
               <h3 className="font-semibold text-gray-800 mb-2">{item.title}</h3>
               <p className="text-gray-500 text-sm">{item.desc}</p>
             </motion.div>

@@ -25,7 +25,7 @@ export default function ForgotPasswordPage() {
                         <label className="block text-sm text-gray-600 mb-1">Email Address</label>
                         <input
                             type="email"
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
                             placeholder="you@example.com"
                             required
                         />
@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+                        className="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition"
                     >
                         Send Reset Link
                     </button>
@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
                 <div className="text-center mt-6">
                     <Link
                         href="/login"
-                        className="text-blue-600 hover:underline font-medium text-sm"
+                        className="text-green-600 hover:underline font-medium text-sm"
                     >
                         Back to Login
                     </Link>

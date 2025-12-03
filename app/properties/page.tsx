@@ -6,7 +6,7 @@ import PropertyGrid from "@/components/ui/PropertyGrid";
 import PropertyFilters from "@/components/ui/SearchProperties";
 import { formatIndianPrice } from "@/lib/constants";
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 50;
 
 function PropertiesContent() {
   const router = useRouter();
@@ -115,7 +115,7 @@ function PropertiesContent() {
                           onClick={() => handlePageChange(pageNum)}
                           className={`px-2.5 sm:px-3 py-2 rounded-lg font-medium text-xs sm:text-sm transition whitespace-nowrap ${
                             currentPage === pageNum
-                              ? "bg-blue-600 text-white"
+                              ? "bg-green-600 text-white"
                               : "border border-gray-300 bg-white hover:bg-gray-50"
                           }`}
                         >

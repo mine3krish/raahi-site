@@ -72,7 +72,7 @@ export default function LoginPage() {
                         <label className="block text-sm text-gray-600 mb-1">Email</label>
                         <input
                             type="email"
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
                             placeholder="you@example.com"
                             required
                             value={email}
@@ -84,7 +84,7 @@ export default function LoginPage() {
                         <label className="block text-sm text-gray-600 mb-1">Password</label>
                         <input
                             type="password"
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
                             placeholder="••••••••"
                             required
                             value={password}
@@ -94,9 +94,9 @@ export default function LoginPage() {
 
                     <div className="flex justify-between items-center text-sm">
                         <label className="flex items-center gap-2">
-                            <input type="checkbox" className="text-blue-600" /> Remember me
+                            <input type="checkbox" className="text-green-600" /> Remember me
                         </label>
-                        <Link href="/forgot-password" className="text-blue-600 hover:underline">
+                        <Link href="/forgot-password" className="text-green-600 hover:underline">
                             Forgot password?
                         </Link>
                     </div>
@@ -107,7 +107,7 @@ export default function LoginPage() {
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+                        className="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition"
                         onClick={handleSubmit}
                     >
                         Log In
@@ -119,7 +119,7 @@ export default function LoginPage() {
 
                 <p className="text-center text-gray-600 mt-6 text-sm">
                     Don’t have an account?{" "}
-                    <Link href="/signup" className="text-blue-600 hover:underline font-medium">
+                    <Link href="/signup" className="text-green-600 hover:underline font-medium">
                         Sign up
                     </Link>
                 </p>

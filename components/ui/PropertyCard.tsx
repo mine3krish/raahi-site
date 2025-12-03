@@ -31,7 +31,7 @@ export default function PropertyCard({
 
   return (
     <Link href={`/properties/${id}`} className="block w-full">
-      <div className="w-full max-w-sm border border-gray-200 rounded-xl bg-white transition hover:border-blue-400">
+      <div className="w-full max-w-sm border border-gray-200 rounded-xl bg-white transition hover:border-green-400">
         {/* Image Section */}
         <div className="relative w-full h-48">
           <Image
@@ -41,7 +41,7 @@ export default function PropertyCard({
             className="object-cover rounded-t-xl"
           />
           {/* Listing ID Overlay */}
-          <div className="absolute top-3 left-3 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+          <div className="absolute top-3 left-3 bg-white/95 text-green-700 text-xs font-semibold px-3 py-1 rounded-full border-2 border-green-600">
             #{id}
           </div>
           {/* Action Buttons */}
@@ -82,8 +82,8 @@ export default function PropertyCard({
             <MapPin size={16} className="mr-1" />
             {location}
           </div>
-          <p className="text-blue-600 font-bold text-lg">{price}</p>
-          <button className="mt-4 w-full bg-blue-600 text-white text-sm font-medium py-2 rounded-lg hover:bg-blue-700 transition">
+          <p className="text-green-600 font-bold text-lg">{price}</p>
+          <button className="mt-4 w-full bg-green-600 text-white text-sm font-medium py-2 rounded-lg hover:bg-green-700 transition">
             View Details
           </button>
         </div>

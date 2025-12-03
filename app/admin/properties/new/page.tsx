@@ -24,6 +24,14 @@ export default function AddPropertyPage() {
     area: "",
     featured: false,
     status: "Active",
+    assetCategory: "",
+    assetAddress: "",
+    assetCity: "",
+    borrowerName: "",
+    publicationDate: "",
+    auctionStartDate: "",
+    auctionEndTime: "",
+    applicationSubmissionDate: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -128,7 +136,7 @@ export default function AddPropertyPage() {
             value={formData.id}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
             placeholder="PROP001"
           />
         </div>
@@ -142,7 +150,7 @@ export default function AddPropertyPage() {
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
             placeholder="Luxury Apartment in Mumbai"
           />
         </div>
@@ -155,7 +163,7 @@ export default function AddPropertyPage() {
             value={formData.location}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 h-24 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 h-24 focus:outline-none focus:ring-2 focus:ring-green-600"
             placeholder="Enter detailed location/address..."
           />
         </div>
@@ -168,7 +176,7 @@ export default function AddPropertyPage() {
             value={formData.state}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
           >
             <option value="">Select State</option>
             {INDIAN_STATES.map((state) => (
@@ -188,7 +196,7 @@ export default function AddPropertyPage() {
             required
             min="0"
             step="0.01"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
             placeholder="5000000"
           />
         </div>
@@ -204,7 +212,7 @@ export default function AddPropertyPage() {
             required
             min="0"
             step="0.01"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
             placeholder="500000"
           />
         </div>
@@ -218,7 +226,7 @@ export default function AddPropertyPage() {
             value={formData.AuctionDate}
             onChange={handleChange}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
           />
         </div>
 
@@ -231,7 +239,7 @@ export default function AddPropertyPage() {
             value={formData.area}
             onChange={handleChange}
             min="0"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
             placeholder="1200"
           />
         </div>
@@ -245,7 +253,7 @@ export default function AddPropertyPage() {
             accept="image/*"
             onChange={handleImageChange}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
           />
           {imageFiles.length > 0 && (
             <div className="mt-2 text-sm text-gray-600">
@@ -261,13 +269,117 @@ export default function AddPropertyPage() {
             type="file"
             accept=".pdf,.doc,.docx,.txt"
             onChange={handleNoticeChange}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
           />
           {noticeFile && (
             <div className="mt-2 text-sm text-gray-600">
               Selected: {noticeFile.name}
             </div>
           )}
+        </div>
+
+        {/* Additional Auction Details Section */}
+        <div className="border-t pt-5 mt-5">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Additional Auction Details</h3>
+          
+          {/* Asset Category */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Asset Category</label>
+            <input
+              type="text"
+              name="assetCategory"
+              value={formData.assetCategory}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="e.g., Residential Property, Commercial Building"
+            />
+          </div>
+
+          {/* Asset Address */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Asset Address</label>
+            <textarea
+              name="assetAddress"
+              value={formData.assetAddress}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 h-20 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Full asset address"
+            />
+          </div>
+
+          {/* Asset City */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Asset City</label>
+            <input
+              type="text"
+              name="assetCity"
+              value={formData.assetCity}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="City name"
+            />
+          </div>
+
+          {/* Borrower Name */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Borrower Name</label>
+            <input
+              type="text"
+              name="borrowerName"
+              value={formData.borrowerName}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Name of borrower"
+            />
+          </div>
+
+          {/* Publication Date */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Publication Date</label>
+            <input
+              type="date"
+              name="publicationDate"
+              value={formData.publicationDate}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+            />
+          </div>
+
+          {/* Auction Start Date */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Auction Start Date</label>
+            <input
+              type="date"
+              name="auctionStartDate"
+              value={formData.auctionStartDate}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+            />
+          </div>
+
+          {/* Auction End Time */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Auction End Time</label>
+            <input
+              type="datetime-local"
+              name="auctionEndTime"
+              value={formData.auctionEndTime}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+            />
+          </div>
+
+          {/* Application Submission Date */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Application Submission Date</label>
+            <input
+              type="date"
+              name="applicationSubmissionDate"
+              value={formData.applicationSubmissionDate}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+            />
+          </div>
         </div>
 
         {/* Type, Status & Featured */}
@@ -279,7 +391,7 @@ export default function AddPropertyPage() {
               value={formData.type}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
             >
               <option value="Residential">Residential</option>
               <option value="Commercial">Commercial</option>
@@ -294,7 +406,7 @@ export default function AddPropertyPage() {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
             >
               <option value="Active">Active</option>
               <option value="Sold">Sold</option>
@@ -309,7 +421,7 @@ export default function AddPropertyPage() {
                 name="featured"
                 checked={formData.featured}
                 onChange={handleChange}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-gray-300 text-green-600 focus:ring-green-500"
               />
               <span className="text-sm text-gray-700">Featured Property</span>
             </label>
@@ -318,14 +430,33 @@ export default function AddPropertyPage() {
 
         {error && <p className="text-red-600 text-sm">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition"
-        >
-          {loading ? "Saving..." : "Add Property"}
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex-1 bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50"
+          >
+            {loading ? "Saving..." : "Add Property"}
+          </button>
+          {formData.id && (
+            <button
+              type="button"
+              onClick={() => window.open(`/properties/${formData.id}`, '_blank')}
+              className="px-6 py-2 bg-white border-2 border-green-600 text-green-600 rounded-lg font-medium hover:bg-green-50 transition"
+            >
+              View Property
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => router.push("/admin/properties")}
+            className="px-6 py-2 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition"
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </section>
   );
 }
+

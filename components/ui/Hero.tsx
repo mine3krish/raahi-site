@@ -34,7 +34,7 @@ export default function Hero() {
       >
         {/* Headline */}
         <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 leading-snug">
-          Find, Bid & Own Your <span className="text-blue-300">Dream Property</span>
+          Find, Bid & Own Your <span className="text-green-300">Dream Property</span>
         </h1>
         <p className="text-base sm:text-lg md:text-xl text-gray-200 mb-8 sm:mb-10 max-w-2xl mx-auto">
           Discover verified listings and live property auctions across India.
@@ -76,7 +76,7 @@ export default function Hero() {
           {/* Search Button */}
           <button 
             type="submit"
-            className="bg-blue-600 text-white w-full sm:w-auto mt-2 sm:mt-0 sm:ml-3 px-6 py-2 rounded-full hover:bg-blue-700 transition flex justify-center items-center gap-2 text-sm sm:text-base"
+            className="bg-green-600 text-white w-full sm:w-auto mt-2 sm:mt-0 sm:ml-3 px-6 py-2 rounded-full hover:bg-green-700 transition flex justify-center items-center gap-2 text-sm sm:text-base"
           >
             <Search size={18} />
             Search

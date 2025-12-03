@@ -71,7 +71,7 @@ export default function PropertyScroller() {
           </h2>
           <a
             href="/properties"
-            className="text-blue-600 hover:underline text-sm font-medium"
+            className="text-green-600 hover:underline text-sm font-medium"
           >
             View All →
           </a>
@@ -87,7 +87,7 @@ export default function PropertyScroller() {
           >
             {loading ? (
               <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-green-600"></div>
               </div>
             ) : properties.length === 0 ? (
               <div className="text-center py-20 text-gray-500">
@@ -126,7 +126,7 @@ export default function PropertyScroller() {
                   }}
                   className={`w-2.5 h-2.5 rounded-full transition ${
                     index === currentPage
-                      ? "bg-blue-600 w-3"
+                      ? "bg-green-600 w-3"
                       : "bg-gray-300 hover:bg-gray-400"
                   }`}
                 />

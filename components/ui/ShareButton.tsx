@@ -48,14 +48,14 @@ export default function ShareButton({
     const city = locationParts[0]?.trim() || location;
     const stateValue = state || locationParts[1]?.trim() || "";
     
-    return `🏢 Attention Investors! Bank Auction Alert! 🏢
+    return `Attention Investors! Bank Auction Alert!
 
-📍 Location: ${city}${stateValue ? `, ${stateValue}` : ''}
-🏠 Property Type: ${propertyType || 'Property'}
-💸 Reserve Price: ${price}${emd ? `
-💰 EMD Amount: ${emd}` : ''}${auctionDate ? `
-📅 Auction Date: ${auctionDate}` : ''}
-🔑 Listing ID: ${propertyId}
+Location: ${city}${stateValue ? `, ${stateValue}` : ''}
+Property Type: ${propertyType || 'Property'}
+Reserve Price: ${price}${emd ? `
+EMD Amount: ${emd}` : ''}${auctionDate ? `
+Auction Date: ${auctionDate}` : ''}
+Listing ID: ${propertyId}
 
 Property Details:${assetAddress ? `
 - Location: ${assetAddress}` : ''}${area ? `
@@ -64,13 +64,13 @@ Property Details:${assetAddress ? `
 Don't miss out on this fantastic opportunity to own a prime property in ${city}! 
 
 For more information or to participate in the auction, contact Raahi Auction at:
-📞 Phone: +91 8488 8488 74
+Phone: +91 8488 8488 74
 
 #RealEstate #PropertyAuction #${city.replace(/\s+/g, '')} #InvestmentOpportunity #BankAuction #RaahiAuction
 
-📞 Contact Us: 
+Contact Us: 
 For more details, 
-visit: 🌐 www.raahiauction.com`;
+visit: www.raahiauction.com`;
   };
 
   const shareUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/properties/${propertyId}`;
@@ -173,7 +173,7 @@ visit: 🌐 www.raahiauction.com`;
       
       ctx.fillStyle = "#6b7280";
       ctx.font = "60px Arial, sans-serif";
-      ctx.fillText("📍 " + location, 180, boxY + 430);
+      ctx.fillText(location, 180, boxY + 430);
 
       // Price with background (scaled 2x)
       ctx.fillStyle = "#eff6ff";
@@ -200,7 +200,7 @@ visit: 🌐 www.raahiauction.com`;
       
       ctx.fillStyle = "#2563eb";
       ctx.font = "bold 64px Arial, sans-serif";
-      ctx.fillText("📞 +91 84888 48874", 140, boxY + 980);
+      ctx.fillText("+91 84888 48874", 140, boxY + 980);
 
       // Convert to blob and create URL
       canvas.toBlob(async (blob) => {
@@ -286,7 +286,7 @@ visit: 🌐 www.raahiauction.com`;
             handleShareClick();
           }}
           disabled={generating}
-          className={`p-2 rounded-full bg-white/90 text-gray-600 hover:bg-blue-500 hover:text-white transition-all ${
+          className={`p-2 rounded-full bg-white/90 text-gray-600 hover:bg-green-500 hover:text-white transition-all ${
             generating ? "opacity-50 cursor-not-allowed" : ""
           }`}
           title="Share Property"
@@ -297,7 +297,7 @@ visit: 🌐 www.raahiauction.com`;
         <button
           onClick={handleShareClick}
           disabled={generating}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-blue-600 text-blue-600 font-semibold hover:bg-blue-50 transition ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-green-600 text-green-600 font-semibold hover:bg-green-50 transition ${
             generating ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
@@ -341,7 +341,7 @@ visit: 🌐 www.raahiauction.com`;
 
                 {generating && (
                   <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-green-600"></div>
                     <span className="ml-3 text-gray-600">Generating poster...</span>
                   </div>
                 )}
@@ -352,7 +352,7 @@ visit: 🌐 www.raahiauction.com`;
                     <div className="mb-6 p-4 bg-gray-50 rounded-xl">
                       <h4 className="font-semibold text-gray-800 mb-1">{propertyName}</h4>
                       <p className="text-sm text-gray-600">{location}</p>
-                      <p className="text-lg font-bold text-blue-600 mt-2">{price}</p>
+                      <p className="text-lg font-bold text-green-600 mt-2">{price}</p>
                     </div>
 
                     {/* Share Buttons */}
@@ -423,7 +423,7 @@ visit: 🌐 www.raahiauction.com`;
                         onClick={async () => {
                           try {
                             await navigator.clipboard.writeText(caption);
-                            alert("✅ Caption copied to clipboard!\n\nPaste it on Instagram along with the poster image.");
+                            alert("Caption copied to clipboard!\n\nPaste it on Instagram along with the poster image.");
                           } catch {
                             alert("Please copy the caption manually and share on Instagram.");
                           }
@@ -450,18 +450,18 @@ visit: 🌐 www.raahiauction.com`;
                           a.download = `raahi-auction-${propertyId}.png`;
                           a.click();
                         }}
-                        className="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition mb-4"
+                        className="w-full py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition mb-4"
                       >
-                        📥 Download Poster Image
+                        Download Poster Image
                       </button>
                     )}
 
                     {/* Info Message */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                      <p className="text-sm text-blue-800">
-                        <strong>💡 How to share:</strong>
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                      <p className="text-sm text-green-800">
+                        <strong>How to share:</strong>
                       </p>
-                      <ol className="text-sm text-blue-800 mt-2 ml-4 list-decimal space-y-1">
+                      <ol className="text-sm text-green-800 mt-2 ml-4 list-decimal space-y-1">
                         <li>Download the poster image using the button above</li>
                         <li>Click on your preferred social media platform</li>
                         <li>The caption will be copied automatically</li>

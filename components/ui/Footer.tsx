@@ -23,10 +23,10 @@ export default function Footer() {
         <div>
           <h4 className="text-gray-800 font-semibold mb-3">Quick Links</h4>
           <ul className="space-y-2 text-gray-600 text-sm">
-            <li><a href="/" className="hover:text-blue-600 transition">Home</a></li>
-            <li><a href="/properties" className="hover:text-blue-600 transition">Properties</a></li>
-            <li><a href="/join" className="hover:text-blue-600 transition">Join as a agent</a></li>
-            <li><a href="/contact" className="hover:text-blue-600 transition">Contact</a></li>
+            <li><a href="/" className="hover:text-green-600 transition">Home</a></li>
+            <li><a href="/properties" className="hover:text-green-600 transition">Properties</a></li>
+            <li><a href="/join" className="hover:text-green-600 transition">Join as a agent</a></li>
+            <li><a href="/contact" className="hover:text-green-600 transition">Contact</a></li>
           </ul>
         </div>
       </div>
@@ -36,19 +36,19 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Socials */}
           <div className="flex gap-4">
-            <a href="#" aria-label="Facebook" className="text-gray-500 hover:text-blue-600 transition">
+            <a href="#" aria-label="Facebook" className="text-gray-500 hover:text-green-600 transition">
               <Facebook size={18} />
             </a>
-            <a href="#" aria-label="Twitter" className="text-gray-500 hover:text-blue-600 transition">
+            <a href="#" aria-label="Twitter" className="text-gray-500 hover:text-green-600 transition">
               <Twitter size={18} />
             </a>
-            <a href="#" aria-label="Instagram" className="text-gray-500 hover:text-blue-600 transition">
+            <a href="#" aria-label="Instagram" className="text-gray-500 hover:text-green-600 transition">
               <Instagram size={18} />
             </a>
-            <a href="#" aria-label="LinkedIn" className="text-gray-500 hover:text-blue-600 transition">
+            <a href="#" aria-label="LinkedIn" className="text-gray-500 hover:text-green-600 transition">
               <Linkedin size={18} />
             </a>
-            <a href="#" aria-label="Email" className="text-gray-500 hover:text-blue-600 transition">
+            <a href="#" aria-label="Email" className="text-gray-500 hover:text-green-600 transition">
               <Mail size={18} />
             </a>
           </div>

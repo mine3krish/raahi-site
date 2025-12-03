@@ -92,9 +92,9 @@ export default function JoinAsAgentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-gray-50">
       {/* Hero Section */}
-      <section className="relative py-20 px-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white overflow-hidden">
+      <section className="relative py-20 px-4 bg-gradient-to-r from-green-600 to-green-800 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative max-w-7xl mx-auto text-center z-10">
           <motion.div
@@ -105,7 +105,7 @@ export default function JoinAsAgentPage() {
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               Join Our Agent Network
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl mb-8 text-green-100 max-w-3xl mx-auto">
               Become part of India's fastest-growing real estate platform and expand your business
             </p>
           </motion.div>
@@ -135,10 +135,10 @@ export default function JoinAsAgentPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-2xl p-8 border-2 border-blue-100 hover:border-blue-500 transition-all"
+              className="bg-white rounded-2xl p-8 border-2 border-green-100 hover:border-green-500 transition-all"
             >
-              <div className="p-4 bg-blue-100 rounded-xl w-fit mb-4">
-                <Users className="text-blue-600" size={32} />
+              <div className="p-4 bg-green-100 rounded-xl w-fit mb-4">
+                <Users className="text-green-600" size={32} />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">
                 Wide Network
@@ -246,7 +246,7 @@ export default function JoinAsAgentPage() {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                     placeholder="John Doe"
                   />
                 </div>
@@ -263,7 +263,7 @@ export default function JoinAsAgentPage() {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                     placeholder="john@example.com"
                   />
                 </div>
@@ -280,7 +280,7 @@ export default function JoinAsAgentPage() {
                     required
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                     placeholder="9876543210"
                   />
                 </div>
@@ -297,7 +297,7 @@ export default function JoinAsAgentPage() {
                     required
                     value={formData.city}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                     placeholder="Mumbai"
                   />
                 </div>
@@ -313,7 +313,7 @@ export default function JoinAsAgentPage() {
                     required
                     value={formData.state}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition bg-white"
                   >
                     <option value="">Select State</option>
                     {INDIAN_STATES.map((state) => (
@@ -335,7 +335,7 @@ export default function JoinAsAgentPage() {
                     required
                     value={formData.experience}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition bg-white"
                   >
                     <option value="">Select Experience</option>
                     {EXPERIENCE_OPTIONS.map((exp) => (
@@ -357,7 +357,7 @@ export default function JoinAsAgentPage() {
                     name="licenseNumber"
                     value={formData.licenseNumber}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                     placeholder="RERA/License Number"
                   />
                 </div>
@@ -373,7 +373,7 @@ export default function JoinAsAgentPage() {
                     name="portfolio"
                     value={formData.portfolio}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                     placeholder="https://yourportfolio.com"
                   />
                 </div>
@@ -391,7 +391,7 @@ export default function JoinAsAgentPage() {
                   rows={5}
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition resize-none"
                   placeholder="Tell us about yourself and why you'd be a great addition to our team..."
                 />
               </div>
@@ -400,7 +400,7 @@ export default function JoinAsAgentPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-6 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold text-lg"
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-4 px-6 rounded-xl hover:from-green-700 hover:to-green-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold text-lg"
               >
                 {loading ? (
                   <>
@@ -421,3 +421,4 @@ export default function JoinAsAgentPage() {
     </div>
   );
 }
+

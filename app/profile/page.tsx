@@ -85,7 +85,7 @@ export default function Profile() {
               <div className="flex items-center gap-4">
                 <Link
                   href="/profile/edit"
-                  className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition"
+                  className="bg-green-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-green-700 transition"
                 >
                   Edit Profile
                 </Link>
@@ -101,7 +101,7 @@ export default function Profile() {
           ) : (
             <p className="text-gray-500 text-center">
               No user data available. Please{" "}
-              <Link href="/login" className="text-blue-600 hover:underline">
+              <Link href="/login" className="text-green-600 hover:underline">
                 log in
               </Link>{" "}
               to continue.
@@ -127,7 +127,7 @@ export default function Profile() {
 
           {loading ? (
             <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-green-600"></div>
             </div>
           ) : wishlistProperties.length === 0 ? (
             <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
@@ -137,7 +137,7 @@ export default function Profile() {
               </p>
               <Link
                 href="/properties"
-                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition"
+                className="inline-block bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition"
               >
                 Browse Properties
               </Link>

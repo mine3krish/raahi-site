@@ -74,6 +74,14 @@ export async function POST(req: NextRequest) {
       area: formData.get("area") ? parseFloat(formData.get("area") as string) : undefined,
       featured: formData.get("featured") === "true",
       status: formData.get("status") as string || "Active",
+      assetCategory: formData.get("assetCategory") as string || "",
+      assetAddress: formData.get("assetAddress") as string || "",
+      assetCity: formData.get("assetCity") as string || "",
+      borrowerName: formData.get("borrowerName") as string || "",
+      publicationDate: formData.get("publicationDate") as string || "",
+      auctionStartDate: formData.get("auctionStartDate") as string || "",
+      auctionEndTime: formData.get("auctionEndTime") as string || "",
+      applicationSubmissionDate: formData.get("applicationSubmissionDate") as string || "",
     };
 
     // Handle image uploads

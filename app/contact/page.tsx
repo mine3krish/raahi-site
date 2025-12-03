@@ -63,7 +63,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -126,7 +126,7 @@ export default function ContactPage() {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                   placeholder="John Doe"
                 />
               </div>
@@ -142,7 +142,7 @@ export default function ContactPage() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                   placeholder="john@example.com"
                 />
               </div>
@@ -158,7 +158,7 @@ export default function ContactPage() {
                   required
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                   placeholder="9876543210"
                 />
               </div>
@@ -174,7 +174,7 @@ export default function ContactPage() {
                   required
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
                   placeholder="Property Inquiry"
                 />
               </div>
@@ -190,7 +190,7 @@ export default function ContactPage() {
                   rows={5}
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition resize-none"
                   placeholder="Tell us about your requirements..."
                 />
               </div>
@@ -198,7 +198,7 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold"
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-6 rounded-xl hover:from-green-700 hover:to-green-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold"
               >
                 {loading ? (
                   <>
@@ -229,14 +229,14 @@ export default function ContactPage() {
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-blue-100 rounded-xl">
-                    <Mail className="text-blue-600" size={24} />
+                  <div className="p-3 bg-green-100 rounded-xl">
+                    <Mail className="text-green-600" size={24} />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
                     <a
                       href="mailto:info@raahiauction.com"
-                      className="text-gray-600 hover:text-blue-600 transition"
+                      className="text-gray-600 hover:text-green-600 transition"
                     >
                       info@raahiauction.com
                     </a>
@@ -251,7 +251,7 @@ export default function ContactPage() {
                     <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
                     <a
                       href="tel:+919876543210"
-                      className="text-gray-600 hover:text-blue-600 transition"
+                      className="text-gray-600 hover:text-green-600 transition"
                     >
                       +91 84888 48874
                     </a>
@@ -272,7 +272,7 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-8 text-white">
+            <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-2xl p-8 text-white">
               <h3 className="text-2xl font-bold mb-4">Business Hours</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">
@@ -305,3 +305,4 @@ export default function ContactPage() {
     </div>
   );
 }
+

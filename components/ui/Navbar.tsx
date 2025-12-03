@@ -75,11 +75,11 @@ export default function Navbar() {
                 placeholder="Search properties..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-full pl-10 pr-4 py-2 bg-gray-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                className="w-full rounded-full pl-10 pr-4 py-2 bg-gray-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
               />
               <button
                 type="submit"
-                className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 hover:text-blue-600 transition"
+                className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 hover:text-green-600 transition"
               >
                 <Search strokeWidth={2} />
               </button>
@@ -94,7 +94,7 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                  className="text-gray-700 hover:text-green-600 transition-colors"
                 >
                   {link.name}
                 </Link>
@@ -102,7 +102,7 @@ export default function Navbar() {
               {!isAuthenticated ? 
                 <Link
                   href="/login"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all"
+                  className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all"
                 >
                   Login
                 </Link>
@@ -155,11 +155,11 @@ export default function Navbar() {
                   value={mobileSearchQuery}
                   onChange={(e) => setMobileSearchQuery(e.target.value)}
                   autoFocus
-                  className="w-full rounded-xl pl-12 pr-4 py-3 bg-white border-2 border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full rounded-xl pl-12 pr-4 py-3 bg-white border-2 border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 />
                 <button
                   type="submit"
-                  className="absolute left-4 top-3.5 text-gray-400 hover:text-blue-600 transition"
+                  className="absolute left-4 top-3.5 text-gray-400 hover:text-green-600 transition"
                   aria-label="Search"
                 >
                   <Search size={20} strokeWidth={2} />
@@ -213,7 +213,7 @@ export default function Navbar() {
                 <Link
                   href="/admin"
                   onClick={closeMenu}
-                  className="flex items-center px-4 py-3 text-base font-medium text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                  className="flex items-center px-4 py-3 text-base font-medium text-green-600 hover:bg-green-50 rounded-xl transition-all"
                 >
                   Admin
                 </Link>
@@ -248,7 +248,7 @@ export default function Navbar() {
                     <Link
                       href="/signup"
                       onClick={closeMenu}
-                      className="block px-4 py-3 text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-xl transition-all text-center"
+                      className="block px-4 py-3 text-base font-semibold bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 rounded-xl transition-all text-center"
                     >
                       Sign Up
                     </Link>

@@ -13,6 +13,8 @@ const PropertySchema = new Schema(
     area: { type: Number }, // in sqft
     images: [String],
     featured: { type: Boolean, default: false },
+    bestDeal: { type: Boolean, default: false },
+    premium: { type: Boolean, default: false },
     status: { type: String, enum: ["Active", "Sold", "Pending"], default: "Active" },
     
     // Additional auction details
@@ -24,6 +26,7 @@ const PropertySchema = new Schema(
     auctionStartDate: { type: String },
     auctionEndTime: { type: String },
     applicationSubmissionDate: { type: String },
+    agentMobile: { type: String, default: "+91 848 884 8874" },
   },
   { timestamps: true }
 );

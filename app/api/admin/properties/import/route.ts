@@ -34,6 +34,7 @@ interface PropertyData {
   auctionStartDate?: string;
   auctionEndTime?: string;
   applicationSubmissionDate?: string;
+  agentMobile?: string;
 }
 
 interface ImportResult {
@@ -385,6 +386,7 @@ async function parseExcelFile(
         auctionStartDate: row.auctionStartDate ? String(row.auctionStartDate) : undefined,
         auctionEndTime: row.auctionEndTime ? String(row.auctionEndTime) : undefined,
         applicationSubmissionDate: row.applicationSubmissionDate ? String(row.applicationSubmissionDate) : undefined,
+        agentMobile: row.agentMobile ? String(row.agentMobile) : "+91 848 884 8874",
       });
       
       console.log(`✓ Row ${rowNum} processed successfully: ${propertyName}`);

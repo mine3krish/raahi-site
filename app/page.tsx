@@ -2,6 +2,8 @@ import JoinCommunity from "@/components/ui/JoinCommunity";
 import Hero from "@/components/ui/Hero";
 import WhyChooseUs from "@/components/ui/WhyChooseUs";
 import PropertyScroller from "@/components/ui/PropertyScroller";
+import BestDealsScroller from "@/components/ui/BestDealsScroller";
+import PremiumPropertiesScroller from "@/components/ui/PremiumPropertiesScroller";
 import IndiaMapSection from "@/components/ui/IndiaMapSection";
 import StateWiseProperties from "@/components/ui/StateWiseProperties";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
@@ -29,6 +31,8 @@ export default function Home() {
       <Hero/>
       <PropertyScroller />
       <WhyChooseUs />
+      <BestDealsScroller />
+      <PremiumPropertiesScroller />
       <JoinCommunity />
       <IndiaMapSection />
       <StateWiseProperties />

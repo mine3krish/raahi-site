@@ -30,6 +30,12 @@ export async function GET(req: NextRequest) {
     if (type) query.type = type;
     if (status) query.status = status; // Allow filtering by status
     if (featured === "true") query.featured = true;
+    
+    // Filter by bestDeal or premium
+    const bestDeal = searchParams.get("bestDeal");
+    const premium = searchParams.get("premium");
+    if (bestDeal === "true") query.bestDeal = true;
+    if (premium === "true") query.premium = true;
 
     // Get total count
     const total = await Property.countDocuments(query);

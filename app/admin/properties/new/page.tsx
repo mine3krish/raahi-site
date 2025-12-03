@@ -23,6 +23,8 @@ export default function AddPropertyPage() {
     AuctionDate: "",
     area: "",
     featured: false,
+    bestDeal: false,
+    premium: false,
     status: "Active",
     assetCategory: "",
     assetAddress: "",
@@ -32,6 +34,7 @@ export default function AddPropertyPage() {
     auctionStartDate: "",
     auctionEndTime: "",
     applicationSubmissionDate: "",
+    agentMobile: "+91 848 884 8874",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -381,6 +384,20 @@ export default function AddPropertyPage() {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
             />
           </div>
+
+          {/* Agent Mobile */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Agent Mobile Number *</label>
+            <input
+              type="text"
+              name="agentMobile"
+              value={formData.agentMobile}
+              onChange={handleChange}
+              required
+              placeholder="+91 848 884 8874"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+            />
+          </div>
         </div>
 
         {/* Type, Status & Featured */}
@@ -424,9 +441,34 @@ export default function AddPropertyPage() {
                 onChange={handleChange}
                 className="rounded border-gray-300 text-green-600 focus:ring-green-500"
               />
-              <span className="text-sm text-gray-700">Featured Property</span>
+              <span className="text-sm text-gray-700">Featured</span>
             </label>
           </div>
+        </div>
+
+        {/* Property Flags */}
+        <div className="grid grid-cols-2 gap-4">
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              name="bestDeal"
+              checked={formData.bestDeal}
+              onChange={handleChange}
+              className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+            />
+            <span className="text-sm text-gray-700">Best Deal</span>
+          </label>
+          
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              name="premium"
+              checked={formData.premium}
+              onChange={handleChange}
+              className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+            />
+            <span className="text-sm text-gray-700">Premium Property</span>
+          </label>
         </div>
 
         {error && <p className="text-red-600 text-sm">{error}</p>}

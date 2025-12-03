@@ -336,6 +336,23 @@ export default function Properties() {
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                       {property.type}
                     </span>
+                    <div className="flex gap-1 mt-1">
+                      {property.featured && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                          ⭐
+                        </span>
+                      )}
+                      {property.bestDeal && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                          🔥
+                        </span>
+                      )}
+                      {property.premium && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                          💎
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <select

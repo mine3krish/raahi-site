@@ -134,6 +134,7 @@ export default function PropertyDetailPage() {
                     state={property.state}
                     area={property.area?.toString()}
                     assetAddress={property.assetAddress}
+                    agentMobile={property.agentMobile}
                   />
                   <button
                     onClick={() => toggleWishlist(property.id)}
@@ -187,7 +188,7 @@ export default function PropertyDetailPage() {
               
               <div className="flex items-start text-gray-600 mb-6">
                 <MapPin size={20} className="mr-2 mt-1 flex-shrink-0" />
-                <span>{property.location}, {property.state}</span>
+                <span>{property.location == "None" ? "" : property.location + ","} {property.state}</span>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -249,7 +250,7 @@ export default function PropertyDetailPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white rounded-2xl p-6  sticky top-6"
+              className="bg-white rounded-2xl p-6"
             >
               <h2 className="text-xl font-bold text-gray-800 mb-4">Auction Details</h2>
 
@@ -310,10 +311,10 @@ export default function PropertyDetailPage() {
 
               {/* CTA Buttons */}
               <div className="space-y-3 mb-6">
-                <a href="tel:+918488848874" className="block w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition text-center">
-                  +91 84888 48874
+                <a href={`tel:${(property.agentMobile || "+91 848 884 8874").replace(/\s/g, "")}`} className="block w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition text-center">
+                  {property.agentMobile || "+91 848 884 8874"}
                 </a>
-                <a href="https://wa.me/918488848874" target="_blank" rel="noopener noreferrer" className="block w-full border-2 border-green-600 text-green-600 py-3 rounded-lg font-semibold hover:bg-green-50 transition text-center">
+                <a href={`https://api.whatsapp.com/send/?phone=${(property.agentMobile || "+91 848 884 8874").replace(/\s/g, "").replace("+", "")}`} target="_blank" rel="noopener noreferrer" className="block w-full border-2 border-green-600 text-green-600 py-3 rounded-lg font-semibold hover:bg-green-50 transition text-center">
                   WhatsApp Us
                 </a>
               </div>
@@ -400,7 +401,15 @@ export default function PropertyDetailPage() {
             transition={{ delay: 0.3 }}
             className="mt-12"
           >
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Similar Properties</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">Similar Properties</h2>
+              <Link
+                href={`/properties?state=${property.state}&type=${property.type}`}
+                className="text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1 transition"
+              >
+                View More →
+              </Link>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {relatedProperties.map((relatedProp) => (
                 <PropertyCard

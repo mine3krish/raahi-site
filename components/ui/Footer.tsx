@@ -11,7 +11,7 @@ export default function Footer() {
           <img 
             src="/logo.png" 
             alt="Raahi Auction Logo" 
-            className="h-12 w-auto mb-4"
+            className="h-20 w-auto mb-4"
           />
           <p className="text-gray-600 text-sm leading-relaxed">
             Discover, bid, and own verified properties across India.

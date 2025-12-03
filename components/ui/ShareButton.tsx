@@ -23,6 +23,7 @@ interface ShareButtonProps {
   state?: string;
   area?: string;
   assetAddress?: string;
+  agentMobile?: string;
 }
 
 export default function ShareButton({
@@ -38,6 +39,7 @@ export default function ShareButton({
   state = "",
   area = "",
   assetAddress = "",
+  agentMobile = "+91 848 884 8874",
 }: ShareButtonProps) {
   const [showShareModal, setShowShareModal] = useState(false);
   
@@ -46,28 +48,29 @@ export default function ShareButton({
     const city = locationParts[0]?.trim() || location;
     const stateValue = state || locationParts[1]?.trim() || "";
     
-    return `Attention Investors! Bank Auction Alert!
+    return `🏛️ Attention Investors! Bank Auction Alert! 🏛️
 
-Location: ${city}${stateValue ? `, ${stateValue}` : ''}
-Property Type: ${propertyType || 'Property'}
-Reserve Price: ${price}${emd ? `
-EMD Amount: ${emd}` : ''}${auctionDate ? `
-Auction Date: ${auctionDate}` : ''}
-Listing ID: ${propertyId}
+📋 Listing ID: ${propertyId}
+📍 Location: ${city}${stateValue ? `, ${stateValue}` : ''}
+🏢 Property Type: ${propertyType || 'Property'}
+💰 Reserve Price: ${price}${emd ? `
+💳 EMD Amount: ${emd}` : ''}${auctionDate ? `
+📅 Auction Date: ${auctionDate}` : ''}
 
-Property Details:${assetAddress ? `
-- Location: ${assetAddress}` : ''}
+🏠 Property Details:${assetAddress ? `
+📌 Location: ${assetAddress}` : ''}
 
-Don't miss out on this fantastic opportunity to own a prime property in ${city}! 
+✨ Don't miss out on this fantastic opportunity to own a prime property in ${city}! 
 
-For more information or to participate in the auction, contact Raahi Auction at:
-Phone: +91 8488 8488 74
+⚡ For more information or to participate in the auction, contact Raahi Auction at:
+📞 Phone: ${agentMobile}
+
+🔗 View Full Details: ${shareUrl}
 
 #RealEstate #PropertyAuction #${city.replace(/\s+/g, '')} #InvestmentOpportunity #BankAuction #RaahiAuction
 
-Contact Us: 
-For more details, 
-visit: www.raahiauction.com`;
+📧 Contact Us: 
+🌐 For more details, visit: www.raahiauction.com`;
   };
 
   const shareUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/properties/${propertyId}`;
@@ -147,9 +150,9 @@ visit: www.raahiauction.com`;
                         onClick={async () => {
                           try {
                             await navigator.clipboard.writeText(caption);
-                            window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
+                            window.open(`https://api.whatsapp.com/send/?text=${encodeURIComponent(caption)}`, '_blank');
                           } catch {
-                            window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
+                            window.open(`https://api.whatsapp.com/send/?text=${encodeURIComponent(caption)}`, '_blank');
                           }
                         }}
                         className="flex flex-col items-center gap-2"

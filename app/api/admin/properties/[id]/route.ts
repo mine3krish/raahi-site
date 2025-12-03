@@ -54,6 +54,8 @@ export async function PUT(
       AuctionDate: formData.get("AuctionDate") as string,
       area: formData.get("area") ? parseFloat(formData.get("area") as string) : undefined,
       featured: formData.get("featured") === "true",
+      bestDeal: formData.get("bestDeal") === "true",
+      premium: formData.get("premium") === "true",
       status: formData.get("status") as string || "Active",
       assetCategory: formData.get("assetCategory") as string || "",
       assetAddress: formData.get("assetAddress") as string || "",
@@ -63,6 +65,7 @@ export async function PUT(
       auctionStartDate: formData.get("auctionStartDate") as string || "",
       auctionEndTime: formData.get("auctionEndTime") as string || "",
       applicationSubmissionDate: formData.get("applicationSubmissionDate") as string || "",
+      agentMobile: formData.get("agentMobile") as string || "+91 848 884 8874",
     };
 
     // Handle existing images

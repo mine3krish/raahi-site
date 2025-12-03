@@ -15,6 +15,7 @@ const Links: NavLink[] = [
   { name: "Home", href: "/" },
   { name: "Properties", href: "/properties" },
   { name: "Communities", href: "/communities" },
+  { name: "Newspaper", href: "/newspaper" },
   { name: "Join as Agent", href: "/join" },
   { name: "Contact Us", href: "/contact" },
 ];
@@ -62,7 +63,7 @@ export default function Navbar() {
               <img 
                 src="/logo.png" 
                 alt="Raahi Auction Logo" 
-                className="h-10 w-auto md:h-12"
+                className="h-15 w-auto md:h-15"
               />
             </Link>
           </div>

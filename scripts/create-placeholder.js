@@ -1,5 +1,4 @@
 const sharp = require('sharp');
-const path = require('path');
 
 // Create a placeholder image
 const width = 1200;
@@ -32,13 +31,14 @@ const svg = `
 </svg>
 `;
 
-const outputPath = path.join(__dirname, '..', 'public', 'uploads', 'properties', 'placeholder.jpg');
+const outputPath = '/var/www/cdn/placeholder.jpg';
 
 sharp(Buffer.from(svg))
   .jpeg({ quality: 90 })
   .toFile(outputPath)
   .then(() => {
     console.log('✓ Placeholder image created successfully at:', outputPath);
+    console.log('✓ Accessible at: https://raahiauctions.cloud/cdn/placeholder.jpg');
   })
   .catch(err => {
     console.error('Error creating placeholder:', err);

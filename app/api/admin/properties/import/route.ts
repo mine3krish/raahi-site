@@ -8,6 +8,7 @@ import { existsSync } from "fs";
 import OpenAI from "openai";
 import { connectDB } from "@/app/api/connect";
 import Property from "@/models/Property";
+import SiteSettings from "@/models/SiteSettings";
 import https from "https";
 import http from "http";
 import { verifyAdmin } from "@/lib/auth";
@@ -47,9 +48,21 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const PLACEHOLDER_IMAGE = "https://raahiauctions.cloud/cdn/placeholder.jpg";
+const DEFAULT_PLACEHOLDER_IMAGE = "https://raahiauctions.cloud/cdn/placeholder.jpg";
 const VALID_IMAGE_FORMATS = ["jpg", "jpeg", "png", "webp"];
 const CDN_DIR = "/var/www/cdn";
+
+// Get placeholder image from settings
+async function getPlaceholderImage(): Promise<string> {
+  try {
+    await connectDB();
+    const settings = await SiteSettings.findOne();
+    return settings?.propertyPlaceholderImage || DEFAULT_PLACEHOLDER_IMAGE;
+  } catch (error) {
+    console.error("Error fetching placeholder image from settings:", error);
+    return DEFAULT_PLACEHOLDER_IMAGE;
+  }
+}
 
 // Ensure upload directory exists
 async function ensureUploadDir() {
@@ -143,7 +156,7 @@ async function processImage(buffer: Buffer, filename: string): Promise<string> {
     return `https://raahiauctions.cloud/cdn/${unique}`;
   } catch (error) {
     console.error("Error processing image:", error);
-    return PLACEHOLDER_IMAGE;
+    return DEFAULT_PLACEHOLDER_IMAGE;
   }
 }
 
@@ -216,7 +229,8 @@ function generateListingId(): string {
 // Parse Excel and extract property data
 async function parseExcelFile(
   excelBuffer: Buffer,
-  imageMap: Map<string, Buffer>
+  imageMap: Map<string, Buffer>,
+  placeholderImage: string
 ): Promise<ImportResult> {
   const workbook = XLSX.read(excelBuffer, { type: "buffer" });
   const sheetName = workbook.SheetNames[0];
@@ -335,7 +349,7 @@ async function parseExcelFile(
                   const filename = path.basename(urlPath) || 'downloaded-image.jpg';
                   const processedPath = await processImage(imageBuffer, filename);
                   
-                  if (processedPath !== PLACEHOLDER_IMAGE) {
+                  if (processedPath !== placeholderImage) {
                     images.push(processedPath);
                     console.log(`✓ Downloaded and processed: ${imageFile} → ${processedPath}`);
                   }
@@ -352,7 +366,9 @@ async function parseExcelFile(
               
               if (imageBuffer && isValidImageFormat(imageFile)) {
                 const processedPath = await processImage(imageBuffer, imageFile);
-                images.push(processedPath);
+                if (processedPath !== placeholderImage) {
+                  images.push(processedPath);
+                }
               }
             }
           }
@@ -361,7 +377,7 @@ async function parseExcelFile(
       
       // Add placeholder if no valid images
       if (images.length === 0) {
-        images.push(PLACEHOLDER_IMAGE);
+        images.push(placeholderImage);
       }
       
       // Create property object with all auction details
@@ -439,8 +455,11 @@ export async function POST(request: NextRequest) {
       imageMap = await extractImagesFromZip(zipBuffer);
     }
     
+    // Get placeholder image from settings
+    const placeholderImage = await getPlaceholderImage();
+    
     // Parse Excel and create property objects
-    const { properties, errors } = await parseExcelFile(excelBuffer, imageMap);
+    const { properties, errors } = await parseExcelFile(excelBuffer, imageMap, placeholderImage);
     
     if (properties.length === 0) {
       return NextResponse.json(

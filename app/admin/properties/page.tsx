@@ -23,6 +23,23 @@ export default function Properties() {
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
   const [total, setTotal] = useState(0);
   
+  // Multi-select state
+  const [selectedProperties, setSelectedProperties] = useState<Set<string>>(new Set());
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [bulkActionLoading, setBulkActionLoading] = useState(false);
+  
+  // Social share modal state
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [socialAccounts, setSocialAccounts] = useState<any[]>([]);
+  const [socialTemplates, setSocialTemplates] = useState<any[]>([]);
+  const [selectedAccounts, setSelectedAccounts] = useState<Set<string>>(new Set());
+  const [shareTemplate, setShareTemplate] = useState("");
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("default");
+  const [includeImage, setIncludeImage] = useState(true);
+  const [includeLink, setIncludeLink] = useState(true);
+  const [sharing, setSharing] = useState(false);
+  const [shareResult, setShareResult] = useState<any>(null);
+  
   // Import modal state
   const [showImportModal, setShowImportModal] = useState(false);
   const [excelFile, setExcelFile] = useState<File | null>(null);
@@ -199,6 +216,175 @@ export default function Properties() {
     setImportResult(null);
   };
 
+  // Multi-select handlers
+  const toggleSelectAll = () => {
+    if (selectedProperties.size === properties.length) {
+      setSelectedProperties(new Set());
+    } else {
+      setSelectedProperties(new Set(properties.map(p => p.id)));
+    }
+  };
+
+  const toggleSelectProperty = (propertyId: string) => {
+    const newSelected = new Set(selectedProperties);
+    if (newSelected.has(propertyId)) {
+      newSelected.delete(propertyId);
+    } else {
+      newSelected.add(propertyId);
+    }
+    setSelectedProperties(newSelected);
+  };
+
+  // Bulk delete action
+  const handleBulkDelete = async () => {
+    if (selectedProperties.size === 0) return;
+    
+    const confirmed = confirm(`Are you sure you want to delete ${selectedProperties.size} selected properties? This action cannot be undone.`);
+    if (!confirmed) return;
+
+    setBulkActionLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const deletePromises = Array.from(selectedProperties).map(propertyId =>
+        fetch(`/api/admin/properties/${propertyId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        })
+      );
+
+      const results = await Promise.allSettled(deletePromises);
+      const successCount = results.filter(r => r.status === "fulfilled" && (r.value as Response).ok).length;
+      const failCount = results.length - successCount;
+
+      alert(`Successfully deleted ${successCount} properties${failCount > 0 ? `. Failed: ${failCount}` : ''}`);
+      
+      setSelectedProperties(new Set());
+      setShowBulkActions(false);
+      
+      // Refresh the list
+      setSearch((prev) => prev);
+    } catch (err: any) {
+      alert(err.message || "Failed to delete properties");
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  // Bulk status change
+  const handleBulkStatusChange = async (newStatus: string) => {
+    if (selectedProperties.size === 0) return;
+
+    setBulkActionLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const updatePromises = Array.from(selectedProperties).map(propertyId =>
+        fetch(`/api/admin/properties/${propertyId}/status`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status: newStatus }),
+        })
+      );
+
+      const results = await Promise.allSettled(updatePromises);
+      const successCount = results.filter(r => r.status === "fulfilled" && (r.value as Response).ok).length;
+
+      alert(`Successfully updated ${successCount} properties to ${newStatus}`);
+      
+      // Update local state
+      setProperties(prev => 
+        prev.map(p => selectedProperties.has(p.id) ? { ...p, status: newStatus } : p)
+      );
+      
+      setSelectedProperties(new Set());
+      setShowBulkActions(false);
+    } catch (err: any) {
+      alert(err.message || "Failed to update properties");
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  // Open share modal
+  const openShareModal = async () => {
+    if (selectedProperties.size === 0) {
+      alert("Please select at least one property to share");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/admin/social-config", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch social accounts");
+
+      const data = await response.json();
+      setSocialAccounts(data.config?.accounts?.filter((a: any) => a.enabled) || []);
+      setSocialTemplates(data.config?.templates || []);
+      setShareTemplate(data.config?.defaultTemplate || "");
+      setSelectedTemplateId("default");
+      setShowShareModal(true);
+      setShareResult(null);
+    } catch (err: any) {
+      alert(err.message || "Failed to load social accounts");
+    }
+  };
+
+  // Handle social share
+  const handleSocialShare = async () => {
+    if (selectedAccounts.size === 0) {
+      alert("Please select at least one social account");
+      return;
+    }
+
+    setSharing(true);
+    setShareResult(null);
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/admin/social-share", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          propertyIds: Array.from(selectedProperties),
+          accountIds: Array.from(selectedAccounts),
+          template: shareTemplate,
+          includeImage,
+          includeLink,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to share properties");
+      }
+
+      setShareResult(data);
+    } catch (err: any) {
+      setShareResult({
+        error: err.message || "Failed to share properties",
+      });
+    } finally {
+      setSharing(false);
+    }
+  };
+
+  const closeShareModal = () => {
+    setShowShareModal(false);
+    setSelectedAccounts(new Set());
+    setShareResult(null);
+  };
+
   return (
     <section className="max-w-7xl mx-auto p-6">
       {/* Header */}
@@ -209,8 +395,25 @@ export default function Properties() {
           className="text-3xl font-bold text-gray-800"
         >
           Properties Management
+          {selectedProperties.size > 0 && (
+            <span className="ml-3 text-lg font-normal text-green-600">
+              ({selectedProperties.size} selected)
+            </span>
+          )}
         </motion.h1>
         <div className="flex gap-3">
+          {selectedProperties.size > 0 && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
+              onClick={() => setShowBulkActions(!showBulkActions)}
+            >
+              Bulk Actions
+            </motion.button>
+          )}
           <motion.button
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -233,6 +436,66 @@ export default function Properties() {
           </motion.button>
         </div>
       </div>
+
+      {/* Bulk Actions Panel */}
+      {showBulkActions && selectedProperties.size > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6"
+        >
+          <h3 className="font-semibold text-blue-900 mb-3">
+            Bulk Actions ({selectedProperties.size} properties selected)
+          </h3>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => handleBulkStatusChange("Active")}
+              disabled={bulkActionLoading}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50"
+            >
+              Mark as Active
+            </button>
+            <button
+              onClick={() => handleBulkStatusChange("Sold")}
+              disabled={bulkActionLoading}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition disabled:opacity-50"
+            >
+              Mark as Sold
+            </button>
+            <button
+              onClick={() => handleBulkStatusChange("Pending")}
+              disabled={bulkActionLoading}
+              className="px-4 py-2 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-700 transition disabled:opacity-50"
+            >
+              Mark as Pending
+            </button>
+            <button
+              onClick={openShareModal}
+              disabled={bulkActionLoading}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition disabled:opacity-50"
+            >
+              📤 Share to Social Media
+            </button>
+            <button
+              onClick={handleBulkDelete}
+              disabled={bulkActionLoading}
+              className="px-4 py-2 bg-red-700 text-white rounded-lg font-medium hover:bg-red-800 transition disabled:opacity-50"
+            >
+              🗑️ Delete Selected
+            </button>
+            <button
+              onClick={() => {
+                setSelectedProperties(new Set());
+                setShowBulkActions(false);
+              }}
+              disabled={bulkActionLoading}
+              className="px-4 py-2 border border-gray-300 bg-white rounded-lg font-medium hover:bg-gray-50 transition disabled:opacity-50"
+            >
+              Clear Selection
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {/* Filters */}
       <motion.div
@@ -295,6 +558,14 @@ export default function Properties() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
+              <th className="px-4 py-3 text-left">
+                <input
+                  type="checkbox"
+                  checked={properties.length > 0 && selectedProperties.size === properties.length}
+                  onChange={toggleSelectAll}
+                  className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                />
+              </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Location</th>
@@ -308,26 +579,34 @@ export default function Properties() {
           <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={8} className="text-center py-12">
+                <td colSpan={9} className="text-center py-12">
                   <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-blue-600"></div>
                   <p className="mt-2 text-gray-600">Loading properties...</p>
                 </td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan={8} className="text-center text-red-600 py-12">
+                <td colSpan={9} className="text-center text-red-600 py-12">
                   <p className="font-medium">{error}</p>
                 </td>
               </tr>
             ) : properties.length === 0 ? (
               <tr>
-                <td colSpan={8} className="text-center py-12 text-gray-500">
+                <td colSpan={9} className="text-center py-12 text-gray-500">
                   No properties found. Try adjusting your filters or add a new property.
                 </td>
               </tr>
             ) : (
               properties.map((property) => (
                 <tr key={property.id || property._id} className="hover:bg-gray-50 transition">
+                  <td className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedProperties.has(property.id)}
+                      onChange={() => toggleSelectProperty(property.id)}
+                      className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                    />
+                  </td>
                   <td className="px-4 py-3 font-mono text-xs text-gray-700">{property.id}</td>
                   <td className="px-4 py-3 font-medium text-gray-900">{property.name}</td>
                   <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">{property.location}</td>
@@ -566,6 +845,254 @@ export default function Properties() {
                 <div className="flex justify-end">
                   <button
                     onClick={closeImportModal}
+                    className="px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition"
+                  >
+                    Close
+                  </button>
+                </div>
+              </>
+            )}
+          </motion.div>
+        </div>
+      )}
+
+      {/* Social Share Modal */}
+      {showShareModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+          >
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              Share {selectedProperties.size} {selectedProperties.size === 1 ? "Property" : "Properties"} to Social Media
+            </h2>
+
+            {!shareResult ? (
+              <>
+                {socialAccounts.length === 0 ? (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+                    <h3 className="font-semibold text-yellow-900 mb-2">No Social Accounts Configured</h3>
+                    <p className="text-yellow-800 mb-4">
+                      You need to configure at least one social media account before sharing properties.
+                    </p>
+                    <button
+                      onClick={() => router.push("/admin/social-sharing")}
+                      className="bg-yellow-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-yellow-700 transition"
+                    >
+                      Configure Social Accounts
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mb-6">
+                      <h3 className="font-semibold text-gray-800 mb-3">Select Social Accounts</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {socialAccounts.map((account, index) => (
+                          <label
+                            key={index}
+                            className="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-green-500 cursor-pointer transition"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedAccounts.has(index.toString())}
+                              onChange={() => {
+                                const newSelected = new Set(selectedAccounts);
+                                if (newSelected.has(index.toString())) {
+                                  newSelected.delete(index.toString());
+                                } else {
+                                  newSelected.add(index.toString());
+                                }
+                                setSelectedAccounts(newSelected);
+                              }}
+                              className="w-5 h-5 text-green-600"
+                            />
+                            <div>
+                              <p className="font-medium text-gray-800">{account.name}</p>
+                              <p className="text-sm text-gray-600 capitalize">{account.platform}</p>
+                              {account.platform === "whatsapp" && account.config.groups && (
+                                <p className="text-xs text-gray-500">
+                                  {account.config.groups.filter((g: any) => g.enabled).length} groups
+                                </p>
+                              )}
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mb-6">
+                      <h3 className="font-semibold text-gray-800 mb-3">Post Template</h3>
+                      
+                      {socialTemplates.length > 0 && (
+                        <div className="mb-3">
+                          <select
+                            value={selectedTemplateId}
+                            onChange={(e) => {
+                              setSelectedTemplateId(e.target.value);
+                              if (e.target.value === "default") {
+                                const token = localStorage.getItem("token");
+                                fetch("/api/admin/social-config", {
+                                  headers: { Authorization: `Bearer ${token}` },
+                                })
+                                  .then(res => res.json())
+                                  .then(data => {
+                                    setShareTemplate(data.config?.defaultTemplate || "");
+                                    setIncludeImage(true);
+                                    setIncludeLink(true);
+                                  });
+                              } else {
+                                const template = socialTemplates.find((t, idx) => idx.toString() === e.target.value);
+                                if (template) {
+                                  setShareTemplate(template.template);
+                                  setIncludeImage(template.includeImage !== false);
+                                  setIncludeLink(template.includeLink !== false);
+                                }
+                              }
+                            }}
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
+                          >
+                            <option value="default">📋 Default Template</option>
+                            {socialTemplates.map((template, index) => (
+                              <option key={index} value={index.toString()}>
+                                {template.platform === "whatsapp" ? "💬" : template.platform === "facebook" ? "📘" : template.platform === "linkedin" ? "💼" : "📷"} {template.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                      
+                      <textarea
+                        value={shareTemplate}
+                        onChange={(e) => setShareTemplate(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm font-mono"
+                        rows={10}
+                        placeholder="Edit your post template here..."
+                      />
+                      <p className="text-xs text-gray-500 mt-2">
+                        Variables: {"{"}{"{"} name {"}"}{"}"}, {"{"}{"{"} location {"}"}{"}"}, {"{"}{"{"} state {"}"}{"}"}, {"{"}{"{"} reservePrice {"}"}{"}"}, {"{"}{"{"} auctionDate {"}"}{"}"}, {"{"}{"{"} area {"}"}{"}"}, {"{"}{"{"} type {"}"}{"}"}, {"{"}{"{"} link {"}"}{"}"}
+                      </p>
+                      
+                      <div className="flex gap-4 mt-3">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={includeImage}
+                            onChange={(e) => setIncludeImage(e.target.checked)}
+                            className="w-4 h-4 text-green-600"
+                          />
+                          <span className="text-sm text-gray-700">Include Image</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={includeLink}
+                            onChange={(e) => setIncludeLink(e.target.checked)}
+                            className="w-4 h-4 text-green-600"
+                          />
+                          <span className="text-sm text-gray-700">Include Link</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                      <h3 className="font-semibold text-blue-900 mb-2">What will happen?</h3>
+                      <ul className="text-sm text-blue-800 space-y-1">
+                        <li>• Each of the {selectedProperties.size} selected properties will be shared</li>
+                        <li>• Posts will be sent to {selectedAccounts.size} selected accounts</li>
+                        <li>• Property images will be included (if available)</li>
+                        <li>• Total posts to be created: {selectedProperties.size * selectedAccounts.size}</li>
+                      </ul>
+                    </div>
+                  </>
+                )}
+
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={closeShareModal}
+                    disabled={sharing}
+                    className="px-5 py-2.5 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  {socialAccounts.length > 0 && (
+                    <button
+                      onClick={handleSocialShare}
+                      disabled={sharing || selectedAccounts.size === 0}
+                      className="px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {sharing ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                          Sharing...
+                        </>
+                      ) : (
+                        "📤 Share Properties"
+                      )}
+                    </button>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-4 mb-6">
+                  {shareResult.error ? (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <h3 className="font-semibold text-red-900 mb-2">Sharing Failed</h3>
+                      <p className="text-red-800">{shareResult.error}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h3 className="font-semibold text-green-900 mb-2">Sharing Summary</h3>
+                        <div className="text-sm text-green-800 space-y-1">
+                          <p>✓ Successfully shared: <strong>{shareResult.summary.success}</strong> posts</p>
+                          {shareResult.summary.failed > 0 && (
+                            <p>✗ Failed: <strong>{shareResult.summary.failed}</strong> posts</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {shareResult.errors && shareResult.errors.length > 0 && (
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-h-60 overflow-y-auto">
+                          <h3 className="font-semibold text-yellow-900 mb-2">Errors:</h3>
+                          <ul className="text-sm text-yellow-800 space-y-1">
+                            {shareResult.errors.map((error: string, idx: number) => (
+                              <li key={idx}>• {error}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {shareResult.results && shareResult.results.length > 0 && (
+                        <div className="border border-gray-200 rounded-lg p-4 max-h-96 overflow-y-auto">
+                          <h3 className="font-semibold text-gray-800 mb-3">Detailed Results:</h3>
+                          <div className="space-y-2">
+                            {shareResult.results.map((result: any, idx: number) => (
+                              <div
+                                key={idx}
+                                className={`text-sm p-3 rounded-lg ${
+                                  result.success ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"
+                                }`}
+                              >
+                                <p className="font-medium">
+                                  {result.success ? "✓" : "✗"} {result.property} → {result.account} ({result.platform})
+                                </p>
+                                {result.error && (
+                                  <p className="text-xs mt-1">{result.error}</p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={closeShareModal}
                     className="px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition"
                   >
                     Close

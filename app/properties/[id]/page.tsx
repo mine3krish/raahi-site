@@ -236,7 +236,7 @@ export default function PropertyDetailPage() {
                     <MapPin size={18} className="mr-2" />
                     <span className="font-semibold">Asset Address</span>
                   </div>
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-sm text-gray-700 leading-relaxed font-bold">
                     {console.log(property)}
                     {property.assetAddress == "Property Details" ? property.location : property.assetAddress}
                   </p>

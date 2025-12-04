@@ -123,28 +123,17 @@ export async function PUT(request: NextRequest) {
     const oldPlaceholderImage = settings.propertyPlaceholderImage;
     
     if (newPlaceholderImage && oldPlaceholderImage && newPlaceholderImage !== oldPlaceholderImage) {
-      // Update all properties that are using the old placeholder image
-      await Property.updateMany(
+      // Update any properties that have the old placeholder in their images array
+      const result = await Property.updateMany(
         { 
-          images: { $size: 0 } // Properties with no images
+          images: oldPlaceholderImage // Properties that contain the old placeholder URL
         },
         { 
-          $set: { 
-            // This updates the reference in case we store placeholder in DB
-            // For now, properties with empty images array will automatically use the new placeholder from settings
-          } 
+          $set: { "images.$": newPlaceholderImage } // Replace the matched element
         }
       );
       
-      // Also update any properties that have the old placeholder explicitly set
-      await Property.updateMany(
-        { 
-          images: [oldPlaceholderImage]
-        },
-        { 
-          $set: { images: [newPlaceholderImage] }
-        }
-      );
+      console.log(`Updated ${result.modifiedCount} properties with new placeholder image`);
     }
 
     // Handle file uploads (team member photos, partner logos)

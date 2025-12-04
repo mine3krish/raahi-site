@@ -32,6 +32,15 @@ interface Banner {
   order: number;
 }
 
+interface Testimonial {
+  name: string;
+  location: string;
+  image: string;
+  rating: number;
+  message: string;
+  order: number;
+}
+
 export default function SettingsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -70,6 +79,7 @@ export default function SettingsPage() {
     teamMembers: [] as TeamMember[],
     partners: [] as Partner[],
     propertyBanners: [] as Banner[],
+    testimonials: [] as Testimonial[],
   });
 
   useEffect(() => {
@@ -143,7 +153,7 @@ export default function SettingsPage() {
 
       // Add all settings fields
       Object.entries(settings).forEach(([key, value]) => {
-        if (key === "teamMembers" || key === "partners" || key === "propertyBanners") {
+        if (key === "teamMembers" || key === "partners" || key === "propertyBanners" || key === "testimonials") {
           formData.append(key, JSON.stringify(value));
         } else {
           formData.append(key, String(value));
@@ -238,6 +248,29 @@ export default function SettingsPage() {
     setSettings({ ...settings, propertyBanners: updated });
   };
 
+  const addTestimonial = () => {
+    setSettings({
+      ...settings,
+      testimonials: [
+        ...settings.testimonials,
+        { name: "", location: "", image: "", rating: 5, message: "", order: settings.testimonials.length },
+      ],
+    });
+  };
+
+  const removeTestimonial = (index: number) => {
+    setSettings({
+      ...settings,
+      testimonials: settings.testimonials.filter((_, i) => i !== index),
+    });
+  };
+
+  const updateTestimonial = (index: number, field: keyof Testimonial, value: string | number) => {
+    const updated = [...settings.testimonials];
+    updated[index] = { ...updated[index], [field]: value };
+    setSettings({ ...settings, testimonials: updated });
+  };
+
   const tabs = [
     { id: "hero", label: "Hero Section", icon: Upload },
     { id: "contact", label: "Contact Info", icon: Mail },
@@ -245,6 +278,7 @@ export default function SettingsPage() {
     { id: "team", label: "Team Members", icon: Users },
     { id: "partners", label: "Partners", icon: Award },
     { id: "banners", label: "Property Banners", icon: Upload },
+    { id: "testimonials", label: "Testimonials", icon: Users },
     { id: "social", label: "Social Media", icon: Globe },
     { id: "adsense", label: "AdSense", icon: DollarSign },
     { id: "seo", label: "SEO", icon: SettingsIcon },
@@ -1104,6 +1138,138 @@ export default function SettingsPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 h-20"
                     placeholder="auction, property, real estate, bank auction"
                   />
+                </div>
+              </div>
+            )}
+
+            {/* Testimonials Tab */}
+            {activeTab === "testimonials" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-gray-800">Happy Customers</h2>
+                  <button
+                    onClick={addTestimonial}
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                  >
+                    <Plus size={18} />
+                    Add Testimonial
+                  </button>
+                </div>
+
+                {settings.testimonials.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">
+                    No testimonials added yet. Click &quot;Add Testimonial&quot; to get started.
+                  </div>
+                )}
+
+                <div className="space-y-4">
+                  {settings.testimonials.map((testimonial, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-semibold text-gray-800">Testimonial #{index + 1}</h3>
+                        <button
+                          onClick={() => removeTestimonial(index)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
+                          <input
+                            type="text"
+                            value={testimonial.name}
+                            onChange={(e) => updateTestimonial(index, "name", e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            placeholder="John Doe"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                          <input
+                            type="text"
+                            value={testimonial.location}
+                            onChange={(e) => updateTestimonial(index, "location", e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            placeholder="Mumbai, India"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Photo</label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={testimonial.image}
+                              onChange={(e) => updateTestimonial(index, "image", e.target.value)}
+                              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                              placeholder="URL or upload"
+                            />
+                            <label className="cursor-pointer">
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => handleImageUpload(e, (url) => updateTestimonial(index, "image", url))}
+                              />
+                              <div className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                <Upload size={16} />
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
+                          <select
+                            value={testimonial.rating}
+                            onChange={(e) => updateTestimonial(index, "rating", parseInt(e.target.value))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                          >
+                            <option value={5}>5 Stars</option>
+                            <option value={4}>4 Stars</option>
+                            <option value={3}>3 Stars</option>
+                            <option value={2}>2 Stars</option>
+                            <option value={1}>1 Star</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
+                          <input
+                            type="number"
+                            value={testimonial.order}
+                            onChange={(e) => updateTestimonial(index, "order", parseInt(e.target.value))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Testimonial Message</label>
+                        <textarea
+                          value={testimonial.message}
+                          onChange={(e) => updateTestimonial(index, "message", e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 h-24"
+                          placeholder="Share your experience..."
+                        />
+                      </div>
+
+                      {testimonial.image && (
+                        <div className="mt-2">
+                          <p className="text-xs text-gray-500 mb-2">Preview:</p>
+                          <img
+                            src={testimonial.image}
+                            alt={testimonial.name}
+                            className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

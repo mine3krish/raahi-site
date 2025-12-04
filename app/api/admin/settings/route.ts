@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
           youtubeUrl: settings.youtubeUrl,
           teamMembers: settings.teamMembers,
           partners: settings.partners,
+          testimonials: settings.testimonials,
           whatsappNumber: settings.whatsappNumber,
           footerText: settings.footerText,
           siteTitle: settings.siteTitle,
@@ -116,6 +117,12 @@ export async function PUT(request: NextRequest) {
     const bannersJson = formData.get("propertyBanners");
     if (bannersJson) {
       settings.propertyBanners = JSON.parse(bannersJson as string);
+    }
+
+    // Handle testimonials
+    const testimonialsJson = formData.get("testimonials");
+    if (testimonialsJson) {
+      settings.testimonials = JSON.parse(testimonialsJson as string);
     }
 
     // Check if placeholder image was updated and update properties

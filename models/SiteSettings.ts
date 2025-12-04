@@ -23,6 +23,15 @@ const BannerSchema = new Schema({
   order: { type: Number, default: 0 },
 });
 
+const TestimonialSchema = new Schema({
+  name: { type: String, required: true },
+  location: { type: String, default: "" },
+  image: { type: String, default: "" },
+  rating: { type: Number, default: 5, min: 1, max: 5 },
+  message: { type: String, required: true },
+  order: { type: Number, default: 0 },
+});
+
 const SiteSettingsSchema = new Schema(
   {
     // Contact Information
@@ -67,6 +76,9 @@ const SiteSettingsSchema = new Schema(
     
     // Property Page Banners
     propertyBanners: [BannerSchema],
+    
+    // Testimonials
+    testimonials: [TestimonialSchema],
     
     // SEO
     siteTitle: { type: String, default: "Raahi Auction" },

@@ -7,6 +7,7 @@ import PremiumPropertiesScroller from "@/components/ui/PremiumPropertiesScroller
 import IndiaMapSection from "@/components/ui/IndiaMapSection";
 import StateWiseProperties from "@/components/ui/StateWiseProperties";
 import PartnersScroller from "@/components/ui/PartnersScroller";
+import TestimonialsCarousel from "@/components/ui/TestimonialsCarousel";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -35,6 +36,7 @@ export default function Home() {
       <BestDealsScroller />
       <PremiumPropertiesScroller />
       <PartnersScroller />
+      <TestimonialsCarousel />
       <JoinCommunity />
       <IndiaMapSection />
       <StateWiseProperties />

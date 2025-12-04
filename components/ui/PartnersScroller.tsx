@@ -33,8 +33,8 @@ export default function PartnersScroller() {
     return null;
   }
 
-  // Duplicate partners for seamless loop
-  const duplicatedPartners = [...partners, ...partners];
+  // Duplicate partners multiple times for truly seamless infinite scroll
+  const duplicatedPartners = [...partners, ...partners, ...partners, ...partners];
 
   return (
     <section className="py-16 bg-white border-y border-gray-200">
@@ -58,13 +58,13 @@ export default function PartnersScroller() {
           <motion.div
             className="flex gap-12 items-center"
             animate={{
-              x: [0, -50 * partners.length + "%"],
+              x: ["0%", "-50%"],
             }}
             transition={{
               x: {
                 repeat: Infinity,
                 repeatType: "loop",
-                duration: 30,
+                duration: partners.length * 3,
                 ease: "linear",
               },
             }}

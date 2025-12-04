@@ -295,7 +295,7 @@ async function parseExcelFile(
         fullLocation = `${fullLocation}, Near ${String(row.branchName)}`;
       }
       
-      const description = row.description || row.Description || `${String(type)} property in ${fullLocation}`;
+      const description = row.address || row.description || `${String(type)} property in ${fullLocation}`;
       const areaRaw = row.area || row.Area || row.sqft;
       const area = areaRaw ? parseFloat(String(areaRaw)) : undefined;
       

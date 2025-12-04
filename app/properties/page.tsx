@@ -16,6 +16,24 @@ function PropertiesContent() {
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [placeholderImage, setPlaceholderImage] = useState("/image.png");
+
+  // Fetch placeholder image from settings
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch("/api/settings");
+        const data = await response.json();
+        if (data.propertyPlaceholderImage) {
+          setPlaceholderImage(data.propertyPlaceholderImage);
+        }
+      } catch (err) {
+        console.error("Failed to fetch settings:", err);
+      }
+    };
+
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -58,7 +76,7 @@ function PropertiesContent() {
     title: p.name,
     location: `${p.location}, ${p.state}`,
     price: formatIndianPrice(p.reservePrice),
-    image: p.images[0] || "/image.png",
+    image: p.images[0] || placeholderImage,
   }));
 
   const handlePageChange = (newPage: number) => {

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
@@ -8,6 +8,31 @@ export default function Hero() {
   const router = useRouter();
   const [propertyType, setPropertyType] = useState("");
   const [location, setLocation] = useState("");
+  const [settings, setSettings] = useState({
+    heroImage: "/Ahemdabad_Skyline.jpg",
+    heroTitle: "Find Bank Verified Properties",
+    heroSubtitle: "Discover verified listings and live property auctions across India.",
+  });
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch("/api/settings");
+        if (response.ok) {
+          const data = await response.json();
+          setSettings({
+            heroImage: data.heroImage || settings.heroImage,
+            heroTitle: data.heroTitle || settings.heroTitle,
+            heroSubtitle: data.heroSubtitle || settings.heroSubtitle,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching hero settings:", error);
+      }
+    };
+    fetchSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +46,10 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative bg-[url('/Ahemdabad_Skyline.jpg')] bg-cover bg-center min-h-[85vh] flex items-center justify-center">
+    <section 
+      className="relative bg-cover bg-center min-h-[85vh] flex items-center justify-center"
+      style={{ backgroundImage: `url('${settings.heroImage}')` }}
+    >
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/80" />
 
@@ -34,10 +62,10 @@ export default function Hero() {
       >
         {/* Headline */}
         <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 leading-snug">
-          Find Bank Verified <span className="text-green-300">Properties</span>
+          {settings.heroTitle}
         </h1>
         <p className="text-base sm:text-lg md:text-xl text-gray-200 mb-8 sm:mb-10 max-w-2xl mx-auto">
-          Discover verified listings and live property auctions across India.
+          {settings.heroSubtitle}
         </p>
 
         {/* Search Bar */}

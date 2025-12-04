@@ -10,6 +10,7 @@ import { useWishlist } from "@/context/WishlistContext";
 import ShareButton from "@/components/ui/ShareButton";
 import { formatIndianPrice } from "@/lib/constants";
 import PropertyCard from "@/components/ui/PropertyCard";
+import PropertyBanners from "@/components/ui/PropertyBanners";
 
 export default function PropertyDetailPage() {
   const params = useParams();
@@ -390,6 +391,9 @@ export default function PropertyDetailPage() {
                 </Link>
               </motion.div>
             )}
+
+            {/* Property Banners */}
+            <PropertyBanners />
           </div>
         </div>
 

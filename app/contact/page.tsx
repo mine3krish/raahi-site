@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Send, CheckCircle2 } from "lucide-react";
+import { Mail, Phone, MapPin, Send, CheckCircle2, Clock } from "lucide-react";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -15,6 +15,33 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [settings, setSettings] = useState({
+    contactEmail: "info@raahiauction.com",
+    contactPhone: "+91 84888 48874",
+    contactAddress: "BG Tower, A/701, Delhi Darwaja Gate, Hatisingwadi, Bardolpura, Madhupura, Ahmedabad, Gujarat 380016",
+    officeHours: "Mon - Sat: 9:00 AM - 6:00 PM",
+  });
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch("/api/settings");
+      if (response.ok) {
+        const data = await response.json();
+        setSettings({
+          contactEmail: data.contactEmail || settings.contactEmail,
+          contactPhone: data.contactPhone || settings.contactPhone,
+          contactAddress: data.contactAddress || settings.contactAddress,
+          officeHours: data.officeHours || settings.officeHours,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -235,10 +262,10 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
                     <a
-                      href="mailto:info@raahiauction.com"
+                      href={`mailto:${settings.contactEmail}`}
                       className="text-gray-600 hover:text-green-600 transition"
                     >
-                      info@raahiauction.com
+                      {settings.contactEmail}
                     </a>
                   </div>
                 </div>
@@ -250,45 +277,39 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
                     <a
-                      href="tel:+919876543210"
+                      href={`tel:${settings.contactPhone.replace(/\s/g, "")}`}
                       className="text-gray-600 hover:text-green-600 transition"
                     >
-                      +91 84888 48874
+                      {settings.contactPhone}
                     </a>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-purple-100 rounded-xl">
-                    <MapPin className="text-purple-600" size={24} />
+                {settings.contactAddress && (
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-purple-100 rounded-xl">
+                      <MapPin className="text-purple-600" size={24} />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-1">Office</h3>
+                      <p className="text-gray-600">
+                        {settings.contactAddress}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Office</h3>
-                    <p className="text-gray-600">
-                       BG Tower, A/701, Delhi Darwaja Gate, Hatisingwadi, Bardolpura, Madhupura, Ahmedabad, Gujarat 380016
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-2xl p-8 text-white">
-              <h3 className="text-2xl font-bold mb-4">Business Hours</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="font-medium">Monday - Friday:</span>
-                  <span>9:00 AM - 6:00 PM</span>
+            {settings.officeHours && (
+              <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-2xl p-8 text-white">
+                <div className="flex items-center gap-3 mb-4">
+                  <Clock size={24} />
+                  <h3 className="text-2xl font-bold">Business Hours</h3>
                 </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Saturday:</span>
-                  <span>10:00 AM - 4:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Sunday:</span>
-                  <span>Closed</span>
-                </div>
+                <p className="text-green-50 text-lg">{settings.officeHours}</p>
               </div>
-            </div>
+            )}
 
             <div className="bg-white rounded-2xl p-8">
               <h3 className="text-xl font-bold text-gray-900 mb-3">

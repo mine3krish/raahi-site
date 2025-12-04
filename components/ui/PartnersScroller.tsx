@@ -77,7 +77,7 @@ export default function PartnersScroller() {
                 <img
                   src={partner.logo}
                   alt={partner.name}
-                  className="max-w-full max-h-full object-contain"
+                  className="w-full h-auto object-contain"
                   title={partner.name}
                 />
               </div>

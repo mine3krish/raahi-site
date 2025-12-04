@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/app/api/connect";
 import SiteSettings from "@/models/SiteSettings";
+import Property from "@/models/Property";
 import { verifyAdmin } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
@@ -115,6 +116,35 @@ export async function PUT(request: NextRequest) {
     const bannersJson = formData.get("propertyBanners");
     if (bannersJson) {
       settings.propertyBanners = JSON.parse(bannersJson as string);
+    }
+
+    // Check if placeholder image was updated and update properties
+    const newPlaceholderImage = formData.get("propertyPlaceholderImage") as string;
+    const oldPlaceholderImage = settings.propertyPlaceholderImage;
+    
+    if (newPlaceholderImage && oldPlaceholderImage && newPlaceholderImage !== oldPlaceholderImage) {
+      // Update all properties that are using the old placeholder image
+      await Property.updateMany(
+        { 
+          images: { $size: 0 } // Properties with no images
+        },
+        { 
+          $set: { 
+            // This updates the reference in case we store placeholder in DB
+            // For now, properties with empty images array will automatically use the new placeholder from settings
+          } 
+        }
+      );
+      
+      // Also update any properties that have the old placeholder explicitly set
+      await Property.updateMany(
+        { 
+          images: [oldPlaceholderImage]
+        },
+        { 
+          $set: { images: [newPlaceholderImage] }
+        }
+      );
     }
 
     // Handle file uploads (team member photos, partner logos)

@@ -254,6 +254,38 @@ export default function PropertyDetailPage() {
                 </div>
               )}
             </motion.div>
+
+            {/* Related Properties Section */}
+            {relatedProperties.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="mt-6"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-2xl font-bold text-gray-800">Similar Properties</h2>
+                  <Link
+                    href={`/properties?state=${property.state}&type=${property.type}`}
+                    className="text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1 transition"
+                  >
+                    View More →
+                  </Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {relatedProperties.map((relatedProp) => (
+                    <PropertyCard
+                      key={relatedProp.id}
+                      id={relatedProp.id}
+                      title={relatedProp.name}
+                      location={`${relatedProp.location}, ${relatedProp.state}`}
+                      price={formatIndianPrice(relatedProp.reservePrice)}
+                      image={relatedProp.images[0] || "/image.png"}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* Right Column - Auction Info */}
@@ -407,38 +439,6 @@ export default function PropertyDetailPage() {
             <PropertyBanners />
           </div>
         </div>
-
-        {/* Related Properties Section */}
-        {relatedProperties.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-12"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Similar Properties</h2>
-              <Link
-                href={`/properties?state=${property.state}&type=${property.type}`}
-                className="text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1 transition"
-              >
-                View More →
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {relatedProperties.map((relatedProp) => (
-                <PropertyCard
-                  key={relatedProp.id}
-                  id={relatedProp.id}
-                  title={relatedProp.name}
-                  location={`${relatedProp.location}, ${relatedProp.state}`}
-                  price={formatIndianPrice(relatedProp.reservePrice)}
-                  image={relatedProp.images[0] || "/image.png"}
-                />
-              ))}
-            </div>
-          </motion.div>
-        )}
       </div>
     </div>
   );

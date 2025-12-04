@@ -242,6 +242,17 @@ export default function PropertyDetailPage() {
                   </p>
                 </div>
               )}
+
+              {property.note && (
+                <div className="border border-blue-200 bg-blue-50 p-4 rounded-lg mb-6">
+                  <div className="flex items-center text-blue-700 mb-2">
+                    <span className="font-semibold">📝 Note</span>
+                  </div>
+                  <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {property.note}
+                  </p>
+                </div>
+              )}
             </motion.div>
           </div>
 

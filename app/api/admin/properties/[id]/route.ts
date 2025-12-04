@@ -66,6 +66,7 @@ export async function PUT(
       auctionEndTime: formData.get("auctionEndTime") as string || "",
       applicationSubmissionDate: formData.get("applicationSubmissionDate") as string || "",
       agentMobile: formData.get("agentMobile") as string || "+91 848 884 8874",
+      note: formData.get("note") as string || "",
     };
 
     // Handle existing images

@@ -27,6 +27,7 @@ const PropertySchema = new Schema(
     auctionEndTime: { type: String },
     applicationSubmissionDate: { type: String },
     agentMobile: { type: String, default: "+91 848 884 8874" },
+    note: { type: String, default: "" },
   },
   { timestamps: true }
 );

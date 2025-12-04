@@ -35,6 +35,7 @@ export default function AddPropertyPage() {
     auctionEndTime: "",
     applicationSubmissionDate: "",
     agentMobile: "+91 848 884 8874",
+    note: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -398,6 +399,19 @@ export default function AddPropertyPage() {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
             />
           </div>
+        </div>
+
+        {/* Note Field */}
+        <div className="mb-4">
+          <label className="block text-sm text-gray-700 mb-1">Note (Optional)</label>
+          <textarea
+            name="note"
+            value={formData.note}
+            onChange={handleChange}
+            placeholder="Add any additional notes or information about this property..."
+            rows={3}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+          />
         </div>
 
         {/* Type, Status & Featured */}

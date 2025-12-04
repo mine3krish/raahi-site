@@ -1,0 +1,57 @@
+import { NextRequest, NextResponse } from "next/server";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
+import { verifyToken } from "../../auth/utils";
+
+export async function POST(request: NextRequest) {
+  try {
+    // Verify authentication
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = verifyToken(token);
+
+    if (!decoded || decoded.role !== "admin") {
+      return NextResponse.json({ error: "Admin access required" }, { status: 403 });
+    }
+
+    const formData = await request.formData();
+    const file = formData.get("file") as File;
+
+    if (!file) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    // Setup CDN directory
+    const CDN_DIR = "/var/www/cdn";
+    
+    try {
+      await mkdir(CDN_DIR, { recursive: true });
+    } catch (err) {
+      // Directory might already exist
+    }
+
+    // Generate unique filename
+    const fileExtension = file.name.split(".").pop() || "jpg";
+    const unique = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
+    const filepath = path.join(CDN_DIR, unique);
+
+    // Save file
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    await writeFile(filepath, buffer);
+
+    // Return CDN URL
+    const url = `https://raahiauctions.cloud/cdn/${unique}`;
+
+    return NextResponse.json({ url }, { status: 200 });
+
+  } catch (error) {
+    console.error("Upload error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Failed to upload file";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
+}

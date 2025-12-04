@@ -96,6 +96,43 @@ export default function SettingsPage() {
     }
   };
 
+  const uploadImage = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const token = localStorage.getItem("token");
+    const response = await fetch("/api/admin/upload", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error("Failed to upload image");
+
+    const data = await response.json();
+    return data.url;
+  };
+
+  const handleImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    callback: (url: string) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const url = await uploadImage(file);
+      callback(url);
+      setMessage("Image uploaded successfully!");
+      setTimeout(() => setMessage(""), 3000);
+    } catch (error) {
+      setMessage("Error uploading image");
+      setTimeout(() => setMessage(""), 3000);
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     setMessage("");
@@ -287,16 +324,30 @@ export default function SettingsPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Hero Background Image URL
+                    Hero Background Image
                   </label>
-                  <input
-                    type="text"
-                    value={settings.heroImage}
-                    onChange={(e) => setSettings({ ...settings, heroImage: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="/Ahemdabad_Skyline.jpg"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Enter a full image URL or path (e.g., /image.jpg or https://...)</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={settings.heroImage}
+                      onChange={(e) => setSettings({ ...settings, heroImage: e.target.value })}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="/Ahemdabad_Skyline.jpg"
+                    />
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleImageUpload(e, (url) => setSettings({ ...settings, heroImage: url }))}
+                      />
+                      <div className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
+                        <Upload size={18} />
+                        Upload
+                      </div>
+                    </label>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Upload an image or enter URL</p>
                 </div>
 
                 <div>
@@ -345,16 +396,30 @@ export default function SettingsPage() {
                   <h3 className="text-lg font-bold text-gray-800 mb-4">Property Placeholder Image</h3>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Default Property Image URL
+                      Default Property Placeholder Image
                     </label>
-                    <input
-                      type="text"
-                      value={settings.propertyPlaceholderImage}
-                      onChange={(e) => setSettings({ ...settings, propertyPlaceholderImage: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                      placeholder="/image.png"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">This image is used when a property has no images uploaded</p>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={settings.propertyPlaceholderImage}
+                        onChange={(e) => setSettings({ ...settings, propertyPlaceholderImage: e.target.value })}
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="/image.png"
+                      />
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleImageUpload(e, (url) => setSettings({ ...settings, propertyPlaceholderImage: url }))}
+                        />
+                        <div className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
+                          <Upload size={18} />
+                          Upload
+                        </div>
+                      </label>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Upload an image or enter URL - used when a property has no images</p>
                   </div>
 
                   {settings.propertyPlaceholderImage && (
@@ -599,14 +664,27 @@ export default function SettingsPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                        <input
-                          type="text"
-                          value={member.image}
-                          onChange={(e) => updateTeamMember(index, "image", e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                          placeholder="https://..."
-                        />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={member.image}
+                            onChange={(e) => updateTeamMember(index, "image", e.target.value)}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            placeholder="URL or upload"
+                          />
+                          <label className="cursor-pointer">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => handleImageUpload(e, (url) => updateTeamMember(index, "image", url))}
+                            />
+                            <div className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                              <Upload size={16} />
+                            </div>
+                          </label>
+                        </div>
                       </div>
 
                       <div>
@@ -682,14 +760,27 @@ export default function SettingsPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
-                        <input
-                          type="text"
-                          value={partner.logo}
-                          onChange={(e) => updatePartner(index, "logo", e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                          placeholder="https://..."
-                        />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Logo</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={partner.logo}
+                            onChange={(e) => updatePartner(index, "logo", e.target.value)}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            placeholder="URL or upload"
+                          />
+                          <label className="cursor-pointer">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => handleImageUpload(e, (url) => updatePartner(index, "logo", url))}
+                            />
+                            <div className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                              <Upload size={16} />
+                            </div>
+                          </label>
+                        </div>
                       </div>
 
                       <div>
@@ -754,14 +845,27 @@ export default function SettingsPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Banner Image URL</label>
-                        <input
-                          type="text"
-                          value={banner.image}
-                          onChange={(e) => updateBanner(index, "image", e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                          placeholder="https://... (square image recommended)"
-                        />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Banner Image</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={banner.image}
+                            onChange={(e) => updateBanner(index, "image", e.target.value)}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            placeholder="URL or upload (square recommended)"
+                          />
+                          <label className="cursor-pointer">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => handleImageUpload(e, (url) => updateBanner(index, "image", url))}
+                            />
+                            <div className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                              <Upload size={16} />
+                            </div>
+                          </label>
+                        </div>
                       </div>
 
                       <div>

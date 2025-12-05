@@ -35,6 +35,7 @@ interface PropertyData {
   auctionStartDate?: string;
   auctionEndTime?: string;
   applicationSubmissionDate?: string;
+  inspectionDate?: string;
   agentMobile?: string;
   note?: string;
 }
@@ -403,6 +404,7 @@ async function parseExcelFile(
         auctionStartDate: row.auctionStartDate ? String(row.auctionStartDate) : undefined,
         auctionEndTime: row.auctionEndTime ? String(row.auctionEndTime) : undefined,
         applicationSubmissionDate: row.applicationSubmissionDate ? String(row.applicationSubmissionDate) : undefined,
+        inspectionDate: row.inspectionDate ? String(row.inspectionDate) : undefined,
         agentMobile: row.agentMobile ? String(row.agentMobile) : "+91 848 884 8874",
         note: row.note ? String(row.note) : "",
       });

@@ -26,6 +26,7 @@ const PropertySchema = new Schema(
     auctionStartDate: { type: String },
     auctionEndTime: { type: String },
     applicationSubmissionDate: { type: String },
+    inspectionDate: { type: String }, // Inspection date or "Not Available"
     agentMobile: { type: String, default: "+91 848 884 8874" },
     note: { type: String, default: "" },
     youtubeVideo: { type: String }, // YouTube video URL

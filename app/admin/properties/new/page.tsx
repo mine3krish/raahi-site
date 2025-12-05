@@ -35,6 +35,7 @@ export default function AddPropertyPage() {
     auctionStartDate: "",
     auctionEndTime: "",
     applicationSubmissionDate: "",
+    inspectionDate: "",
     agentMobile: "+91 848 884 8874",
     note: "",
     youtubeVideo: "",
@@ -430,6 +431,20 @@ export default function AddPropertyPage() {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
               placeholder="DD-MM-YYYY or any format"
             />
+          </div>
+
+          {/* Inspection Date */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Inspection Date</label>
+            <input
+              type="text"
+              name="inspectionDate"
+              value={formData.inspectionDate}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="DD-MM-YYYY or 'Not Available'"
+            />
+            <p className="text-xs text-gray-500 mt-1">Leave empty or enter 'Not Available' to show call button instead</p>
           </div>
 
           {/* Agent Mobile */}

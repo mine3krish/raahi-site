@@ -279,25 +279,71 @@ export default function Properties() {
     setBulkActionLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const updatePromises = Array.from(selectedProperties).map(propertyId =>
-        fetch(`/api/admin/properties/${propertyId}/status`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status: newStatus }),
-        })
-      );
+      const response = await fetch("/api/admin/properties/bulk-update", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          propertyIds: Array.from(selectedProperties),
+          updates: { status: newStatus },
+        }),
+      });
 
-      const results = await Promise.allSettled(updatePromises);
-      const successCount = results.filter(r => r.status === "fulfilled" && (r.value as Response).ok).length;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update properties");
+      }
 
-      alert(`Successfully updated ${successCount} properties to ${newStatus}`);
+      const data = await response.json();
+      alert(`Successfully updated ${data.updated} properties to ${newStatus}`);
       
       // Update local state
       setProperties(prev => 
         prev.map(p => selectedProperties.has(p.id) ? { ...p, status: newStatus } : p)
+      );
+      
+      setSelectedProperties(new Set());
+      setShowBulkActions(false);
+    } catch (err: any) {
+      alert(err.message || "Failed to update properties");
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  // Bulk feature updates
+  const handleBulkFeatureUpdate = async (field: "featured" | "bestDeal" | "premium", value: boolean) => {
+    if (selectedProperties.size === 0) return;
+
+    setBulkActionLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/admin/properties/bulk-update", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          propertyIds: Array.from(selectedProperties),
+          updates: { [field]: value },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update properties");
+      }
+
+      const data = await response.json();
+      const fieldName = field === "bestDeal" ? "Best Deal" : field === "premium" ? "Premium" : "Featured";
+      alert(`Successfully updated ${data.updated} properties - ${fieldName}: ${value ? "enabled" : "disabled"}`);
+      
+      // Update local state
+      setProperties(prev => 
+        prev.map(p => selectedProperties.has(p.id) ? { ...p, [field]: value } : p)
       );
       
       setSelectedProperties(new Set());
@@ -444,55 +490,116 @@ export default function Properties() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6"
         >
-          <h3 className="font-semibold text-blue-900 mb-3">
+          <h3 className="font-semibold text-blue-900 mb-4">
             Bulk Actions ({selectedProperties.size} properties selected)
           </h3>
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => handleBulkStatusChange("Active")}
-              disabled={bulkActionLoading}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50"
-            >
-              Mark as Active
-            </button>
-            <button
-              onClick={() => handleBulkStatusChange("Sold")}
-              disabled={bulkActionLoading}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition disabled:opacity-50"
-            >
-              Mark as Sold
-            </button>
-            <button
-              onClick={() => handleBulkStatusChange("Pending")}
-              disabled={bulkActionLoading}
-              className="px-4 py-2 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-700 transition disabled:opacity-50"
-            >
-              Mark as Pending
-            </button>
-            <button
-              onClick={openShareModal}
-              disabled={bulkActionLoading}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition disabled:opacity-50"
-            >
-              📤 Share to Social Media
-            </button>
-            <button
-              onClick={handleBulkDelete}
-              disabled={bulkActionLoading}
-              className="px-4 py-2 bg-red-700 text-white rounded-lg font-medium hover:bg-red-800 transition disabled:opacity-50"
-            >
-              🗑️ Delete Selected
-            </button>
-            <button
-              onClick={() => {
-                setSelectedProperties(new Set());
-                setShowBulkActions(false);
-              }}
-              disabled={bulkActionLoading}
-              className="px-4 py-2 border border-gray-300 bg-white rounded-lg font-medium hover:bg-gray-50 transition disabled:opacity-50"
-            >
-              Clear Selection
-            </button>
+          
+          {/* Status Updates */}
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-blue-800 mb-2">Status Updates</h4>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => handleBulkStatusChange("Active")}
+                disabled={bulkActionLoading}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition disabled:opacity-50 text-sm"
+              >
+                Mark as Active
+              </button>
+              <button
+                onClick={() => handleBulkStatusChange("Sold")}
+                disabled={bulkActionLoading}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition disabled:opacity-50 text-sm"
+              >
+                Mark as Sold
+              </button>
+              <button
+                onClick={() => handleBulkStatusChange("Pending")}
+                disabled={bulkActionLoading}
+                className="px-4 py-2 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-700 transition disabled:opacity-50 text-sm"
+              >
+                Mark as Pending
+              </button>
+            </div>
+          </div>
+
+          {/* Feature Toggles */}
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-blue-800 mb-2">Feature Updates</h4>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              <button
+                onClick={() => handleBulkFeatureUpdate("featured", true)}
+                disabled={bulkActionLoading}
+                className="px-3 py-2 bg-yellow-500 text-white rounded-lg font-medium hover:bg-yellow-600 transition disabled:opacity-50 text-sm flex items-center justify-center gap-1"
+              >
+                ⭐ Enable Featured
+              </button>
+              <button
+                onClick={() => handleBulkFeatureUpdate("featured", false)}
+                disabled={bulkActionLoading}
+                className="px-3 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition disabled:opacity-50 text-sm flex items-center justify-center gap-1"
+              >
+                ⭐ Disable Featured
+              </button>
+              <button
+                onClick={() => handleBulkFeatureUpdate("bestDeal", true)}
+                disabled={bulkActionLoading}
+                className="px-3 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition disabled:opacity-50 text-sm flex items-center justify-center gap-1"
+              >
+                🔥 Enable Best Deal
+              </button>
+              <button
+                onClick={() => handleBulkFeatureUpdate("bestDeal", false)}
+                disabled={bulkActionLoading}
+                className="px-3 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition disabled:opacity-50 text-sm flex items-center justify-center gap-1"
+              >
+                🔥 Disable Best Deal
+              </button>
+              <button
+                onClick={() => handleBulkFeatureUpdate("premium", true)}
+                disabled={bulkActionLoading}
+                className="px-3 py-2 bg-purple-500 text-white rounded-lg font-medium hover:bg-purple-600 transition disabled:opacity-50 text-sm flex items-center justify-center gap-1"
+              >
+                💎 Enable Premium
+              </button>
+              <button
+                onClick={() => handleBulkFeatureUpdate("premium", false)}
+                disabled={bulkActionLoading}
+                className="px-3 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition disabled:opacity-50 text-sm flex items-center justify-center gap-1"
+              >
+                💎 Disable Premium
+              </button>
+            </div>
+          </div>
+
+          {/* Other Actions */}
+          <div className="mb-2">
+            <h4 className="text-sm font-medium text-blue-800 mb-2">Other Actions</h4>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={openShareModal}
+                disabled={bulkActionLoading}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition disabled:opacity-50 text-sm"
+              >
+                📤 Share to Social Media
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                disabled={bulkActionLoading}
+                className="px-4 py-2 bg-red-700 text-white rounded-lg font-medium hover:bg-red-800 transition disabled:opacity-50 text-sm"
+              >
+                🗑️ Delete Selected
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedProperties(new Set());
+                  setShowBulkActions(false);
+                }}
+                disabled={bulkActionLoading}
+                className="px-4 py-2 border border-gray-300 bg-white rounded-lg font-medium hover:bg-gray-50 transition disabled:opacity-50 text-sm"
+              >
+                Clear Selection
+              </button>
+            </div>
           </div>
         </motion.div>
       )}

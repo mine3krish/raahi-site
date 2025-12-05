@@ -392,6 +392,31 @@ export default function PropertyDetailPage() {
                 </div>
               )}
 
+              {/* Inspection Date */}
+              <div className="mb-6 bg-blue-50 p-4 rounded-lg">
+                <div className="flex items-center text-blue-700 mb-2">
+                  <Calendar size={18} className="mr-2" />
+                  <span className="text-sm font-semibold">Inspection Date</span>
+                </div>
+                {property.inspectionDate && 
+                 property.inspectionDate.toLowerCase() !== "not available" && 
+                 property.inspectionDate.trim() !== "" ? (
+                  <p className="text-sm text-blue-900 font-medium">
+                    {property.inspectionDate}
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-sm text-blue-900">Not Available - Call for details</p>
+                    <a 
+                      href={`tel:${(property.agentMobile || "+91 848 884 8874").replace(/\s/g, "")}`} 
+                      className="inline-flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition text-sm"
+                    >
+                      📞 {property.agentMobile || "+91 848 884 8874"}
+                    </a>
+                  </div>
+                )}
+              </div>
+
               {/* CTA Buttons */}
               <div className="space-y-3 mb-6">
                 <a href={`tel:${(property.agentMobile || "+91 848 884 8874").replace(/\s/g, "")}`} className="block w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition text-center">

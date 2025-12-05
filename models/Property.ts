@@ -28,6 +28,7 @@ const PropertySchema = new Schema(
     applicationSubmissionDate: { type: String },
     agentMobile: { type: String, default: "+91 848 884 8874" },
     note: { type: String, default: "" },
+    youtubeVideo: { type: String }, // YouTube video URL
   },
   { timestamps: true }
 );

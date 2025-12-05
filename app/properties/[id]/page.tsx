@@ -178,6 +178,29 @@ export default function PropertyDetailPage() {
               )}
             </motion.div>
 
+            {/* YouTube Video */}
+            {property.youtubeVideo && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="bg-white rounded-2xl overflow-hidden mt-6"
+              >
+                <div className="aspect-video">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={property.youtubeVideo.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                    title="Property Video"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  ></iframe>
+                </div>
+              </motion.div>
+            )}
+
             {/* Property Details */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

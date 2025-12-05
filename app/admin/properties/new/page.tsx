@@ -11,6 +11,7 @@ export default function AddPropertyPage() {
   const [error, setError] = useState("");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [noticeFile, setNoticeFile] = useState<File | null>(null);
+  const [youtubeUrl, setYoutubeUrl] = useState("");
 
   const [formData, setFormData] = useState({
     id: "",
@@ -36,6 +37,7 @@ export default function AddPropertyPage() {
     applicationSubmissionDate: "",
     agentMobile: "+91 848 884 8874",
     note: "",
+    youtubeVideo: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -47,8 +49,12 @@ export default function AddPropertyPage() {
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+    const files = Array.from(e.target.files || []).slice(0, 5); // Limit to 5 images
     setImageFiles(files);
+  };
+
+  const removeImage = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleNoticeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -251,7 +257,7 @@ export default function AddPropertyPage() {
 
         {/* Multiple Images Upload */}
         <div>
-          <label className="block text-sm text-gray-700 mb-1">Property Images *</label>
+          <label className="block text-sm text-gray-700 mb-1">Property Images * (Max 5)</label>
           <input
             type="file"
             multiple
@@ -260,11 +266,47 @@ export default function AddPropertyPage() {
             required
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
           />
+          <p className="text-xs text-gray-500 mt-1">Select up to 5 images. First image will be the main image.</p>
+          
           {imageFiles.length > 0 && (
-            <div className="mt-2 text-sm text-gray-600">
-              {imageFiles.length} image(s) selected: {imageFiles.map(f => f.name).join(', ')}
+            <div className="mt-3 grid grid-cols-5 gap-2">
+              {imageFiles.map((file, index) => (
+                <div key={index} className="relative">
+                  <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200 bg-gray-100">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition"
+                  >
+                    ×
+                  </button>
+                  {index === 0 && (
+                    <span className="absolute bottom-1 left-1 bg-green-600 text-white text-xs px-2 py-0.5 rounded">Main</span>
+                  )}
+                </div>
+              ))}
             </div>
           )}
+        </div>
+
+        {/* YouTube Video */}
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">YouTube Video URL (Optional)</label>
+          <input
+            type="url"
+            name="youtubeVideo"
+            value={formData.youtubeVideo}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+            placeholder="https://www.youtube.com/watch?v=..."
+          />
+          <p className="text-xs text-gray-500 mt-1">Paste YouTube video URL to embed a property tour video</p>
         </div>
 
         {/* Notice Upload */}

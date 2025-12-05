@@ -41,6 +41,7 @@ export default function EditPropertyPage() {
     auctionEndTime: "",
     applicationSubmissionDate: "",
     agentMobile: "+91 848 884 8874",
+    youtubeVideo: "",
   });
 
   // Fetch property data
@@ -84,6 +85,7 @@ export default function EditPropertyPage() {
           auctionEndTime: property.auctionEndTime || "",
           applicationSubmissionDate: property.applicationSubmissionDate || "",
           agentMobile: property.agentMobile || "+91 848 884 8874",
+          youtubeVideo: property.youtubeVideo || "",
         });
         
         setExistingImages(property.images || []);
@@ -108,6 +110,13 @@ export default function EditPropertyPage() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    const totalImages = existingImages.length + files.length;
+    
+    if (totalImages > 5) {
+      alert(`You can only upload up to 5 images total. You have ${existingImages.length} existing images.`);
+      return;
+    }
+    
     setImageFiles(files);
   };
 
@@ -118,6 +127,10 @@ export default function EditPropertyPage() {
 
   const removeExistingImage = (index: number) => {
     setExistingImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeNewImage = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const validateForm = () => {
@@ -324,40 +337,78 @@ export default function EditPropertyPage() {
           />
         </div>
 
-        {/* Existing Images */}
-        {existingImages.length > 0 && (
-          <div>
-            <label className="block text-sm text-gray-700 mb-1">Existing Images</label>
-            <div className="grid grid-cols-3 gap-2">
-              {existingImages.map((img, index) => (
-                <div key={index} className="relative group">
-                  <img src={img} alt={`Property ${index + 1}`} className="w-full h-24 object-cover rounded-lg" />
-                  <button
-                    type="button"
-                    onClick={() => removeExistingImage(index)}
-                    className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Add New Images */}
+        {/* Property Images Management */}
         <div>
-          <label className="block text-sm text-gray-700 mb-1">Add New Images</label>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
-          />
+          <label className="block text-sm text-gray-700 mb-2">Property Images (Max 5 total)</label>
+          <p className="text-xs text-gray-500 mb-3">
+            Total: {existingImages.length + imageFiles.length} / 5 images. First image will be the main image.
+          </p>
+
+          {/* Existing Images */}
+          {existingImages.length > 0 && (
+            <div className="mb-4">
+              <p className="text-sm font-medium text-gray-600 mb-2">Current Images</p>
+              <div className="grid grid-cols-5 gap-2">
+                {existingImages.map((img, index) => (
+                  <div key={index} className="relative">
+                    <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200">
+                      <img src={img} alt={`Property ${index + 1}`} className="w-full h-full object-cover" />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeExistingImage(index)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition"
+                    >
+                      ×
+                    </button>
+                    {index === 0 && (
+                      <span className="absolute bottom-1 left-1 bg-green-600 text-white text-xs px-2 py-0.5 rounded">Main</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Add New Images */}
+          {(existingImages.length + imageFiles.length) < 5 && (
+            <div>
+              <p className="text-sm font-medium text-gray-600 mb-2">Add More Images</p>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+            </div>
+          )}
+
+          {/* New Images Preview */}
           {imageFiles.length > 0 && (
-            <div className="mt-2 text-sm text-gray-600">
-              {imageFiles.length} new image(s) selected
+            <div className="mt-4">
+              <p className="text-sm font-medium text-gray-600 mb-2">New Images to Upload</p>
+              <div className="grid grid-cols-5 gap-2">
+                {imageFiles.map((file, index) => (
+                  <div key={index} className="relative">
+                    <div className="aspect-square rounded-lg overflow-hidden border-2 border-green-200 bg-gray-100">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`New ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeNewImage(index)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition"
+                    >
+                      ×
+                    </button>
+                    <span className="absolute bottom-1 left-1 bg-blue-600 text-white text-xs px-2 py-0.5 rounded">New</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -381,6 +432,20 @@ export default function EditPropertyPage() {
               New file: {noticeFile.name}
             </div>
           )}
+        </div>
+
+        {/* YouTube Video */}
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">YouTube Video URL (Optional)</label>
+          <input
+            type="url"
+            name="youtubeVideo"
+            value={formData.youtubeVideo}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+            placeholder="https://www.youtube.com/watch?v=..."
+          />
+          <p className="text-xs text-gray-500 mt-1">Paste YouTube video URL to embed a property tour video</p>
         </div>
 
         {/* Additional Auction Details Section */}

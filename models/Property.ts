@@ -18,18 +18,18 @@ const PropertySchema = new Schema(
     status: { type: String, enum: ["Active", "Sold", "Pending"], default: "Active" },
     
     // Additional auction details
-    assetCategory: { type: String },
-    assetAddress: { type: String },
-    assetCity: { type: String },
-    borrowerName: { type: String },
-    publicationDate: { type: String },
-    auctionStartDate: { type: String },
-    auctionEndTime: { type: String },
-    applicationSubmissionDate: { type: String },
-    inspectionDate: { type: String }, // Inspection date or "Not Available"
+    assetCategory: { type: String, default: "" },
+    assetAddress: { type: String, default: "" },
+    assetCity: { type: String, default: "" },
+    borrowerName: { type: String, default: "" },
+    publicationDate: { type: String, default: "" },
+    auctionStartDate: { type: String, default: "" },
+    auctionEndTime: { type: String, default: "" },
+    applicationSubmissionDate: { type: String, default: "" },
+    inspectionDate: { type: String, default: "" }, // Inspection date or "Not Available"
     agentMobile: { type: String, default: "+91 848 884 8874" },
     note: { type: String, default: "" },
-    youtubeVideo: { type: String }, // YouTube video URL
+    youtubeVideo: { type: String, default: "" }, // YouTube video URL
   },
   { timestamps: true }
 );

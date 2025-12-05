@@ -179,27 +179,44 @@ export default function PropertyDetailPage() {
             </motion.div>
 
             {/* YouTube Video */}
-            {property.youtubeVideo && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-                className="bg-white rounded-2xl overflow-hidden mt-6"
-              >
-                <div className="aspect-video">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src={property.youtubeVideo.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
-                    title="Property Video"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-full"
-                  ></iframe>
-                </div>
-              </motion.div>
-            )}
+            {property.youtubeVideo && (() => {
+              let videoId = '';
+              const url = property.youtubeVideo;
+              
+              // Extract video ID from various YouTube URL formats
+              if (url.includes('youtube.com/watch?v=')) {
+                videoId = url.split('watch?v=')[1]?.split('&')[0] || '';
+              } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1]?.split('?')[0] || '';
+              } else if (url.includes('youtube.com/embed/')) {
+                videoId = url.split('embed/')[1]?.split('?')[0] || '';
+              } else {
+                // Assume it's just the video ID
+                videoId = url;
+              }
+              
+              return videoId ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="bg-white rounded-2xl overflow-hidden mt-6"
+                >
+                  <div className="aspect-video">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${videoId}`}
+                      title="Property Video Tour"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      className="w-full h-full"
+                    ></iframe>
+                  </div>
+                </motion.div>
+              ) : null;
+            })()}
 
             {/* Property Details */}
             <motion.div
@@ -254,13 +271,12 @@ export default function PropertyDetailPage() {
               </div>
 
               {property.assetAddress && (
-                <div className="border border-gray-200 bg-gray-50 p-4 rounded-lg mb-6">
-                  <div className="flex items-center text-gray-700 mb-2">
-                    <MapPin size={18} className="mr-2" />
-                    <span className="font-semibold">Asset Address</span>
+                <div className="border-2 border-green-500 bg-gradient-to-r from-green-50 to-white p-5 rounded-xl mb-6 shadow-sm">
+                  <div className="flex items-center text-green-800 mb-3">
+                    <MapPin size={20} className="mr-2 flex-shrink-0" />
+                    <span className="font-bold text-lg">📍 Asset Address</span>
                   </div>
-                  <p className="text-sm text-gray-700 leading-relaxed font-bold">
-                    {console.log(property)}
+                  <p className="text-base text-gray-800 leading-relaxed font-semibold">
                     {property.assetAddress == "Property Details" ? property.location : property.assetAddress}
                   </p>
                 </div>

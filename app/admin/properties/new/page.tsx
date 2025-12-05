@@ -384,11 +384,12 @@ export default function AddPropertyPage() {
           <div className="mb-4">
             <label className="block text-sm text-gray-700 mb-1">Publication Date</label>
             <input
-              type="date"
+              type="text"
               name="publicationDate"
               value={formData.publicationDate}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="DD-MM-YYYY or any format"
             />
           </div>
 
@@ -396,11 +397,12 @@ export default function AddPropertyPage() {
           <div className="mb-4">
             <label className="block text-sm text-gray-700 mb-1">Auction Start Date</label>
             <input
-              type="date"
+              type="text"
               name="auctionStartDate"
               value={formData.auctionStartDate}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="DD-MM-YYYY or any format"
             />
           </div>
 
@@ -408,11 +410,12 @@ export default function AddPropertyPage() {
           <div className="mb-4">
             <label className="block text-sm text-gray-700 mb-1">Auction End Time</label>
             <input
-              type="datetime-local"
+              type="text"
               name="auctionEndTime"
               value={formData.auctionEndTime}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="DD-MM-YYYY HH:MM or any format"
             />
           </div>
 
@@ -420,11 +423,12 @@ export default function AddPropertyPage() {
           <div className="mb-4">
             <label className="block text-sm text-gray-700 mb-1">Application Submission Date</label>
             <input
-              type="date"
+              type="text"
               name="applicationSubmissionDate"
               value={formData.applicationSubmissionDate}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="DD-MM-YYYY or any format"
             />
           </div>
 

@@ -255,13 +255,13 @@ export default function PropertyDetailPage() {
               )}
             </motion.div>
 
-            {/* Related Properties Section */}
+            {/* Related Properties Section - Shows below property details on desktop */}
             {relatedProperties.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="mt-6"
+                transition={{ delay: 0.4 }}
+                className="mt-6 hidden lg:block"
               >
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-2xl font-bold text-gray-800">Similar Properties</h2>
@@ -437,6 +437,38 @@ export default function PropertyDetailPage() {
 
             {/* Property Banners */}
             <PropertyBanners />
+
+            {/* Related Properties Section - Shows after banners on mobile only */}
+            {relatedProperties.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="mt-6 lg:hidden"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-2xl font-bold text-gray-800">Similar Properties</h2>
+                  <Link
+                    href={`/properties?state=${property.state}&type=${property.type}`}
+                    className="text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1 transition"
+                  >
+                    View More →
+                  </Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {relatedProperties.map((relatedProp) => (
+                    <PropertyCard
+                      key={relatedProp.id}
+                      id={relatedProp.id}
+                      title={relatedProp.name}
+                      location={`${relatedProp.location}, ${relatedProp.state}`}
+                      price={formatIndianPrice(relatedProp.reservePrice)}
+                      image={relatedProp.images[0] || "/image.png"}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
         </div>
       </div>

@@ -423,12 +423,7 @@ async function parseExcelFile(
 export async function POST(request: NextRequest) {
   try {
     // Verify admin token
-    const token = request.headers.get("authorization")?.replace("Bearer ", "");
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    
-    verifyAdmin(request);
+    await verifyAdmin(request);
 
     // Check for OpenAI API key
     if (!process.env.OPENAI_API_KEY) {

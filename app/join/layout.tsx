@@ -2,7 +2,7 @@ import { generateMetadata as generateSEOMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = generateSEOMetadata({
-  title: "Join as Agent - Partner with India's Leading Platform",
+  title: "Join as Member - Partner with India's Leading Platform",
   description: "Become a real estate agent with Raahi Auction. Join India's fastest-growing property platform. Get access to wide network, higher earnings, and dedicated support. Apply now!",
   keywords: [
     "real estate agent",

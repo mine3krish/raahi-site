@@ -490,6 +490,7 @@ export default function AddPropertyPage() {
               <option value="Commercial">Commercial</option>
               <option value="Land">Land</option>
               <option value="Industrial">Industrial</option>
+              <option value="Others">Others</option>
             </select>
           </div>
 

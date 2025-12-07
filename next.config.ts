@@ -7,7 +7,12 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
     domains: ["raahiauctions.cloud"],
-  }
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '50mb',
+    },
+  },
 };
 
 export default nextConfig;

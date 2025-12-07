@@ -17,7 +17,7 @@ const Links: NavLink[] = [
   { name: "About Us", href: "/about" },
   { name: "Communities", href: "/communities" },
   { name: "Newspaper", href: "/newspaper" },
-  { name: "Join as Agent", href: "/join" },
+  { name: "Join as Member", href: "/join" },
   { name: "Contact Us", href: "/contact" },
 ];
 
@@ -202,7 +202,7 @@ export default function Navbar() {
                 onClick={closeMenu}
                 className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-white rounded-xl transition-all"
               >
-                Join as agent
+                Join as member
               </Link>
               <Link
                 href="/contact"

@@ -2002,9 +2002,32 @@ export default function SettingsPage() {
                             rows={8}
                             placeholder="🏠 New Property Alert!\n\n📍 {{location}}, {{state}}\n💰 Reserve Price: ₹{{reservePrice}}\n📅 Auction Date: {{auctionDate}}\n📏 Area: {{area}}\n🏷️ Type: {{type}}\n\n🔗 {{link}}"
                           />
-                          <p className="text-xs text-blue-600 mt-2">
-                            <strong>Available Variables:</strong> {"{{name}}"}, {"{{location}}"}, {"{{state}}"}, {"{{reservePrice}}"}, {"{{auctionDate}}"}, {"{{area}}"}, {"{{type}}"}, {"{{link}}"}
-                          </p>
+                          <div className="text-xs text-blue-700 mt-3 space-y-2 bg-white p-3 rounded-lg border border-blue-200">
+                            <p className="font-semibold text-blue-900 mb-2">📋 Available Variables:</p>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
+                              <span>• {"{{id}}"} - Property ID</span>
+                              <span>• {"{{name}}"} - Property name</span>
+                              <span>• {"{{location}}"} - Location</span>
+                              <span>• {"{{state}}"} - State</span>
+                              <span>• {"{{city}}"} - City</span>
+                              <span>• {"{{reservePrice}}"} - Reserve price</span>
+                              <span>• {"{{auctionDate}}"} - Auction date</span>
+                              <span>• {"{{area}}"} - Area (sq ft)</span>
+                              <span>• {"{{type}}"} - Property type</span>
+                              <span>• {"{{category}}"} - Category</span>
+                              <span>• {"{{bank}}"} - Bank name</span>
+                              <span>• {"{{branch}}"} - Branch name</span>
+                              <span>• {"{{emd}}"} - EMD amount</span>
+                              <span>• {"{{assetAddress}}"} - Asset address</span>
+                              <span>• {"{{borrowerName}}"} - Borrower name</span>
+                              <span>• {"{{applicationNumber}}"} - Application no.</span>
+                              <span>• {"{{possessionStatus}}"} - Possession status</span>
+                              <span>• {"{{auctionType}}"} - Auction type</span>
+                              <span>• {"{{contactPerson}}"} - Contact person</span>
+                              <span>• {"{{contactNumber}}"} - Contact number</span>
+                              <span>• {"{{link}}"} - Property URL</span>
+                            </div>
+                          </div>
                         </div>
 
                         <div className="grid gap-4">
@@ -2472,9 +2495,32 @@ export default function SettingsPage() {
                     rows={10}
                     placeholder="🏠 New Property: {{name}}&#10;📍 Location: {{location}}, {{state}}&#10;💰 Price: ₹{{reservePrice}}&#10;&#10;🔗 {{link}}"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Variables: {"{{name}}"}, {"{{location}}"}, {"{{state}}"}, {"{{reservePrice}}"}, {"{{auctionDate}}"}, {"{{area}}"}, {"{{type}}"}, {"{{link}}"}
-                  </p>
+                  <div className="text-xs text-gray-600 mt-2 bg-gray-50 p-3 rounded-lg border border-gray-200 max-h-40 overflow-y-auto">
+                    <p className="font-semibold text-gray-800 mb-1">📋 Available Variables:</p>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                      <span>• {"{{id}}"} - Property ID</span>
+                      <span>• {"{{name}}"} - Property name</span>
+                      <span>• {"{{location}}"} - Location</span>
+                      <span>• {"{{state}}"} - State</span>
+                      <span>• {"{{city}}"} - City</span>
+                      <span>• {"{{reservePrice}}"} - Reserve price</span>
+                      <span>• {"{{auctionDate}}"} - Auction date</span>
+                      <span>• {"{{area}}"} - Area (sq ft)</span>
+                      <span>• {"{{type}}"} - Property type</span>
+                      <span>• {"{{category}}"} - Category</span>
+                      <span>• {"{{bank}}"} - Bank name</span>
+                      <span>• {"{{branch}}"} - Branch</span>
+                      <span>• {"{{emd}}"} - EMD amount</span>
+                      <span>• {"{{assetAddress}}"} - Asset address</span>
+                      <span>• {"{{borrowerName}}"} - Borrower</span>
+                      <span>• {"{{applicationNumber}}"} - App. no.</span>
+                      <span>• {"{{possessionStatus}}"} - Possession</span>
+                      <span>• {"{{auctionType}}"} - Auction type</span>
+                      <span>• {"{{contactPerson}}"} - Contact person</span>
+                      <span>• {"{{contactNumber}}"} - Contact no.</span>
+                      <span>• {"{{link}}"} - Property URL</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex gap-4">

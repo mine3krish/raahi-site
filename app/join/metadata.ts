@@ -2,7 +2,7 @@ import { generateMetadata as generateSEOMetadata, generateFAQSchema } from "@/li
 import type { Metadata } from "next";
 
 export const metadata: Metadata = generateSEOMetadata({
-  title: "Join as Agent - Partner with Us",
+  title: "Join as Member - Partner with Us",
   description: "Become a real estate agent with Raahi Auction. Join India's fastest-growing property platform. Get access to wide network, higher earnings, and dedicated support. Apply now!",
   keywords: [
     "real estate agent",

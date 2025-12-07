@@ -60,7 +60,7 @@ export default function Footer() {
             <li><a href="/" className="hover:text-green-600 transition">Home</a></li>
             <li><a href="/properties" className="hover:text-green-600 transition">Properties</a></li>
             <li><a href="/about" className="hover:text-green-600 transition">About Us</a></li>
-            <li><a href="/join" className="hover:text-green-600 transition">Join as Agent</a></li>
+            <li><a href="/join" className="hover:text-green-600 transition">Join as Member</a></li>
             <li><a href="/contact" className="hover:text-green-600 transition">Contact</a></li>
             <li><a href="/privacy-policy" className="hover:text-green-600 transition">Privacy Policy</a></li>
           </ul>

@@ -45,6 +45,7 @@ export const PROPERTY_TYPES = [
   "Commercial",
   "Land",
   "Industrial",
+  "Others",
 ] as const;
 
 export const PROPERTY_STATUSES = [

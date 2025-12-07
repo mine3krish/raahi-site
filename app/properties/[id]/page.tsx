@@ -116,7 +116,7 @@ export default function PropertyDetailPage() {
                   src={property.images[selectedImage] || "/image.png"}
                   alt={property.name}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                 />
                 <div className="absolute top-4 left-4 bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
                   #{property.id}

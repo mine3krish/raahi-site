@@ -317,7 +317,7 @@ async function parseExcelFile(
       
       let propertyName = "";
       // Check for schemeName field (case-insensitive)
-      const schemeName = row.schemeName || row.SchemeName;
+      const schemeName = row.schemeName || row.name;
       if (schemeName) {
         propertyName = String(schemeName);
       } else {

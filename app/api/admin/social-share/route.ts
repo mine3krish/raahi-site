@@ -4,6 +4,63 @@ import Property from "@/models/Property";
 import { verifyAdmin } from "@/lib/auth";
 import { connectDB } from "@/app/api/connect";
 import { formatIndianPrice } from "@/lib/constants";
+import sharp from "sharp";
+import path from "path";
+import fs from "fs/promises";
+
+// Helper to resize image for Instagram and save to public folder
+async function resizeImageForInstagram(imageUrl: string, propertyId: string): Promise<string> {
+  try {
+    // Download the image
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error("Failed to fetch image");
+    }
+    
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    
+    // Get image metadata to determine orientation
+    const metadata = await sharp(buffer).metadata();
+    const { width = 0, height = 0 } = metadata;
+    
+    // Determine target size based on orientation
+    const targetWidth = 1080;
+    let targetHeight = 1080;
+    
+    // If landscape (wider than tall), use 1.91:1 ratio
+    if (width > height) {
+      targetHeight = Math.round(1080 / 1.91);
+    }
+    // If portrait (taller than wide), use 4:5 ratio
+    else if (height > width) {
+      targetHeight = Math.round(1080 * 1.25);
+    }
+    // Square stays 1:1
+    
+    // Resize and crop to fit Instagram requirements
+    const resizedBuffer = await sharp(buffer)
+      .resize(targetWidth, targetHeight, {
+        fit: 'cover',
+        position: 'center'
+      })
+      .jpeg({ quality: 90 })
+      .toBuffer();
+    
+    // Save to public/uploads/instagram folder
+    const instagramDir = path.join(process.cwd(), 'public', 'uploads', 'instagram');
+    await fs.mkdir(instagramDir, { recursive: true });
+    
+    const filename = `${propertyId}-${Date.now()}.jpg`;
+    const filepath = path.join(instagramDir, filename);
+    await fs.writeFile(filepath, resizedBuffer);
+    
+    // Return public URL
+    return `/uploads/instagram/${filename}`;
+  } catch (error) {
+    throw new Error(`Image resize failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
 
 // Helper to replace template variables
 function replaceTemplateVars(template: string, property: any): string {
@@ -98,7 +155,7 @@ export async function POST(req: NextRequest) {
               result = await shareToLinkedIn(account, postText, imageUrl);
               break;
             case "instagram":
-              result = await shareToInstagram(account, postText, imageUrl);
+              result = await shareToInstagram(account, postText, imageUrl, property.id);
               break;
             default:
               throw new Error(`Unsupported platform: ${account.platform}`);
@@ -462,7 +519,7 @@ async function shareToLinkedIn(account: any, text: string, imageUrl: string) {
 }
 
 // Instagram sharing
-async function shareToInstagram(account: any, text: string, imageUrl: string) {
+async function shareToInstagram(account: any, text: string, imageUrl: string, propertyId: string) {
   const { instagramBusinessAccountId, pageAccessToken } = account.config;
 
   if (!instagramBusinessAccountId || !pageAccessToken) {
@@ -474,6 +531,13 @@ async function shareToInstagram(account: any, text: string, imageUrl: string) {
   }
 
   try {
+    // Resize image for Instagram compatibility
+    const resizedImagePath = await resizeImageForInstagram(imageUrl, propertyId);
+    
+    // Get full URL for the resized image
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://raahiauctions.cloud';
+    const fullImageUrl = `${baseUrl}${resizedImagePath}`;
+    
     // Step 1: Create media container
     const containerResponse = await fetch(
       `https://graph.facebook.com/v18.0/${instagramBusinessAccountId}/media`,
@@ -483,7 +547,7 @@ async function shareToInstagram(account: any, text: string, imageUrl: string) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          image_url: imageUrl,
+          image_url: fullImageUrl,
           caption: text,
           access_token: pageAccessToken,
         }),
@@ -492,7 +556,14 @@ async function shareToInstagram(account: any, text: string, imageUrl: string) {
 
     if (!containerResponse.ok) {
       const error = await containerResponse.json();
-      throw new Error(`Instagram container error: ${error.error?.message || containerResponse.statusText}`);
+      const errorMsg = error.error?.message || containerResponse.statusText;
+      
+      // Provide helpful guidance for common errors
+      if (errorMsg.includes("aspect ratio")) {
+        throw new Error(`Instagram requires images with aspect ratios between 4:5 and 1.91:1. Current image doesn't meet this requirement. Try using a square (1:1) or landscape image.`);
+      }
+      
+      throw new Error(`Instagram container error: ${errorMsg}`);
     }
 
     const containerData = await containerResponse.json();

@@ -40,4 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# uploads
+/public/uploads/instagram/*.jpg
+/public/uploads/instagram/*.jpeg
+/public/uploads/instagram/*.png
+
 secret.txt

@@ -5,8 +5,15 @@ import { motion } from "framer-motion";
 import { Calendar, Download, FileText, Newspaper } from "lucide-react";
 
 export default function NewspaperPage() {
+  const [filterBy, setFilterBy] = useState<"created" | "auction">("created");
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
+  );
+  const [startDate, setStartDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [endDate, setEndDate] = useState(
+    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
   );
   const [selectedState, setSelectedState] = useState("all");
   const [loading, setLoading] = useState(false);
@@ -38,7 +45,15 @@ export default function NewspaperPage() {
 
     try {
       const stateParam = selectedState === "all" ? "" : `&state=${encodeURIComponent(selectedState)}`;
-      const response = await fetch(`/api/newspaper?date=${selectedDate}${stateParam}`);
+      let url = `/api/newspaper?filterBy=${filterBy}${stateParam}`;
+      
+      if (filterBy === "created") {
+        url += `&date=${selectedDate}`;
+      } else {
+        url += `&startDate=${startDate}&endDate=${endDate}`;
+      }
+      
+      const response = await fetch(url);
 
       if (!response.ok) {
         const data = await response.json();
@@ -72,7 +87,15 @@ export default function NewspaperPage() {
 
     try {
       const stateParam = selectedState === "all" ? "" : `&state=${encodeURIComponent(selectedState)}`;
-      const response = await fetch(`/api/newspaper?date=${selectedDate}${stateParam}`);
+      let url = `/api/newspaper?filterBy=${filterBy}${stateParam}`;
+      
+      if (filterBy === "created") {
+        url += `&date=${selectedDate}`;
+      } else {
+        url += `&startDate=${startDate}&endDate=${endDate}`;
+      }
+      
+      const response = await fetch(url);
 
       if (!response.ok) {
         const data = await response.json();
@@ -117,27 +140,100 @@ export default function NewspaperPage() {
 
           {/* Main Card */}
           <div className="bg-white rounded-2xl shadow-lg p-8">
-            {/* Date Selector */}
+            {/* Filter Type Toggle */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Date
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Filter Properties By
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Calendar className="text-gray-400" size={20} />
-                </div>
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  max={new Date().toISOString().split("T")[0]}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setFilterBy("created")}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition ${
+                    filterBy === "created"
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  📅 Created Date
+                </button>
+                <button
+                  onClick={() => setFilterBy("auction")}
+                  className={`flex-1 py-3 px-4 rounded-lg font-medium transition ${
+                    filterBy === "auction"
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  🔨 Auction Date
+                </button>
               </div>
-              <p className="mt-2 text-sm text-gray-500">
-                Select a date to generate newspaper for that day&apos;s property listings
-              </p>
             </div>
+
+            {/* Date Selector - Created Date */}
+            {filterBy === "created" && (
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Select Date
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Calendar className="text-gray-400" size={20} />
+                  </div>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    max={new Date().toISOString().split("T")[0]}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                </div>
+                <p className="mt-2 text-sm text-gray-500">
+                  Select a date to generate newspaper for properties created on that day
+                </p>
+              </div>
+            )}
+
+            {/* Date Range Selector - Auction Date */}
+            {filterBy === "auction" && (
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Auction Date Range
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Start Date</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Calendar className="text-gray-400" size={18} />
+                      </div>
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">End Date</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Calendar className="text-gray-400" size={18} />
+                      </div>
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <p className="mt-2 text-sm text-gray-500">
+                  Generate newspaper for properties with auction dates between these dates
+                </p>
+              </div>
+            )}
 
             {/* State Filter */}
             <div className="mb-8">

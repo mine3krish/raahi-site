@@ -5,6 +5,72 @@ import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import fs from "fs";
 import path from "path";
 
+// Helper function to parse Indian date formats
+function parseIndianDate(dateStr: string): Date | null {
+  if (!dateStr) return null;
+  
+  try {
+    // Remove extra spaces and clean the string
+    const cleaned = dateStr.trim().replace(/\s+/g, ' ');
+    
+    // Common Indian date formats
+    const formats = [
+      // DD-MM-YYYY or DD/MM/YYYY
+      /^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/,
+      // DD.MM.YYYY
+      /^(\d{1,2})\.(\d{1,2})\.(\d{4})/,
+      // DD Month YYYY (e.g., 15 December 2025)
+      /^(\d{1,2})\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})/i,
+      // Month DD, YYYY (e.g., December 15, 2025)
+      /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(\d{4})/i,
+    ];
+    
+    for (const format of formats) {
+      const match = cleaned.match(format);
+      if (match) {
+        if (format.source.includes('January')) {
+          // Month name format
+          const months: { [key: string]: number } = {
+            'january': 0, 'february': 1, 'march': 2, 'april': 3,
+            'may': 4, 'june': 5, 'july': 6, 'august': 7,
+            'september': 8, 'october': 9, 'november': 10, 'december': 11
+          };
+          
+          if (match[1].toLowerCase() in months) {
+            // Month DD, YYYY format
+            const month = months[match[1].toLowerCase()];
+            const day = parseInt(match[2]);
+            const year = parseInt(match[3]);
+            return new Date(year, month, day);
+          } else {
+            // DD Month YYYY format
+            const day = parseInt(match[1]);
+            const month = months[match[2].toLowerCase()];
+            const year = parseInt(match[3]);
+            return new Date(year, month, day);
+          }
+        } else {
+          // Numeric DD-MM-YYYY format
+          const day = parseInt(match[1]);
+          const month = parseInt(match[2]) - 1; // JS months are 0-indexed
+          const year = parseInt(match[3]);
+          return new Date(year, month, day);
+        }
+      }
+    }
+    
+    // Try standard ISO format as fallback
+    const isoDate = new Date(dateStr);
+    if (!isNaN(isoDate.getTime())) {
+      return isoDate;
+    }
+  } catch (e) {
+    console.error('Error parsing date:', dateStr, e);
+  }
+  
+  return null;
+}
+
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
@@ -12,18 +78,11 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const date = searchParams.get("date") || new Date().toISOString().split("T")[0];
     const state = searchParams.get("state");
+    const filterBy = searchParams.get("filterBy") || "created"; // 'created' or 'auction'
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
 
-    // Get properties created on the specified date (UTC time)
-    const startOfDay = new Date(date + "T00:00:00.000Z");
-    const endOfDay = new Date(date + "T23:59:59.999Z");
-
-    console.log("Searching for properties between:", startOfDay, "and", endOfDay);
-
-    const query: any = {
-      createdAt: {
-        $gte: startOfDay,
-        $lte: endOfDay,
-      },
+    let query: any = {
       status: "Active",
     };
 
@@ -31,30 +90,77 @@ export async function GET(request: NextRequest) {
       query.state = state;
     }
 
-    const properties = await Property.find(query).sort({ createdAt: -1 });
+    let properties: any[] = [];
 
-    console.log(`Found ${properties.length} properties for date ${date}`);
-
-    if (properties.length === 0) {
-      // If no properties found for exact date, try returning all properties as fallback for testing
-      const allProperties = await Property.find({ status: "Active" }).limit(10).sort({ createdAt: -1 });
+    // Filter by created date or auction date
+    if (filterBy === "created") {
+      const startOfDay = new Date(date + "T00:00:00.000Z");
+      const endOfDay = new Date(date + "T23:59:59.999Z");
       
-      return NextResponse.json(
-        { 
-          error: `No properties found for ${date}. Total active properties: ${allProperties.length}`,
-          debug: {
-            searchDate: date,
-            startOfDay: startOfDay.toISOString(),
-            endOfDay: endOfDay.toISOString(),
-            recentProperties: allProperties.map(p => ({
-              id: p.id,
-              name: p.name,
-              createdAt: p.createdAt
-            }))
-          }
-        },
-        { status: 404 }
-      );
+      query.createdAt = {
+        $gte: startOfDay,
+        $lte: endOfDay,
+      };
+      
+      console.log("Searching by created date between:", startOfDay, "and", endOfDay);
+    } else if (filterBy === "auction" && startDate && endDate) {
+      // Fetch all active properties and filter by auction date
+      const allProperties = await Property.find({ 
+        status: "Active",
+        ...(state && state !== "all" ? { state } : {})
+      });
+      
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999); // Include end of day
+      
+      console.log("Filtering by auction date between:", start, "and", end);
+      
+      const filteredProperties = allProperties.filter(property => {
+        const auctionDate = parseIndianDate(property.AuctionDate);
+        if (!auctionDate) return false;
+        return auctionDate >= start && auctionDate <= end;
+      });
+      
+      if (filteredProperties.length === 0) {
+        return NextResponse.json(
+          { 
+            error: `No properties found with auction dates between ${startDate} and ${endDate}`,
+            debug: {
+              filterBy,
+              startDate,
+              endDate,
+              totalProperties: allProperties.length
+            }
+          },
+          { status: 404 }
+        );
+      }
+      
+      // Use filtered properties for PDF generation
+      console.log(`Found ${filteredProperties.length} properties with auction dates between ${startDate} and ${endDate}`);
+      
+      // Continue to PDF generation with filteredProperties
+      properties = filteredProperties;
+    } else {
+      // Get properties by created date
+      properties = await Property.find(query).sort({ createdAt: -1 });
+      
+      console.log(`Found ${properties.length} properties`);
+
+      if (properties.length === 0) {
+        return NextResponse.json(
+          { 
+            error: `No properties found for the selected criteria`,
+            debug: {
+              filterBy,
+              date,
+              state
+            }
+          },
+          { status: 404 }
+        );
+      }
     }
 
     // Create PDF

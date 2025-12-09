@@ -141,6 +141,7 @@ export async function POST(req: NextRequest) {
             property
           );
           const imageUrl = includeImage ? (property.images?.[0] || "") : "";
+          const propertyLink = `https://raahiauctions.cloud/properties/${property.id}`;
 
           let result;
 
@@ -149,7 +150,7 @@ export async function POST(req: NextRequest) {
               result = await shareToWhatsApp(account, postText, imageUrl, property);
               break;
             case "facebook":
-              result = await shareToFacebook(account, postText, imageUrl);
+              result = await shareToFacebook(account, postText, imageUrl, propertyLink);
               break;
             case "linkedin":
               result = await shareToLinkedIn(account, postText, imageUrl);
@@ -290,7 +291,7 @@ async function shareToWhatsApp(account: any, text: string, imageUrl: string, pro
 }
 
 // Facebook sharing
-async function shareToFacebook(account: any, text: string, imageUrl: string) {
+async function shareToFacebook(account: any, text: string, imageUrl: string, propertyLink?: string) {
   const { pageId, pageAccessToken } = account.config;
 
   if (!pageId || !pageAccessToken) {
@@ -298,8 +299,37 @@ async function shareToFacebook(account: any, text: string, imageUrl: string) {
   }
 
   try {
-    // If image is provided, post as photo with caption
-    if (imageUrl) {
+    // If link is provided, post with link preview (best for showing property pages)
+    if (propertyLink) {
+      const response = await fetch(
+        `https://graph.facebook.com/v18.0/${pageId}/feed`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: text,
+            link: propertyLink,
+            access_token: pageAccessToken,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(`Facebook API error: ${error.error?.message || response.statusText}`);
+      }
+
+      const data = await response.json();
+      return { 
+        status: "success", 
+        postId: data.id,
+        message: "Posted with link preview"
+      };
+    }
+    // If image is provided but no link, post as photo with caption
+    else if (imageUrl) {
       const response = await fetch(
         `https://graph.facebook.com/v18.0/${pageId}/photos`,
         {

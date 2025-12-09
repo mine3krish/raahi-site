@@ -62,16 +62,16 @@ export default function NewspaperPage() {
       }
 
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const blobUrl = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url;
+      a.href = blobUrl;
       const filename = selectedState === "all" 
         ? `raahi-auction-daily-${selectedDate}.pdf`
         : `raahi-auction-${selectedState}-${selectedDate}.pdf`;
       a.download = filename;
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
+      window.URL.revokeObjectURL(blobUrl);
       document.body.removeChild(a);
     } catch (err: any) {
       setError(err.message);
@@ -104,8 +104,8 @@ export default function NewspaperPage() {
       }
 
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      window.open(url, "_blank");
+      const blobUrl = window.URL.createObjectURL(blob);
+      window.open(blobUrl, "_blank");
     } catch (err: any) {
       setError(err.message);
     } finally {

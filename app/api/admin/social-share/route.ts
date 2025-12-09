@@ -6,9 +6,9 @@ import { connectDB } from "@/app/api/connect";
 import { formatIndianPrice } from "@/lib/constants";
 import sharp from "sharp";
 import path from "path";
-import fs from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
 
-// Helper to resize image for Instagram and save to public folder
+// Helper to resize image for Instagram and save to CDN
 async function resizeImageForInstagram(imageUrl: string, propertyId: string): Promise<string> {
   try {
     // Download the image
@@ -47,16 +47,16 @@ async function resizeImageForInstagram(imageUrl: string, propertyId: string): Pr
       .jpeg({ quality: 90 })
       .toBuffer();
     
-    // Save to public/uploads/instagram folder
-    const instagramDir = path.join(process.cwd(), 'public', 'uploads', 'instagram');
-    await fs.mkdir(instagramDir, { recursive: true });
+    // Save to CDN directory (same as property uploads)
+    const CDN_DIR = "/var/www/cdn";
+    await mkdir(CDN_DIR, { recursive: true });
     
-    const filename = `${propertyId}-${Date.now()}.jpg`;
-    const filepath = path.join(instagramDir, filename);
-    await fs.writeFile(filepath, resizedBuffer);
+    const filename = `instagram-${propertyId}-${Date.now()}.jpg`;
+    const filepath = path.join(CDN_DIR, filename);
+    await writeFile(filepath, resizedBuffer);
     
-    // Return public URL
-    return `/uploads/instagram/${filename}`;
+    // Return CDN URL
+    return `https://raahiauctions.cloud/cdn/${filename}`;
   } catch (error) {
     throw new Error(`Image resize failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
@@ -531,12 +531,8 @@ async function shareToInstagram(account: any, text: string, imageUrl: string, pr
   }
 
   try {
-    // Resize image for Instagram compatibility
-    const resizedImagePath = await resizeImageForInstagram(imageUrl, propertyId);
-    
-    // Get full URL for the resized image
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://raahiauctions.cloud';
-    const fullImageUrl = `${baseUrl}${resizedImagePath}`;
+    // Resize image for Instagram compatibility and upload to CDN
+    const fullImageUrl = await resizeImageForInstagram(imageUrl, propertyId);
     
     // Step 1: Create media container
     const containerResponse = await fetch(

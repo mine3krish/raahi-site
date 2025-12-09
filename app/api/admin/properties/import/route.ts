@@ -49,7 +49,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const DEFAULT_PLACEHOLDER_IMAGE = "https://raahiauctions.cloud/cdn/placeholder.jpg";
+const DEFAULT_PLACEHOLDER_IMAGE = "https://raahiauctions.cloud/cdn/1765120597356-rxpr0b.jpg";
 const VALID_IMAGE_FORMATS = ["jpg", "jpeg", "png", "webp"];
 const CDN_DIR = "/var/www/cdn";
 

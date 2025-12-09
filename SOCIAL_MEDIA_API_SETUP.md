@@ -38,19 +38,13 @@ Complete guide to obtaining and configuring API credentials for Facebook, Linked
 1. Go to https://developers.facebook.com/tools/explorer
 2. Select your app from dropdown
 3. Click **"Generate Access Token"**
-4. Grant **ONLY** these permissions:
+4. Grant permissions:
    - `pages_manage_posts` (Required - allows posting to page)
    - `pages_read_engagement` (Optional - view page insights)
 5. Click **"Generate Access Token"**
 6. Copy the token (starts with `EAA...`)
 
-**⚠️ CRITICAL - Avoid Deprecated Permissions:**
-Do NOT select these (they will cause "#200 permission not available" errors):
-- ❌ `publish_actions` (DEPRECATED - causes errors)
-- ❌ `manage_pages` (DEPRECATED)
-- ❌ `pages_show_list` (DEPRECATED)
-
-**If you get permission errors:** Delete your old token and generate a completely new one with ONLY the current permissions above.
+**Note:** The permissions `manage_pages` and `pages_show_list` are deprecated and no longer needed.
 
 **Option B: Using Access Token Tool**
 

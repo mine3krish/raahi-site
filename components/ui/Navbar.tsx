@@ -191,6 +191,13 @@ export default function Navbar() {
                 Properties
               </Link>
               <Link
+                href="/about"
+                onClick={closeMenu}
+                className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-white rounded-xl transition-all"
+              >
+                About Us
+              </Link>
+              <Link
                 href="/communities"
                 onClick={closeMenu}
                 className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-white rounded-xl transition-all"

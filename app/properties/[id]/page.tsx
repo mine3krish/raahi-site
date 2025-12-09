@@ -23,11 +23,28 @@ export default function PropertyDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [relatedProperties, setRelatedProperties] = useState<any[]>([]);
   const [communities, setCommunities] = useState<any[]>([]);
+  const [defaultPhone, setDefaultPhone] = useState("+91 848 884 8874");
 
   const { isInWishlist, toggleWishlist, loading: wishlistLoading } = useWishlist();
   const inWishlist = property ? isInWishlist(property.id) : false;
 
   useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch("/api/settings");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.whatsappNumber) {
+            setDefaultPhone(data.whatsappNumber);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch settings:", err);
+      }
+    };
+
+    fetchSettings();
+
     const fetchProperty = async () => {
       try {
         const response = await fetch(`/api/properties/${propertyId}`);
@@ -408,10 +425,10 @@ export default function PropertyDetailPage() {
                   <div className="flex flex-col gap-2">
                     <p className="text-sm text-blue-900">Not Available - Call for details</p>
                     <a 
-                      href={`tel:${(property.agentMobile || "+91 848 884 8874").replace(/\s/g, "")}`} 
+                      href={`tel:${(property.agentMobile || defaultPhone).replace(/\s/g, "")}`} 
                       className="inline-flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition text-sm"
                     >
-                      📞 {property.agentMobile || "+91 848 884 8874"}
+                      📞 {property.agentMobile || defaultPhone}
                     </a>
                   </div>
                 )}
@@ -419,10 +436,10 @@ export default function PropertyDetailPage() {
 
               {/* CTA Buttons */}
               <div className="space-y-3 mb-6">
-                <a href={`tel:${(property.agentMobile || "+91 848 884 8874").replace(/\s/g, "")}`} className="block w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition text-center">
-                  {property.agentMobile || "+91 848 884 8874"}
+                <a href={`tel:${(property.agentMobile || defaultPhone).replace(/\s/g, "")}`} className="block w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition text-center">
+                  {property.agentMobile || defaultPhone}
                 </a>
-                <a href={`https://api.whatsapp.com/send/?phone=${(property.agentMobile || "+91 848 884 8874").replace(/\s/g, "").replace("+", "")}`} target="_blank" rel="noopener noreferrer" className="block w-full border-2 border-green-600 text-green-600 py-3 rounded-lg font-semibold hover:bg-green-50 transition text-center">
+                <a href={`https://api.whatsapp.com/send/?phone=${(property.agentMobile || defaultPhone).replace(/\s/g, "").replace("+", "")}`} target="_blank" rel="noopener noreferrer" className="block w-full border-2 border-green-600 text-green-600 py-3 rounded-lg font-semibold hover:bg-green-50 transition text-center">
                   WhatsApp Us
                 </a>
               </div>

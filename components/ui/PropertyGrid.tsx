@@ -39,16 +39,31 @@ export default function PropertyGrid({ properties, total }: PropertyGridProps) {
               place-items-stretch
             "
           >
-            {properties.map((property) => (
-              <div key={property.id} className="p-0">
-                <PropertyCard
-                  id={property.id}
-                  title={property.title}
-                  location={property.location}
-                  price={property.price}
-                  image={property.image}
-                />
-              </div>
+            {properties.map((property, index) => (
+              <>
+                <div key={property.id} className="p-0">
+                  <PropertyCard
+                    id={property.id}
+                    title={property.title}
+                    location={property.location}
+                    price={property.price}
+                    image={property.image}
+                  />
+                </div>
+                {/* Insert ad after every 10 properties */}
+                {(index + 1) % 10 === 0 && index !== properties.length - 1 && (
+                  <div key={`ad-${index}`} className="col-span-1 sm:col-span-2 lg:col-span-4 xl:col-span-5 p-4">
+                    <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-center min-h-[250px]">
+                      <ins className="adsbygoogle"
+                           style={{ display: 'block' }}
+                           data-ad-format="fluid"
+                           data-ad-layout-key="-6t+ed+2i-1n-4w"
+                           data-ad-client="ca-pub-7792213399438771"
+                           data-ad-slot="1429909386"></ins>
+                    </div>
+                  </div>
+                )}
+              </>
             ))}
           </div>
         ) : (

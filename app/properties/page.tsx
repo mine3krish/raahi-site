@@ -35,6 +35,17 @@ function PropertiesContent() {
     fetchSettings();
   }, []);
 
+  // Initialize AdSense ads
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
+        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+      }
+    } catch (err) {
+      console.error('AdSense error:', err);
+    }
+  }, [properties]);
+
   useEffect(() => {
     const fetchProperties = async () => {
       setLoading(true);

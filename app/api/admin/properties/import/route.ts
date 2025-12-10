@@ -9,6 +9,7 @@ import OpenAI from "openai";
 import { connectDB } from "@/app/api/connect";
 import Property from "@/models/Property";
 import SiteSettings from "@/models/SiteSettings";
+import ImportedData from "@/models/ImportedData";
 import https from "https";
 import http from "http";
 import { verifyAdmin } from "@/lib/auth";
@@ -140,7 +141,7 @@ async function downloadImage(url: string, timeoutMs: number = 10000): Promise<Bu
 }
 
 // Process and save image
-async function processImage(buffer: Buffer, filename: string): Promise<string> {
+async function processImage(buffer: Buffer): Promise<string> {
   try {
     await ensureUploadDir();
     
@@ -231,7 +232,8 @@ function generateListingId(): string {
 async function parseExcelFile(
   excelBuffer: Buffer,
   imageMap: Map<string, Buffer>,
-  placeholderImage: string
+  placeholderImage: string,
+  importBatchId: string
 ): Promise<ImportResult> {
   const workbook = XLSX.read(excelBuffer, { type: "buffer" });
   const sheetName = workbook.SheetNames[0];
@@ -243,11 +245,56 @@ async function parseExcelFile(
   
   console.log(`Found ${rawData.length} rows in Excel file`);
   
+  // Connect to DB to save raw imported data
+  await connectDB();
+  
   for (let i = 0; i < rawData.length; i++) {
     const row = rawData[i] as Record<string, unknown>;
     const rowNum = i + 2; // Excel rows start at 1, plus header row
 
     console.log(`Processing row ${rowNum}:`, JSON.stringify(row));
+    
+    // Save raw Excel data to ImportedData collection
+    try {
+      await ImportedData.create({
+        newListingId: row.newListingId ? String(row.newListingId) : undefined,
+        schemeName: row.schemeName ? String(row.schemeName) : undefined,
+        name: row.name ? String(row.name) : undefined,
+        category: row.category ? String(row.category) : undefined,
+        state: row.state ? String(row.state) : undefined,
+        city: row.city ? String(row.city) : undefined,
+        areaTown: row.areaTown ? String(row.areaTown) : undefined,
+        date: row.date ? String(row.date) : undefined,
+        reservePrice: row.reservePrice ? Number(row.reservePrice) : undefined,
+        emd: row.emd || row.EMD ? Number(row.emd || row.EMD) : undefined,
+        incrementBid: row.incrementBid ? String(row.incrementBid) : undefined,
+        bankName: row.bankName ? String(row.bankName) : undefined,
+        branchName: row.branchName ? String(row.branchName) : undefined,
+        contactDetails: row.contactDetails ? String(row.contactDetails) : undefined,
+        description: row.description ? String(row.description) : undefined,
+        address: row.address ? String(row.address) : undefined,
+        note: row.note ? String(row.note) : undefined,
+        borrowerName: row.borrowerName ? String(row.borrowerName) : undefined,
+        publishingDate: row.publishingDate ? String(row.publishingDate) : undefined,
+        inspectionDate: row.inspectionDate ? String(row.inspectionDate) : undefined,
+        applicationSubmissionDate: row.applicationSubmissionDate ? String(row.applicationSubmissionDate) : undefined,
+        auctionStartDate: row.auctionStartDate ? String(row.auctionStartDate) : undefined,
+        auctionEndTime: row.auctionEndTime ? String(row.auctionEndTime) : undefined,
+        auctionType: row.auctionType ? String(row.auctionType) : undefined,
+        listingId: row.listingId ? String(row.listingId) : undefined,
+        images: row.images ? String(row.images) : undefined,
+        notice: row.notice ? String(row.notice) : undefined,
+        source: row.source ? String(row.source) : undefined,
+        url: row.url ? String(row.url) : undefined,
+        fingerprint: row.fingerprint ? String(row.fingerprint) : undefined,
+        importBatchId,
+        processed: false,
+      });
+      console.log(`✓ Saved raw data for row ${rowNum}`);
+    } catch (rawDataError) {
+      console.error(`Failed to save raw data for row ${rowNum}:`, rawDataError);
+      // Continue processing even if raw data save fails
+    }
     
     try {
       // Extract listing ID
@@ -345,10 +392,7 @@ async function parseExcelFile(
                 const imageBuffer = await downloadImage(imageFile);
                 
                 if (imageBuffer) {
-                  // Extract filename from URL or generate one
-                  const urlPath = new URL(imageFile).pathname;
-                  const filename = path.basename(urlPath) || 'downloaded-image.jpg';
-                  const processedPath = await processImage(imageBuffer, filename);
+                  const processedPath = await processImage(imageBuffer);
                   
                   if (processedPath !== placeholderImage) {
                     images.push(processedPath);
@@ -366,7 +410,7 @@ async function parseExcelFile(
               const imageBuffer = imageMap.get(normalizedName);
               
               if (imageBuffer && isValidImageFormat(imageFile)) {
-                const processedPath = await processImage(imageBuffer, imageFile);
+                const processedPath = await processImage(imageBuffer);
                 if (processedPath !== placeholderImage) {
                   images.push(processedPath);
                 }
@@ -420,9 +464,16 @@ async function parseExcelFile(
   return { properties, errors };
 }
 
-// Configure route for longer execution time (for large imports)
-export const maxDuration = 300; // 5 minutes
-export const dynamic = 'force-dynamic';
+// Configure route to accept larger payloads
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '50mb',
+    },
+  },
+};
+
+export const maxDuration = 300; // 5 minutes timeout for long uploads
 
 export async function POST(request: NextRequest) {
   try {
@@ -459,8 +510,12 @@ export async function POST(request: NextRequest) {
     // Get placeholder image from settings
     const placeholderImage = await getPlaceholderImage();
     
+    // Generate unique batch ID for this import
+    const importBatchId = `batch_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    console.log(`Starting import batch: ${importBatchId}`);
+    
     // Parse Excel and create property objects
-    const { properties, errors } = await parseExcelFile(excelBuffer, imageMap, placeholderImage);
+    const { properties, errors } = await parseExcelFile(excelBuffer, imageMap, placeholderImage, importBatchId);
     
     if (properties.length === 0) {
       return NextResponse.json(
@@ -487,15 +542,33 @@ export async function POST(request: NextRequest) {
         if (existing) {
           results.duplicates++;
           results.errors.push(`Property ${property.id} already exists`);
+          
+          // Update ImportedData to mark as duplicate
+          await ImportedData.findOneAndUpdate(
+            { importBatchId, newListingId: property.id },
+            { processed: true, propertyId: existing.id, processingError: "Duplicate property" }
+          );
           continue;
         }
         
-        await Property.create(property);
+        const createdProperty = await Property.create(property);
         results.success++;
+        
+        // Update ImportedData to mark as processed successfully
+        await ImportedData.findOneAndUpdate(
+          { importBatchId, newListingId: property.id },
+          { processed: true, propertyId: createdProperty.id }
+        );
       } catch (error) {
         results.failed++;
         const message = error instanceof Error ? error.message : "Unknown error";
         results.errors.push(`Failed to create ${property.id}: ${message}`);
+        
+        // Update ImportedData to mark processing error
+        await ImportedData.findOneAndUpdate(
+          { importBatchId, newListingId: property.id },
+          { processed: true, processingError: message }
+        );
       }
     }
     

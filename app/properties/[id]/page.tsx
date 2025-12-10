@@ -36,13 +36,21 @@ export default function PropertyDetailPage() {
 
   // Initialize AdSense ads
   useEffect(() => {
-    try {
-      if (typeof window !== 'undefined' && property) {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
+    const timer = setTimeout(() => {
+      try {
+        if (typeof window !== 'undefined' && property) {
+          const ads = document.querySelectorAll('.adsbygoogle');
+          ads.forEach((ad) => {
+            if (!ad.getAttribute('data-adsbygoogle-status')) {
+              (window.adsbygoogle = window.adsbygoogle || []).push({});
+            }
+          });
+        }
+      } catch (err) {
+        console.error('AdSense error:', err);
       }
-    } catch (err) {
-      console.error('AdSense error:', err);
-    }
+    }, 100);
+    return () => clearTimeout(timer);
   }, [property]);
 
   useEffect(() => {
@@ -335,18 +343,13 @@ export default function PropertyDetailPage() {
               transition={{ delay: 0.3 }}
               className="mt-6"
             >
-              <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-center min-h-[250px]">
-                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7792213399438771"
-                     crossOrigin="anonymous"></script>
+              <div className="w-full min-h-[250px]">
                 <ins className="adsbygoogle"
-                     style={{ display: 'block', textAlign: 'center' }}
+                     style={{ display: 'block', textAlign: 'center', width: '100%', minHeight: '250px' }}
                      data-ad-layout="in-article"
                      data-ad-format="fluid"
                      data-ad-client="ca-pub-7792213399438771"
                      data-ad-slot="3747974443"></ins>
-                <script dangerouslySetInnerHTML={{
-                  __html: `(adsbygoogle = window.adsbygoogle || []).push({});`
-                }} />
               </div>
             </motion.div>
 

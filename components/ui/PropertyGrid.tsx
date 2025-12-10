@@ -70,18 +70,13 @@ export default function PropertyGrid({ properties, total }: PropertyGridProps) {
                 {/* Insert ad after every 10 properties */}
                 {(index + 1) % 10 === 0 && index !== properties.length - 1 && (
                   <div key={`ad-${index}`} className="col-span-1 sm:col-span-2 lg:col-span-4 xl:col-span-5 p-4">
-                    <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-center min-h-[250px]">
-                      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7792213399438771"
-                           crossOrigin="anonymous"></script>
+                    <div className="bg-gray-50 rounded-lg p-4">
                       <ins className="adsbygoogle"
-                           style={{ display: 'block' }}
+                           style={{ display: 'block', width: '100%', minHeight: '250px' }}
                            data-ad-format="fluid"
                            data-ad-layout-key="-6t+ed+2i-1n-4w"
                            data-ad-client="ca-pub-7792213399438771"
                            data-ad-slot="1429909386"></ins>
-                      <script dangerouslySetInnerHTML={{
-                        __html: `(adsbygoogle = window.adsbygoogle || []).push({});`
-                      }} />
                     </div>
                   </div>
                 )}

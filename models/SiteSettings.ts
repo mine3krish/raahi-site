@@ -60,6 +60,7 @@ const SiteSettingsSchema = new Schema(
     instagramUrl: { type: String, default: "" },
     linkedinUrl: { type: String, default: "" },
     youtubeUrl: { type: String, default: "" },
+    snapchatUrl: { type: String, default: "" },
     
     // AdSense
     adsenseClientId: { type: String, default: "" },

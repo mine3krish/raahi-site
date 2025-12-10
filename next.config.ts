@@ -6,7 +6,16 @@ const nextConfig: NextConfig = {
   },
   images: {
     unoptimized: true,
-    domains: ["raahiauctions.cloud","raahiauction.com"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'raahiauctions.cloud',
+      },
+      {
+        protocol: 'https',
+        hostname: 'raahiauction.com',
+      },
+    ],
   },
   experimental: {
     serverActions: {

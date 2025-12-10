@@ -142,19 +142,6 @@ export async function PATCH(
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
-      body,
-      { new: true }
-    );
-
-    if (!community) {
-      return NextResponse.json({ error: "Community not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ community });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 403 });
-  }
-}
 
 export async function DELETE(
   req: Request,

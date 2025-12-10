@@ -420,16 +420,9 @@ async function parseExcelFile(
   return { properties, errors };
 }
 
-// Configure route to accept larger payloads
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '50mb',
-    },
-  },
-};
-
-export const maxDuration = 300; // 5 minutes timeout for long uploads
+// Configure route for longer execution time (for large imports)
+export const maxDuration = 300; // 5 minutes
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {

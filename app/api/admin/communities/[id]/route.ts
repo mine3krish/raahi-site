@@ -15,7 +15,12 @@ export async function GET(
 
     const params = await context.params;
     const communityId = params.id;
-    const community = await Community.findOne({ id: communityId });
+    
+    // Try to find by custom id field first, then by MongoDB _id
+    let community = await Community.findOne({ id: communityId });
+    if (!community) {
+      community = await Community.findById(communityId);
+    }
 
     if (!community) {
       return NextResponse.json({ error: "Community not found" }, { status: 404 });
@@ -72,11 +77,21 @@ export async function PUT(
       updateData.image = existingImage;
     }
 
-    const community = await Community.findOneAndUpdate(
-      { id: communityId },
-      updateData,
-      { new: true }
-    );
+    // Try to find and update by custom id field first, then by MongoDB _id
+    let community = await Community.findOne({ id: communityId });
+    if (community) {
+      community = await Community.findOneAndUpdate(
+        { id: communityId },
+        updateData,
+        { new: true }
+      );
+    } else {
+      community = await Community.findByIdAndUpdate(
+        communityId,
+        updateData,
+        { new: true }
+      );
+    }
 
     if (!community) {
       return NextResponse.json({ error: "Community not found" }, { status: 404 });
@@ -101,8 +116,32 @@ export async function PATCH(
     const communityId = params.id;
     const body = await req.json();
 
-    const community = await Community.findOneAndUpdate(
-      { id: communityId },
+    // Try to find by custom id field first, then by MongoDB _id
+    let community = await Community.findOne({ id: communityId });
+    if (community) {
+      community = await Community.findOneAndUpdate(
+        { id: communityId },
+        body,
+        { new: true }
+      );
+    } else {
+      community = await Community.findByIdAndUpdate(
+        communityId,
+        body,
+        { new: true }
+      );
+    }
+
+    if (!community) {
+      return NextResponse.json({ error: "Community not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ community });
+  } catch (err: any) {
+    console.error("Community update error:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
       body,
       { new: true }
     );
@@ -127,7 +166,14 @@ export async function DELETE(
 
     const params = await context.params;
     const communityId = params.id;
-    const community = await Community.findOneAndDelete({ id: communityId });
+    
+    // Try to find by custom id field first, then by MongoDB _id
+    let community = await Community.findOne({ id: communityId });
+    if (!community) {
+      community = await Community.findByIdAndDelete(communityId);
+    } else {
+      community = await Community.findOneAndDelete({ id: communityId });
+    }
 
     if (!community) {
       return NextResponse.json({ error: "Community not found" }, { status: 404 });

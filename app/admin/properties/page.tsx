@@ -757,12 +757,38 @@ export default function Properties() {
                   </td>
                   <td className="px-4 py-3 text-sm font-medium text-gray-900">₹{property.reservePrice?.toLocaleString('en-IN')}</td>
                   <td className="px-4 py-3">
-                    <button
-                      className="text-green-600 hover:text-green-800 font-medium text-sm hover:underline"
-                      onClick={() => router.push(`/admin/properties/${property.id}/edit`)}
-                    >
-                      Edit
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        className="text-green-600 hover:text-green-800 font-medium text-sm hover:underline"
+                        onClick={() => router.push(`/admin/properties/${property.id}/edit`)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="text-red-600 hover:text-red-800 font-medium text-sm hover:underline"
+                        onClick={async () => {
+                          if (!confirm(`Are you sure you want to delete "${property.name}"?`)) return;
+                          try {
+                            const token = localStorage.getItem("token");
+                            const response = await fetch(`/api/admin/properties/${property.id}`, {
+                              method: "DELETE",
+                              headers: { Authorization: `Bearer ${token}` },
+                            });
+                            if (response.ok) {
+                              setProperties(prev => prev.filter(p => p.id !== property.id));
+                              setTotal(prev => prev - 1);
+                            } else {
+                              const error = await response.json();
+                              alert(`Failed to delete: ${error.error || 'Unknown error'}`);
+                            }
+                          } catch (err) {
+                            alert("Failed to delete property. Please try again.");
+                          }
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

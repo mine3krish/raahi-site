@@ -64,9 +64,13 @@ export default function CommunitiesPage() {
 
       if (response.ok) {
         fetchCommunities();
+      } else {
+        const error = await response.json();
+        alert(`Failed to update status: ${error.error || 'Unknown error'}`);
       }
     } catch (err) {
       console.error("Failed to update community:", err);
+      alert("Failed to update community status. Please try again.");
     }
   };
 
@@ -84,9 +88,13 @@ export default function CommunitiesPage() {
 
       if (response.ok) {
         fetchCommunities();
+      } else {
+        const error = await response.json();
+        alert(`Failed to delete community: ${error.error || 'Unknown error'}`);
       }
     } catch (err) {
       console.error("Failed to delete community:", err);
+      alert("Failed to delete community. Please try again.");
     }
   };
 
@@ -215,19 +223,19 @@ export default function CommunitiesPage() {
               {/* Actions */}
               <div className="flex gap-2">
                 <button
-                  onClick={() => router.push(`/admin/communities/${community.id}/edit`)}
+                  onClick={() => router.push(`/admin/communities/${community._id}/edit`)}
                   className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => toggleActiveStatus(community.id, community.active)}
+                  onClick={() => toggleActiveStatus(community._id, community.active)}
                   className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition"
                 >
                   {community.active ? "Deactivate" : "Activate"}
                 </button>
                 <button
-                  onClick={() => deleteCommunity(community.id)}
+                  onClick={() => deleteCommunity(community._id)}
                   className="px-4 bg-red-100 text-red-700 py-2 rounded-lg text-sm font-medium hover:bg-red-200 transition"
                 >
                   Delete

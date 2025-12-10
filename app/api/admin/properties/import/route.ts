@@ -308,7 +308,7 @@ async function parseExcelFile(
         fullLocation = `${String(row.areaTown)}, ${String(row.city)}`;
       }
       if (row.branchName) {
-        fullLocation = `${fullLocation}, Near ${String(row.branchName)}`;
+        fullLocation = `${fullLocation}`;
       }
       
       const description = row.address || row.description || `${String(type)} property in ${fullLocation}`;

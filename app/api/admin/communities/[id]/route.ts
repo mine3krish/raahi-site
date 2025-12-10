@@ -7,14 +7,15 @@ import path from "path";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     await verifyAdmin(req);
 
-    const { id } = params;
-    const community = await Community.findOne({ id });
+    const params = await context.params;
+    const communityId = params.id;
+    const community = await Community.findOne({ id: communityId });
 
     if (!community) {
       return NextResponse.json({ error: "Community not found" }, { status: 404 });
@@ -22,19 +23,21 @@ export async function GET(
 
     return NextResponse.json({ community });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 403 });
+    console.error("Community fetch error:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     await verifyAdmin(req);
 
-    const { id } = params;
+    const params = await context.params;
+    const communityId = params.id;
     const formData = await req.formData();
 
     // Extract text fields
@@ -70,7 +73,7 @@ export async function PUT(
     }
 
     const community = await Community.findOneAndUpdate(
-      { id },
+      { id: communityId },
       updateData,
       { new: true }
     );
@@ -88,17 +91,18 @@ export async function PUT(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     await verifyAdmin(req);
 
-    const { id } = params;
+    const params = await context.params;
+    const communityId = params.id;
     const body = await req.json();
 
     const community = await Community.findOneAndUpdate(
-      { id },
+      { id: communityId },
       body,
       { new: true }
     );
@@ -115,14 +119,15 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     await verifyAdmin(req);
 
-    const { id } = params;
-    const community = await Community.findOneAndDelete({ id });
+    const params = await context.params;
+    const communityId = params.id;
+    const community = await Community.findOneAndDelete({ id: communityId });
 
     if (!community) {
       return NextResponse.json({ error: "Community not found" }, { status: 404 });
@@ -130,6 +135,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: "Community deleted successfully" });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 403 });
+    console.error("Community deletion error:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

@@ -6,7 +6,7 @@ import { verifyAdmin } from "@/lib/auth";
 // GET - Get single agent application
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const adminUser = await verifyAdmin(req);
@@ -16,6 +16,7 @@ export async function GET(
 
     await connectDB();
 
+    const params = await context.params;
     const agent = await Agent.findById(params.id);
 
     if (!agent) {
@@ -38,7 +39,7 @@ export async function GET(
 // PATCH - Update agent application status
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const adminUser = await verifyAdmin(req);
@@ -58,6 +59,7 @@ export async function PATCH(
       );
     }
 
+    const params = await context.params;
     const agent = await Agent.findByIdAndUpdate(
       params.id,
       { status },
@@ -87,7 +89,7 @@ export async function PATCH(
 // DELETE - Delete an agent application
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const adminUser = await verifyAdmin(req);
@@ -97,6 +99,7 @@ export async function DELETE(
 
     await connectDB();
 
+    const params = await context.params;
     const agent = await Agent.findByIdAndDelete(params.id);
 
     if (!agent) {

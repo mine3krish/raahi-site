@@ -263,7 +263,11 @@ export default function PropertyDetailPage() {
               
               <div className="flex items-start text-gray-600 mb-6">
                 <MapPin size={20} className="mr-2 mt-1 flex-shrink-0" />
-                <span>{property.location == "None" ? "" : property.location + ","} {property.state}</span>
+                <span>
+                  {[property.location, property.state]
+                    .filter(part => part && part !== "None")
+                    .join(', ') || 'Location not specified'}
+                </span>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

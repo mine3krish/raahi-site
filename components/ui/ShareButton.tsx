@@ -44,7 +44,7 @@ export default function ShareButton({
   const [showShareModal, setShowShareModal] = useState(false);
   
   const generateCaption = () => {
-    const locationParts = location.split(',');
+    const locationParts = location?.includes(',') ? location.split(',') : [location];
     const city = locationParts[0]?.trim() || location;
     const stateValue = state || locationParts[1]?.trim() || "";
     
@@ -67,7 +67,7 @@ export default function ShareButton({
 
 🔗 View Full Details: ${shareUrl}
 
-#RealEstate #PropertyAuction #${city.replace(/\s+/g, '')} #InvestmentOpportunity #BankAuction #RaahiAuction
+#RealEstate #PropertyAuction ${city ? `#${city.replace(/\s+/g, '')}` : ''} #InvestmentOpportunity #BankAuction #RaahiAuction
 
 📧 Contact Us: 
 🌐 For more details, visit: www.raahiauction.com`;

@@ -571,16 +571,19 @@ export default function PropertyDetailPage() {
                   </Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {relatedProperties.map((relatedProp) => (
-                    <PropertyCard
-                      key={relatedProp.id}
-                      id={relatedProp.id}
-                      title={relatedProp.name}
-                      location={`${relatedProp.location}, ${relatedProp.state}`}
-                      price={formatIndianPrice(relatedProp.reservePrice)}
-                      image={relatedProp.images[0] || "/image.png"}
-                    />
-                  ))}
+                  {relatedProperties.map((relatedProp) => {
+                    const locationParts = [relatedProp.location, relatedProp.state].filter(Boolean);
+                    return (
+                      <PropertyCard
+                        key={relatedProp.id}
+                        id={relatedProp.id}
+                        title={relatedProp.name}
+                        location={locationParts.length > 0 ? locationParts.join(', ') : 'Location not specified'}
+                        price={formatIndianPrice(relatedProp.reservePrice)}
+                        image={relatedProp.images[0] || "/image.png"}
+                      />
+                    );
+                  })}
                 </div>
               </motion.div>
             )}

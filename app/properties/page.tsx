@@ -82,13 +82,16 @@ function PropertiesContent() {
   }, [searchParams]);
 
   // Transform properties to match PropertyCard interface
-  const transformedProperties = properties.map(p => ({
-    id: p.id,
-    title: p.name,
-    location: `${p.location}, ${p.state}`,
-    price: formatIndianPrice(p.reservePrice),
-    image: p.images[0] || placeholderImage,
-  }));
+  const transformedProperties = properties.map(p => {
+    const locationParts = [p.location, p.state].filter(Boolean);
+    return {
+      id: p.id,
+      title: p.name,
+      location: locationParts.length > 0 ? locationParts.join(', ') : 'Location not specified',
+      price: formatIndianPrice(p.reservePrice),
+      image: p.images[0] || placeholderImage,
+    };
+  });
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams.toString());

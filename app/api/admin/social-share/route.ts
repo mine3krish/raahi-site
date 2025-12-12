@@ -56,7 +56,7 @@ async function resizeImageForInstagram(imageUrl: string, propertyId: string): Pr
     await writeFile(filepath, resizedBuffer);
     
     // Return CDN URL
-    return `https://raahiauctions.cloud/cdn/${filename}`;
+    return `https://raahiauction.com/cdn/${filename}`;
   } catch (error) {
     throw new Error(`Image resize failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
@@ -85,7 +85,7 @@ function replaceTemplateVars(template: string, property: any): string {
     .replace(/{{auctionType}}/g, property.auctionType || "")
     .replace(/{{contactPerson}}/g, property.contactPerson || "")
     .replace(/{{contactNumber}}/g, property.contactNumber || "")
-    .replace(/{{link}}/g, `https://raahiauctions.cloud/properties/${property.id}`);
+    .replace(/{{link}}/g, `https://raahiauction.com/properties/${property.id}`);
 }
 
 // POST - Share properties to social media
@@ -141,7 +141,7 @@ export async function POST(req: NextRequest) {
             property
           );
           const imageUrl = includeImage ? (property.images?.[0] || "") : "";
-          const propertyLink = `https://raahiauctions.cloud/properties/${property.id}`;
+          const propertyLink = `https://raahiauction.com/properties/${property.id}`;
 
           let result;
 

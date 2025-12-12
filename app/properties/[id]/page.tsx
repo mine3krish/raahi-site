@@ -47,6 +47,26 @@ export default function PropertyDetailPage() {
     return template.visibleFields[field] === true;
   };
 
+  // Helper function to extract YouTube video ID from URL
+  const getYouTubeVideoId = (url: string): string | null => {
+    if (!url) return null;
+    
+    // Handle different YouTube URL formats
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /^([a-zA-Z0-9_-]{11})$/ // Direct video ID
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    
+    return null;
+  };
+
   // Initialize AdSense ads
   useEffect(() => {
     try {
@@ -352,6 +372,24 @@ export default function PropertyDetailPage() {
                   <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
                     {property.note}
                   </p>
+                </div>
+              )}
+
+              {isFieldVisible('youtubeVideo') && property.youtubeVideo && getYouTubeVideoId(property.youtubeVideo) && (
+                <div className="border border-red-200 bg-red-50 p-4 rounded-lg mb-6">
+                  <div className="flex items-center text-red-700 mb-3">
+                    <span className="font-semibold text-lg">🎥 Property Video</span>
+                  </div>
+                  <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                    <iframe
+                      className="absolute top-0 left-0 w-full h-full rounded-lg"
+                      src={`https://www.youtube.com/embed/${getYouTubeVideoId(property.youtubeVideo)}`}
+                      title="Property Video"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
                 </div>
               )}
             </motion.div>

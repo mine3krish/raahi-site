@@ -43,6 +43,28 @@ export default function EditPropertyPage() {
     inspectionDate: "",
     agentMobile: "+91 848 884 8874",
     youtubeVideo: "",
+    // All Excel import fields
+    newListingId: "",
+    schemeName: "",
+    category: "",
+    city: "",
+    areaTown: "",
+    date: "",
+    emd: "",
+    incrementBid: "",
+    bankName: "",
+    branchName: "",
+    contactDetails: "",
+    description: "",
+    address: "",
+    note: "",
+    publishingDate: "",
+    listingId: "",
+    auctionType: "",
+    notice: "",
+    source: "",
+    url: "",
+    fingerprint: "",
   });
 
   // Fetch property data
@@ -88,6 +110,28 @@ export default function EditPropertyPage() {
           inspectionDate: property.inspectionDate || "",
           agentMobile: property.agentMobile || "+91 848 884 8874",
           youtubeVideo: property.youtubeVideo || "",
+          // Excel import fields
+          newListingId: property.newListingId || "",
+          schemeName: property.schemeName || "",
+          category: property.category || "",
+          city: property.city || "",
+          areaTown: property.areaTown || "",
+          date: property.date || "",
+          emd: property.emd?.toString() || "",
+          incrementBid: property.incrementBid || "",
+          bankName: property.bankName || "",
+          branchName: property.branchName || "",
+          contactDetails: property.contactDetails || "",
+          description: property.description || "",
+          address: property.address || "",
+          note: property.note || "",
+          publishingDate: property.publishingDate || "",
+          listingId: property.listingId || "",
+          auctionType: property.auctionType || "",
+          notice: property.notice || "",
+          source: property.source || "",
+          url: property.url || "",
+          fingerprint: property.fingerprint || "",
         });
         
         setExistingImages(property.images || []);
@@ -583,6 +627,282 @@ export default function EditPropertyPage() {
               placeholder="+91 848 884 8874"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
             />
+          </div>
+
+          {/* Excel Import Fields */}
+          <div className="col-span-2 mt-6 mb-4">
+            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Excel Import Data</h3>
+          </div>
+
+          {/* New Listing ID */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">New Listing ID</label>
+            <input
+              type="text"
+              name="newListingId"
+              value={formData.newListingId}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="New listing identifier"
+            />
+          </div>
+
+          {/* Scheme Name */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Scheme Name</label>
+            <input
+              type="text"
+              name="schemeName"
+              value={formData.schemeName}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Scheme name"
+            />
+          </div>
+
+          {/* Category */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Category</label>
+            <input
+              type="text"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Property category"
+            />
+          </div>
+
+          {/* City */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">City</label>
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="City name"
+            />
+          </div>
+
+          {/* Area/Town */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Area/Town</label>
+            <input
+              type="text"
+              name="areaTown"
+              value={formData.areaTown}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Area or town"
+            />
+          </div>
+
+          {/* Date */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Date</label>
+            <input
+              type="text"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Date from Excel"
+            />
+          </div>
+
+          {/* EMD (lowercase) */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">emd (lowercase)</label>
+            <input
+              type="number"
+              name="emd"
+              value={formData.emd}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="EMD amount (Excel field)"
+            />
+          </div>
+
+          {/* Increment Bid */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Increment Bid</label>
+            <input
+              type="text"
+              name="incrementBid"
+              value={formData.incrementBid}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Bid increment amount"
+            />
+          </div>
+
+          {/* Bank Name */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Bank Name</label>
+            <input
+              type="text"
+              name="bankName"
+              value={formData.bankName}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Bank name"
+            />
+          </div>
+
+          {/* Branch Name */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Branch Name</label>
+            <input
+              type="text"
+              name="branchName"
+              value={formData.branchName}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Branch name"
+            />
+          </div>
+
+          {/* Contact Details */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Contact Details</label>
+            <textarea
+              name="contactDetails"
+              value={formData.contactDetails}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 h-20 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Contact information"
+            />
+          </div>
+
+          {/* Description */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 h-24 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Property description"
+            />
+          </div>
+
+          {/* Address */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Address</label>
+            <textarea
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 h-20 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Full address"
+            />
+          </div>
+
+          {/* Note */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Note</label>
+            <textarea
+              name="note"
+              value={formData.note}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 h-20 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Additional notes"
+            />
+          </div>
+
+          {/* Publishing Date */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Publishing Date</label>
+            <input
+              type="text"
+              name="publishingDate"
+              value={formData.publishingDate}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Publishing date"
+            />
+          </div>
+
+          {/* Listing ID */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Listing ID</label>
+            <input
+              type="text"
+              name="listingId"
+              value={formData.listingId}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Listing identifier"
+            />
+          </div>
+
+          {/* Auction Type */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Auction Type</label>
+            <input
+              type="text"
+              name="auctionType"
+              value={formData.auctionType}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Type of auction"
+            />
+          </div>
+
+          {/* Notice */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Notice</label>
+            <input
+              type="text"
+              name="notice"
+              value={formData.notice}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Notice file URL"
+            />
+          </div>
+
+          {/* Source */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Source</label>
+            <input
+              type="text"
+              name="source"
+              value={formData.source}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Data source"
+            />
+          </div>
+
+          {/* URL */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">URL</label>
+            <input
+              type="text"
+              name="url"
+              value={formData.url}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Source URL"
+            />
+          </div>
+
+          {/* Fingerprint */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-700 mb-1">Fingerprint</label>
+            <input
+              type="text"
+              name="fingerprint"
+              value={formData.fingerprint}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
+              placeholder="Unique fingerprint"
+              disabled
+            />
+            <p className="text-xs text-gray-500 mt-1">Automatically generated for duplicate detection</p>
           </div>
         </div>
 

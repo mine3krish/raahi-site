@@ -40,9 +40,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# uploads
-/public/uploads/instagram/*.jpg
-/public/uploads/instagram/*.jpeg
-/public/uploads/instagram/*.png
+# uploads (development CDN files)
+/public/uploads/**
+!.gitkeep
 
 secret.txt

@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/auth";
 
-const WAHA_API_KEY = "d0169ac6199f4681a46f191bce4dce94";
-
 // GET - Fetch WhatsApp groups from WAHA
 export async function POST(req: NextRequest) {
   try {
     await verifyAdmin(req);
 
-    const { wahaBaseUrl, sessionName } = await req.json();
+    const { wahaBaseUrl, sessionName, wahaApiKey } = await req.json();
 
     if (!wahaBaseUrl || !sessionName) {
       return NextResponse.json(
@@ -19,8 +17,11 @@ export async function POST(req: NextRequest) {
 
     const headers: any = {
       "Content-Type": "application/json",
-      "X-Api-Key": WAHA_API_KEY,
     };
+    
+    if (wahaApiKey) {
+      headers["X-Api-Key"] = wahaApiKey;
+    }
 
     // Fetch groups from WAHA
     const groupsResponse = await fetch(

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/auth";
 
-const WAHA_API_KEY = "d0169ac6199f4681a46f191bce4dce94";
-
 // GET - Fetch all sessions from WAHA
 export async function GET(req: NextRequest) {
   try {
@@ -10,6 +8,7 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const wahaBaseUrl = searchParams.get("wahaBaseUrl");
+    const wahaApiKey = searchParams.get("wahaApiKey");
 
     if (!wahaBaseUrl) {
       return NextResponse.json(
@@ -20,8 +19,11 @@ export async function GET(req: NextRequest) {
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      "X-Api-Key": WAHA_API_KEY,
     };
+    
+    if (wahaApiKey) {
+      headers["X-Api-Key"] = wahaApiKey;
+    }
 
     // Fetch sessions from WAHA
     const response = await fetch(`${wahaBaseUrl}/api/sessions`, {
@@ -49,7 +51,7 @@ export async function POST(req: NextRequest) {
   try {
     await verifyAdmin(req);
 
-    const { wahaBaseUrl, sessionName, config } = await req.json();
+    const { wahaBaseUrl, sessionName, config, wahaApiKey } = await req.json();
 
     if (!wahaBaseUrl || !sessionName) {
       return NextResponse.json(
@@ -60,8 +62,11 @@ export async function POST(req: NextRequest) {
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      "X-Api-Key": WAHA_API_KEY,
     };
+    
+    if (wahaApiKey) {
+      headers["X-Api-Key"] = wahaApiKey;
+    }
 
     // Start session on WAHA
     const response = await fetch(`${wahaBaseUrl}/api/sessions/start`, {

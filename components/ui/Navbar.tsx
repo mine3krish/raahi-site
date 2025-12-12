@@ -103,7 +103,7 @@ export default function Navbar() {
               ))}
               {!isAuthenticated ? 
                 <Link
-                  href="/login"
+                  href="/mobile-login"
                   className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all"
                 >
                   Login
@@ -248,7 +248,7 @@ export default function Navbar() {
                 ) : (
                   <div className="space-y-2">
                     <Link
-                      href="/login"
+                      href="/mobile-login"
                       onClick={closeMenu}
                       className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-white rounded-xl transition-all text-center"
                     >

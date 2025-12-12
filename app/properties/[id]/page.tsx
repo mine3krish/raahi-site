@@ -30,9 +30,22 @@ export default function PropertyDetailPage() {
   const [relatedProperties, setRelatedProperties] = useState<any[]>([]);
   const [communities, setCommunities] = useState<any[]>([]);
   const [defaultPhone, setDefaultPhone] = useState("+91 848 884 8874");
+  const [template, setTemplate] = useState<any>(null);
 
   const { isInWishlist, toggleWishlist, loading: wishlistLoading } = useWishlist();
   const inWishlist = property ? isInWishlist(property.id) : false;
+
+  // Helper function to check if field should be visible
+  const isFieldVisible = (field: string): boolean => {
+    // Default visibility when no template exists
+    const defaultVisible = ['id', 'name', 'location', 'state', 'type', 'reservePrice', 'EMD', 'AuctionDate', 'area', 'images', 'status', 'description', 'address', 'note', 'inspectionDate', 'assetAddress', 'agentMobile', 'youtubeVideo'];
+    
+    if (!template || !template.visibleFields) {
+      return defaultVisible.includes(field);
+    }
+    
+    return template.visibleFields[field] === true;
+  };
 
   // Initialize AdSense ads
   useEffect(() => {
@@ -72,6 +85,13 @@ export default function PropertyDetailPage() {
 
         const data = await response.json();
         setProperty(data.property);
+
+        // Fetch template for this property's state
+        const templateRes = await fetch(`/api/admin/property-templates?state=${data.property.state || ''}`);
+        if (templateRes.ok) {
+          const templateData = await templateRes.json();
+          setTemplate(templateData.template);
+        }
 
         // Fetch related properties
         const relatedRes = await fetch(`/api/properties?state=${data.property.state}&type=${data.property.type}&limit=4`);
@@ -213,7 +233,7 @@ export default function PropertyDetailPage() {
             </motion.div>
 
             {/* YouTube Video */}
-            {property.youtubeVideo && (() => {
+            {isFieldVisible('youtubeVideo') && property.youtubeVideo && (() => {
               let videoId = '';
               const url = property.youtubeVideo;
               
@@ -271,15 +291,17 @@ export default function PropertyDetailPage() {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex items-center text-gray-600 mb-1">
-                    <Home size={16} className="mr-1" />
-                    <span className="text-xs">Type</span>
+                {isFieldVisible('type') && (
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center text-gray-600 mb-1">
+                      <Home size={16} className="mr-1" />
+                      <span className="text-xs">Type</span>
+                    </div>
+                    <p className="font-semibold text-gray-800">{property.type}</p>
                   </div>
-                  <p className="font-semibold text-gray-800">{property.type}</p>
-                </div>
+                )}
 
-                {property.area && (
+                {isFieldVisible('area') && property.area && (
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <div className="flex items-center text-gray-600 mb-1">
                       <span className="text-xs">Area</span>
@@ -288,17 +310,19 @@ export default function PropertyDetailPage() {
                   </div>
                 )}
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex items-center text-gray-600 mb-1">
-                    <span className="text-xs">Status</span>
+                {isFieldVisible('status') && (
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center text-gray-600 mb-1">
+                      <span className="text-xs">Status</span>
+                    </div>
+                    <p className={`font-semibold ${
+                      property.status === "Active" ? "text-green-600" :
+                      property.status === "Sold" ? "text-red-600" : "text-yellow-600"
+                    }`}>
+                      {property.status}
+                    </p>
                   </div>
-                  <p className={`font-semibold ${
-                    property.status === "Active" ? "text-green-600" :
-                    property.status === "Sold" ? "text-red-600" : "text-yellow-600"
-                  }`}>
-                    {property.status}
-                  </p>
-                </div>
+                )}
 
                 {property.featured && (
                   <div className="bg-green-50 p-4 rounded-lg">
@@ -308,19 +332,19 @@ export default function PropertyDetailPage() {
                 )}
               </div>
 
-              {property.assetAddress && (
+              {(isFieldVisible('assetAddress')) && (
                 <div className="border-2 border-green-500 bg-gradient-to-r from-green-50 to-white p-5 rounded-xl mb-6 shadow-sm">
                   <div className="flex items-center text-green-800 mb-3">
                     <MapPin size={20} className="mr-2 flex-shrink-0" />
                     <span className="font-bold text-lg">📍 Asset Address</span>
                   </div>
                   <p className="text-base text-gray-800 leading-relaxed font-semibold">
-                    {property.assetAddress == "Property Details" ? property.location : property.assetAddress}
+                    {property.assetAddress || property.address || property.location}
                   </p>
                 </div>
               )}
 
-              {property.note && (
+              {isFieldVisible('note') && property.note && (
                 <div className="border border-blue-200 bg-blue-50 p-4 rounded-lg mb-6">
                   <div className="flex items-center text-blue-700 mb-2">
                     <span className="font-semibold">📝 Note</span>
@@ -393,49 +417,55 @@ export default function PropertyDetailPage() {
               <h2 className="text-xl font-bold text-gray-800 mb-4">Auction Details</h2>
 
               {/* Reserve Price */}
-              <div className="mb-6">
-                <p className="text-sm text-gray-600 mb-1">Reserve Price</p>
-                <div className="flex items-center">
-                  <span className="text-3xl font-bold text-green-600">
-                    {formatIndianPrice(property.reservePrice)}
-                  </span>
+              {isFieldVisible('reservePrice') && (
+                <div className="mb-6">
+                  <p className="text-sm text-gray-600 mb-1">Reserve Price</p>
+                  <div className="flex items-center">
+                    <span className="text-3xl font-bold text-green-600">
+                      {formatIndianPrice(property.reservePrice)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    ₹{property.reservePrice.toLocaleString('en-IN')}
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  ₹{property.reservePrice.toLocaleString('en-IN')}
-                </p>
-              </div>
+              )}
 
               {/* EMD */}
-              <div className="mb-6 pb-6 border-b">
-                <p className="text-sm text-gray-600 mb-1">Earnest Money Deposit (EMD)</p>
-                <p className="text-xl font-bold text-gray-800">
-                  ₹{property.EMD.toLocaleString('en-IN')}
-                </p>
-              </div>
+              {isFieldVisible('EMD') && (
+                <div className="mb-6 pb-6 border-b">
+                  <p className="text-sm text-gray-600 mb-1">Earnest Money Deposit (EMD)</p>
+                  <p className="text-xl font-bold text-gray-800">
+                    ₹{property.EMD.toLocaleString('en-IN')}
+                  </p>
+                </div>
+              )}
 
               {/* Auction Date */}
-              <div className="mb-6">
-                <div className="flex items-center text-gray-600 mb-2">
-                  <Calendar size={18} className="mr-2" />
-                  <span className="text-sm font-medium">Auction Date</span>
+              {isFieldVisible('AuctionDate') && (
+                <div className="mb-6">
+                  <div className="flex items-center text-gray-600 mb-2">
+                    <Calendar size={18} className="mr-2" />
+                    <span className="text-sm font-medium">Auction Date</span>
+                  </div>
+                  <p className="text-lg font-semibold text-gray-800">
+                    {auctionDate}
+                  </p>
+                  {isFieldVisible('auctionStartDate') && property.auctionStartDate && (
+                    <p className="text-sm text-gray-600 mt-1">
+                      Start: {property.auctionStartDate}
+                    </p>
+                  )}
+                  {isFieldVisible('auctionEndTime') && property.auctionEndTime && (
+                    <p className="text-sm text-gray-600">
+                      End: {property.auctionEndTime}
+                    </p>
+                  )}
                 </div>
-                <p className="text-lg font-semibold text-gray-800">
-                  {auctionDate}
-                </p>
-                {property.auctionStartDate && (
-                  <p className="text-sm text-gray-600 mt-1">
-                    Start: {property.auctionStartDate}
-                  </p>
-                )}
-                {property.auctionEndTime && (
-                  <p className="text-sm text-gray-600">
-                    End: {property.auctionEndTime}
-                  </p>
-                )}
-              </div>
+              )}
 
               {/* Application Deadline */}
-              {property.applicationSubmissionDate && (
+              {isFieldVisible('applicationSubmissionDate') && property.applicationSubmissionDate && (
                 <div className="mb-6 bg-orange-50 p-4 rounded-lg">
                   <div className="flex items-center text-orange-700 mb-2">
                     <Calendar size={18} className="mr-2" />
@@ -448,29 +478,33 @@ export default function PropertyDetailPage() {
               )}
 
               {/* Inspection Date */}
-              <div className="mb-6 bg-blue-50 p-4 rounded-lg">
-                <div className="flex items-center text-blue-700 mb-2">
-                  <Calendar size={18} className="mr-2" />
-                  <span className="text-sm font-semibold">Inspection Date</span>
-                </div>
-                {property.inspectionDate && 
-                 property.inspectionDate.toLowerCase() !== "not available" && 
-                 property.inspectionDate.trim() !== "" ? (
-                  <p className="text-sm text-blue-900 font-medium">
-                    {property.inspectionDate}
-                  </p>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    <p className="text-sm text-blue-900">Not Available - Call for details</p>
-                    <a 
-                      href={`tel:${(property.agentMobile || defaultPhone).replace(/\s/g, "")}`} 
-                      className="inline-flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition text-sm"
-                    >
-                      📞 {property.agentMobile || defaultPhone}
-                    </a>
+              {isFieldVisible('inspectionDate') && (
+                <div className="mb-6 bg-blue-50 p-4 rounded-lg">
+                  <div className="flex items-center text-blue-700 mb-2">
+                    <Calendar size={18} className="mr-2" />
+                    <span className="text-sm font-semibold">Inspection Date</span>
                   </div>
-                )}
-              </div>
+                  {property.inspectionDate && 
+                   property.inspectionDate.toLowerCase() !== "not available" && 
+                   property.inspectionDate.trim() !== "" ? (
+                    <p className="text-sm text-blue-900 font-medium">
+                      {property.inspectionDate}
+                    </p>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <p className="text-sm text-blue-900">Not Available - Call for details</p>
+                      {isFieldVisible('agentMobile') && (
+                        <a 
+                          href={`tel:${(property.agentMobile || defaultPhone).replace(/\s/g, "")}`} 
+                          className="inline-flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition text-sm"
+                        >
+                          📞 {property.agentMobile || defaultPhone}
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* CTA Buttons */}
               <div className="space-y-3 mb-6">
@@ -484,16 +518,40 @@ export default function PropertyDetailPage() {
 
               {/* Additional Details */}
               <div className="border-t pt-4 space-y-4 text-sm">
-                {property.assetCategory && (
+                {isFieldVisible('assetCategory') && property.assetCategory && (
                   <div>
                     <span className="text-gray-600">Asset Category:</span>
                     <p className="font-medium text-gray-800">{property.assetCategory}</p>
                   </div>
                 )}
-                {property.publicationDate && (
+                {isFieldVisible('publicationDate') && property.publicationDate && (
                   <div>
                     <span className="text-gray-600">Publication Date:</span>
                     <p className="font-medium text-gray-800">{property.publicationDate}</p>
+                  </div>
+                )}
+                {isFieldVisible('bankName') && property.bankName && (
+                  <div>
+                    <span className="text-gray-600">Bank Name:</span>
+                    <p className="font-medium text-gray-800">{property.bankName}</p>
+                  </div>
+                )}
+                {isFieldVisible('branchName') && property.branchName && (
+                  <div>
+                    <span className="text-gray-600">Branch:</span>
+                    <p className="font-medium text-gray-800">{property.branchName}</p>
+                  </div>
+                )}
+                {isFieldVisible('borrowerName') && property.borrowerName && (
+                  <div>
+                    <span className="text-gray-600">Borrower:</span>
+                    <p className="font-medium text-gray-800">{property.borrowerName}</p>
+                  </div>
+                )}
+                {isFieldVisible('category') && property.category && (
+                  <div>
+                    <span className="text-gray-600">Category:</span>
+                    <p className="font-medium text-gray-800">{property.category}</p>
                   </div>
                 )}
               </div>

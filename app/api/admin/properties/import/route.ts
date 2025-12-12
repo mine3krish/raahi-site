@@ -9,12 +9,13 @@ import OpenAI from "openai";
 import { connectDB } from "@/app/api/connect";
 import Property from "@/models/Property";
 import SiteSettings from "@/models/SiteSettings";
-import ImportedData from "@/models/ImportedData";
 import https from "https";
 import http from "http";
 import { verifyAdmin } from "@/lib/auth";
+import { getCDNDir, getCDNUrl } from "@/lib/cdn";
 
 interface PropertyData {
+  // Core required fields
   id: string;
   name: string;
   location: string;
@@ -27,18 +28,44 @@ interface PropertyData {
   images: string[];
   status: string;
   
-  // Additional auction details
+  // ALL Excel import fields (30 columns)
+  newListingId?: string;
+  schemeName?: string;
+  category?: string;
+  city?: string;
+  areaTown?: string;
+  date?: string;
+  emd?: number;
+  incrementBid?: string;
+  bankName?: string;
+  branchName?: string;
+  contactDetails?: string;
+  description?: string;
+  address?: string;
+  note?: string;
+  borrowerName?: string;
+  publishingDate?: string;
+  inspectionDate?: string;
+  applicationSubmissionDate?: string;
+  auctionStartDate?: string;
+  auctionEndTime?: string;
+  auctionType?: string;
+  listingId?: string;
+  notice?: string;
+  source?: string;
+  url?: string;
+  fingerprint?: string;
+  
+  // Legacy fields
   assetCategory?: string;
   assetAddress?: string;
   assetCity?: string;
-  borrowerName?: string;
   publicationDate?: string;
-  auctionStartDate?: string;
-  auctionEndTime?: string;
-  applicationSubmissionDate?: string;
-  inspectionDate?: string;
   agentMobile?: string;
-  note?: string;
+  
+  // Import tracking
+  importBatchId?: string;
+  importedAt?: Date;
 }
 
 interface ImportResult {
@@ -52,7 +79,6 @@ const openai = new OpenAI({
 
 const DEFAULT_PLACEHOLDER_IMAGE = "https://raahiauctions.cloud/cdn/1765120597356-rxpr0b.jpg";
 const VALID_IMAGE_FORMATS = ["jpg", "jpeg", "png", "webp"];
-const CDN_DIR = "/var/www/cdn";
 
 // Get placeholder image from settings
 async function getPlaceholderImage(): Promise<string> {
@@ -68,6 +94,7 @@ async function getPlaceholderImage(): Promise<string> {
 
 // Ensure upload directory exists
 async function ensureUploadDir() {
+  const CDN_DIR = getCDNDir();
   if (!existsSync(CDN_DIR)) {
     await fs.mkdir(CDN_DIR, { recursive: true });
   }
@@ -147,7 +174,7 @@ async function processImage(buffer: Buffer): Promise<string> {
     
     // Generate unique filename
     const unique = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
-    const savePath = path.join(CDN_DIR, unique);
+    const savePath = path.join(getCDNDir(), unique);
     
     // Process image with sharp (optimize and resize if needed)
     await sharp(buffer)
@@ -155,7 +182,7 @@ async function processImage(buffer: Buffer): Promise<string> {
       .jpeg({ quality: 85 })
       .toFile(savePath);
     
-    return `https://raahiauctions.cloud/cdn/${unique}`;
+    return getCDNUrl(unique);
   } catch (error) {
     console.error("Error processing image:", error);
     return DEFAULT_PLACEHOLDER_IMAGE;
@@ -220,12 +247,11 @@ async function generatePropertyName(
   }
 }
 
-// Generate random listing ID
-function generateListingId(): string {
-  const prefix = "PROP";
-  const timestamp = Date.now().toString().slice(-6);
-  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-  return `${prefix}${timestamp}${random}`;
+// Generate random listing ID with state initial
+function generateListingId(state: string): string {
+  const stateInitial = state.charAt(0).toUpperCase();
+  const randomNumbers = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+  return `${stateInitial}${randomNumbers}`;
 }
 
 // Parse Excel and extract property data
@@ -254,56 +280,14 @@ async function parseExcelFile(
 
     console.log(`Processing row ${rowNum}:`, JSON.stringify(row));
     
-    // Save raw Excel data to ImportedData collection
     try {
-      await ImportedData.create({
-        newListingId: row.newListingId ? String(row.newListingId) : undefined,
-        schemeName: row.schemeName ? String(row.schemeName) : undefined,
-        name: row.name ? String(row.name) : undefined,
-        category: row.category ? String(row.category) : undefined,
-        state: row.state ? String(row.state) : undefined,
-        city: row.city ? String(row.city) : undefined,
-        areaTown: row.areaTown ? String(row.areaTown) : undefined,
-        date: row.date ? String(row.date) : undefined,
-        reservePrice: row.reservePrice ? Number(row.reservePrice) : undefined,
-        emd: row.emd || row.EMD ? Number(row.emd || row.EMD) : undefined,
-        incrementBid: row.incrementBid ? String(row.incrementBid) : undefined,
-        bankName: row.bankName ? String(row.bankName) : undefined,
-        branchName: row.branchName ? String(row.branchName) : undefined,
-        contactDetails: row.contactDetails ? String(row.contactDetails) : undefined,
-        description: row.description ? String(row.description) : undefined,
-        address: row.address ? String(row.address) : undefined,
-        note: row.note ? String(row.note) : undefined,
-        borrowerName: row.borrowerName ? String(row.borrowerName) : undefined,
-        publishingDate: row.publishingDate ? String(row.publishingDate) : undefined,
-        inspectionDate: row.inspectionDate ? String(row.inspectionDate) : undefined,
-        applicationSubmissionDate: row.applicationSubmissionDate ? String(row.applicationSubmissionDate) : undefined,
-        auctionStartDate: row.auctionStartDate ? String(row.auctionStartDate) : undefined,
-        auctionEndTime: row.auctionEndTime ? String(row.auctionEndTime) : undefined,
-        auctionType: row.auctionType ? String(row.auctionType) : undefined,
-        listingId: row.listingId ? String(row.listingId) : undefined,
-        images: row.images ? String(row.images) : undefined,
-        notice: row.notice ? String(row.notice) : undefined,
-        source: row.source ? String(row.source) : undefined,
-        url: row.url ? String(row.url) : undefined,
-        fingerprint: row.fingerprint ? String(row.fingerprint) : undefined,
-        importBatchId,
-        processed: false,
-      });
-      console.log(`✓ Saved raw data for row ${rowNum}`);
-    } catch (rawDataError) {
-      console.error(`Failed to save raw data for row ${rowNum}:`, rawDataError);
-      // Continue processing even if raw data save fails
-    }
-    
-    try {
-      // Extract listing ID
-      const listingId = row.newListingId || generateListingId();
-      
-      // Extract basic required fields
+      // Extract basic required fields first (need state for listing ID)
       const type = row.type || row.propertyType || row.Type || row.category;
       const location = row.location || row.address || row.Location || row.city || row.areaTown;
       const state = row.state || row.State;
+      
+      // Extract listing ID (use state for generating ID)
+      const listingId = row.newListingId || generateListingId(String(state));
       const reservePriceRaw = row.reservePrice || row.price || row.ReservePrice;
       const auctionDate = row.date;
       
@@ -358,7 +342,9 @@ async function parseExcelFile(
         fullLocation = `${fullLocation}`;
       }
       
-      const description = row.address || row.description || `${String(type)} property in ${fullLocation}`;
+      // Use address for assetAddress, fallback to description, then auto-generate
+      const assetAddressValue = row.address || row.description || `${String(type)} property in ${fullLocation}`;
+      const description = row.description || `${String(type)} property in ${fullLocation}`;
       const areaRaw = row.area || row.Area || row.sqft;
       const area = areaRaw ? parseFloat(String(areaRaw)) : undefined;
       
@@ -425,8 +411,9 @@ async function parseExcelFile(
         images.push(placeholderImage);
       }
       
-      // Create property object with all auction details
+      // Create property object with ALL Excel fields + processed data
       properties.push({
+        // Core fields for display
         id: String(listingId),
         name: propertyName,
         location: fullLocation || String(location),
@@ -439,18 +426,44 @@ async function parseExcelFile(
         images,
         status: "Active",
         
-        // Additional auction details
-        assetCategory: row.category ? String(row.category) : String(type),
-        assetAddress: String(description),
-        assetCity: row.city ? String(row.city) : (row.areaTown ? String(row.areaTown) : undefined),
+        // ALL Excel import fields (30 columns) - stored as-is for full data access
+        newListingId: row.newListingId ? String(row.newListingId) : undefined,
+        schemeName: row.schemeName ? String(row.schemeName) : undefined,
+        category: row.category ? String(row.category) : undefined,
+        city: row.city ? String(row.city) : undefined,
+        areaTown: row.areaTown ? String(row.areaTown) : undefined,
+        date: row.date ? String(row.date) : undefined,
+        emd: row.emd || row.EMD ? Number(row.emd || row.EMD) : emd,
+        incrementBid: row.incrementBid ? String(row.incrementBid) : undefined,
+        bankName: row.bankName ? String(row.bankName) : undefined,
+        branchName: row.branchName ? String(row.branchName) : undefined,
+        contactDetails: row.contactDetails ? String(row.contactDetails) : undefined,
+        description: row.description ? String(row.description) : undefined,
+        address: row.address ? String(row.address) : undefined,
+        note: row.note ? String(row.note) : undefined,
         borrowerName: row.borrowerName ? String(row.borrowerName) : undefined,
-        publicationDate: row.publicationDate ? String(row.publicationDate) : undefined,
+        publishingDate: row.publishingDate ? String(row.publishingDate) : undefined,
+        inspectionDate: row.inspectionDate ? String(row.inspectionDate) : undefined,
+        applicationSubmissionDate: row.applicationSubmissionDate ? String(row.applicationSubmissionDate) : undefined,
         auctionStartDate: row.auctionStartDate ? String(row.auctionStartDate) : undefined,
         auctionEndTime: row.auctionEndTime ? String(row.auctionEndTime) : undefined,
-        applicationSubmissionDate: row.applicationSubmissionDate ? String(row.applicationSubmissionDate) : undefined,
-        inspectionDate: row.inspectionDate ? String(row.inspectionDate) : undefined,
+        auctionType: row.auctionType ? String(row.auctionType) : undefined,
+        listingId: row.listingId ? String(row.listingId) : undefined,
+        notice: row.notice ? String(row.notice) : undefined,
+        source: row.source ? String(row.source) : undefined,
+        url: row.url ? String(row.url) : undefined,
+        fingerprint: row.fingerprint ? String(row.fingerprint) : undefined,
+        
+        // Legacy fields for backwards compatibility
+        assetCategory: row.category ? String(row.category) : String(type),
+        assetAddress: String(assetAddressValue),
+        assetCity: row.city ? String(row.city) : (row.areaTown ? String(row.areaTown) : undefined),
+        publicationDate: row.publicationDate ? String(row.publicationDate) : undefined,
         agentMobile: row.agentMobile ? String(row.agentMobile) : "+91 848 884 8874",
-        note: row.note ? String(row.note) : "",
+        
+        // Import tracking
+        importBatchId,
+        importedAt: new Date(),
       });
       
       console.log(`✓ Row ${rowNum} processed successfully: ${propertyName}`);
@@ -537,38 +550,26 @@ export async function POST(request: NextRequest) {
     
     for (const property of properties) {
       try {
-        // Check for duplicate
-        const existing = await Property.findOne({ id: property.id });
+        // Check for duplicate by id or fingerprint
+        const existing = await Property.findOne({
+          $or: [
+            { id: property.id },
+            ...(property.fingerprint ? [{ fingerprint: property.fingerprint }] : [])
+          ]
+        });
+        
         if (existing) {
           results.duplicates++;
-          results.errors.push(`Property ${property.id} already exists`);
-          
-          // Update ImportedData to mark as duplicate
-          await ImportedData.findOneAndUpdate(
-            { importBatchId, newListingId: property.id },
-            { processed: true, propertyId: existing.id, processingError: "Duplicate property" }
-          );
+          results.errors.push(`Property ${property.id} already exists (fingerprint: ${property.fingerprint || 'N/A'})`);
           continue;
         }
         
-        const createdProperty = await Property.create(property);
+        await Property.create(property);
         results.success++;
-        
-        // Update ImportedData to mark as processed successfully
-        await ImportedData.findOneAndUpdate(
-          { importBatchId, newListingId: property.id },
-          { processed: true, propertyId: createdProperty.id }
-        );
       } catch (error) {
         results.failed++;
         const message = error instanceof Error ? error.message : "Unknown error";
         results.errors.push(`Failed to create ${property.id}: ${message}`);
-        
-        // Update ImportedData to mark processing error
-        await ImportedData.findOneAndUpdate(
-          { importBatchId, newListingId: property.id },
-          { processed: true, processingError: message }
-        );
       }
     }
     

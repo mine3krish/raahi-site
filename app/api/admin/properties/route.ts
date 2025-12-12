@@ -4,6 +4,7 @@ import { verifyAdmin } from "@/lib/auth";
 import { connectDB } from "../../connect";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { getCDNDir, getCDNUrl } from "@/lib/cdn";
 
 export async function GET(req: Request) {
   try {
@@ -91,7 +92,7 @@ export async function POST(req: NextRequest) {
 
     // Handle image uploads
     const imageUrls: string[] = [];
-    const CDN_DIR = "/var/www/cdn";
+    const CDN_DIR = getCDNDir();
     
     try {
       await mkdir(CDN_DIR, { recursive: true });
@@ -110,7 +111,7 @@ export async function POST(req: NextRequest) {
         const buffer = Buffer.from(bytes);
         await writeFile(filepath, buffer);
         
-        imageUrls.push(`https://raahiauctions.cloud/cdn/${unique}`);
+        imageUrls.push(getCDNUrl(unique));
       }
     }
 
@@ -119,19 +120,19 @@ export async function POST(req: NextRequest) {
     const noticeFile = formData.get("notice_file") as File;
     if (noticeFile && noticeFile.size > 0) {
       try {
-        await mkdir(CDN_DIR, { recursive: true });
+        await mkdir(getCDNDir(), { recursive: true });
       } catch (err) {
         // Directory might already exist
       }
       
       const unique = `notice-${Date.now()}-${Math.random().toString(36).substring(7)}.pdf`;
-      const noticeFilepath = path.join(CDN_DIR, unique);
+      const noticeFilepath = path.join(getCDNDir(), unique);
       
       const noticeBytes = await noticeFile.arrayBuffer();
       const noticeBuffer = Buffer.from(noticeBytes);
       await writeFile(noticeFilepath, noticeBuffer);
       
-      noticeUrl = `https://raahiauctions.cloud/cdn/${unique}`;
+      noticeUrl = getCDNUrl(unique);
     }
 
     // Create property with image URLs and notice

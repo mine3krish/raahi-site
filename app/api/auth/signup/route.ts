@@ -15,7 +15,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "User already exists" }, { status: 409 });
 
     const hashed = await hashPassword(password);
-    const user = await User.create({ name, email, password: hashed });
+    const user = await User.create({ name, email, password: hashed, isVerified: true, authMethod: 'email' });
     const token = generateToken({ id: user._id, email: user.email });
 
     return NextResponse.json({ token, user: { name, email } }, { status: 201 });

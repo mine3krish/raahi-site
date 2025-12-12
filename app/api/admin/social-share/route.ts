@@ -48,7 +48,7 @@ async function resizeImageForInstagram(imageUrl: string, propertyId: string): Pr
       .toBuffer();
     
     // Save to CDN directory (same as property uploads)
-    const CDN_DIR = "/var/www/cdn";
+    const CDN_DIR = getCDNDir();
     await mkdir(CDN_DIR, { recursive: true });
     
     const filename = `instagram-${propertyId}-${Date.now()}.jpg`;
@@ -158,6 +158,9 @@ export async function POST(req: NextRequest) {
             case "instagram":
               result = await shareToInstagram(account, postText, imageUrl, property.id);
               break;
+            case "telegram":
+              result = await shareToTelegram(account, postText, imageUrl);
+              break;
             default:
               throw new Error(`Unsupported platform: ${account.platform}`);
           }
@@ -200,11 +203,9 @@ export async function POST(req: NextRequest) {
   }
 }
 
-const WAHA_API_KEY = "d0169ac6199f4681a46f191bce4dce94";
-
 // WhatsApp sharing via WAHA API
 async function shareToWhatsApp(account: any, text: string, imageUrl: string, property: any) {
-  const { wahaBaseUrl, sessionName, groups } = account.config;
+  const { wahaBaseUrl, sessionName, groups, wahaApiKey } = account.config;
 
   if (!wahaBaseUrl || !sessionName) {
     throw new Error("WhatsApp configuration incomplete");
@@ -221,8 +222,12 @@ async function shareToWhatsApp(account: any, text: string, imageUrl: string, pro
     try {
       const headers: any = {
         "Content-Type": "application/json",
-        "X-Api-Key": WAHA_API_KEY,
       };
+      
+      // Add API key if configured
+      if (wahaApiKey) {
+        headers["X-Api-Key"] = wahaApiKey;
+      }
 
       // Send image if available
       if (imageUrl) {
@@ -648,4 +653,93 @@ async function shareToInstagram(account: any, text: string, imageUrl: string, pr
     const error = err as Error;
     throw new Error(`Instagram sharing failed: ${error.message}`);
   }
+}
+
+// Telegram sharing
+async function shareToTelegram(account: any, text: string, imageUrl: string) {
+  const { botToken, channels } = account.config;
+
+  if (!botToken) {
+    throw new Error("Telegram Bot Token is required");
+  }
+
+  const enabledChannels = channels?.filter((c: any) => c.enabled) || [];
+  if (enabledChannels.length === 0) {
+    throw new Error("No Telegram channels enabled");
+  }
+
+  const results = [];
+
+  for (const channel of enabledChannels) {
+    try {
+      const chatId = channel.id; // Can be @channel_username or -100xxxxxxxxxx
+
+      if (imageUrl) {
+        // Send photo with caption
+        const response = await fetch(
+          `https://api.telegram.org/bot${botToken}/sendPhoto`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              chat_id: chatId,
+              photo: imageUrl,
+              caption: text,
+              parse_mode: "HTML", // Supports <b>, <i>, <a> tags
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(`Telegram API error: ${error.description || response.statusText}`);
+        }
+
+        const data = await response.json();
+        results.push({ 
+          channel: channel.name, 
+          status: "sent with image",
+          messageId: data.result.message_id 
+        });
+      } else {
+        // Send text only
+        const response = await fetch(
+          `https://api.telegram.org/bot${botToken}/sendMessage`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: text,
+              parse_mode: "HTML",
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(`Telegram API error: ${error.description || response.statusText}`);
+        }
+
+        const data = await response.json();
+        results.push({ 
+          channel: channel.name, 
+          status: "sent",
+          messageId: data.result.message_id 
+        });
+      }
+    } catch (err: any) {
+      results.push({ 
+        channel: channel.name, 
+        status: "failed", 
+        error: err.message 
+      });
+    }
+  }
+
+  return results;
 }

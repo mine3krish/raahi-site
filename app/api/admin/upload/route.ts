@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { verifyAdmin } from "@/lib/auth";
+import { getCDNDir, getCDNUrl } from "@/lib/cdn";
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     // Verify admin authentication
-    await verifyAdmin(request);
+    await verifyAdmin(req);
 
-    const formData = await request.formData();
+    const formData = await req.formData();
     const file = formData.get("file") as File;
 
     if (!file) {
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Setup CDN directory
-    const CDN_DIR = "/var/www/cdn";
+    const CDN_DIR = getCDNDir();
     
     try {
       await mkdir(CDN_DIR, { recursive: true });
@@ -33,11 +34,9 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     await writeFile(filepath, buffer);
-
+    
     // Return CDN URL
-    const url = `https://raahiauctions.cloud/cdn/${unique}`;
-
-    return NextResponse.json({ url }, { status: 200 });
+    const url = getCDNUrl(unique);    return NextResponse.json({ url }, { status: 200 });
 
   } catch (error) {
     console.error("Upload error:", error);

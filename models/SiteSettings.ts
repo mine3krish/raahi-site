@@ -89,6 +89,11 @@ const SiteSettingsSchema = new Schema(
     // Other Settings
     whatsappNumber: { type: String, default: "+918488848874" },
     footerText: { type: String, default: "© 2024 Raahi Auction. All rights reserved." },
+    
+    // WAHA Configuration for OTP
+    wahaBaseUrl: { type: String, default: "" },
+    wahaSessionName: { type: String, default: "" },
+    wahaApiKey: { type: String, default: "" },
   },
   { timestamps: true }
 );

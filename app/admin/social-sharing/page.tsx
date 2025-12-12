@@ -49,6 +49,10 @@ export default function SocialSharingConfig() {
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [qrInterval, setQrInterval] = useState<NodeJS.Timeout | null>(null);
 
+  // Telegram channel input
+  const [newChannelName, setNewChannelName] = useState("");
+  const [newChannelId, setNewChannelId] = useState("");
+
   // Template form
   const [showTemplateForm, setShowTemplateForm] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<PostTemplate | null>(null);
@@ -682,6 +686,7 @@ export default function SocialSharingConfig() {
                   className="w-full border border-gray-300 rounded-lg px-3 py-2"
                 >
                   <option value="whatsapp">WhatsApp (WAHA)</option>
+                  <option value="telegram">Telegram</option>
                   <option value="facebook">Facebook</option>
                   <option value="linkedin">LinkedIn</option>
                   <option value="instagram">Instagram</option>
@@ -968,6 +973,121 @@ export default function SocialSharingConfig() {
                       </div>
                     </div>
                   </details>
+                </div>
+              )}
+
+              {/* Telegram Configuration */}
+              {accountForm.platform === "telegram" && (
+                <div className="border-t pt-4 space-y-4">
+                  <h3 className="font-semibold text-gray-800">Telegram Configuration</h3>
+                  
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+                    <p className="font-medium text-blue-900 mb-1">How to setup Telegram Bot:</p>
+                    <ol className="text-blue-800 space-y-1 list-decimal list-inside">
+                      <li>Message <span className="font-mono">@BotFather</span> on Telegram</li>
+                      <li>Send <span className="font-mono">/newbot</span> and follow instructions</li>
+                      <li>Copy the Bot Token provided</li>
+                      <li>Add bot as admin to your channel/group</li>
+                      <li>Channel ID: Use <span className="font-mono">@username</span> or get numeric ID from <span className="font-mono">@userinfobot</span></li>
+                    </ol>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bot Token *
+                    </label>
+                    <input
+                      type="password"
+                      value={accountForm.config.botToken || ""}
+                      onChange={(e) => setAccountForm({
+                        ...accountForm,
+                        config: { ...accountForm.config, botToken: e.target.value }
+                      })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                      placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Get from @BotFather on Telegram
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Channels/Groups
+                    </label>
+                    <div className="space-y-2">
+                      {(accountForm.config.channels || []).map((channel: any, index: number) => (
+                        <div key={index} className="flex gap-2 items-center p-3 bg-gray-50 rounded-lg">
+                          <input
+                            type="checkbox"
+                            checked={channel.enabled}
+                            onChange={(e) => {
+                              const newChannels = [...(accountForm.config.channels || [])];
+                              newChannels[index].enabled = e.target.checked;
+                              setAccountForm({
+                                ...accountForm,
+                                config: { ...accountForm.config, channels: newChannels }
+                              });
+                            }}
+                            className="w-4 h-4 text-green-600"
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{channel.name}</p>
+                            <p className="text-xs text-gray-500">{channel.id}</p>
+                          </div>
+                          <button
+                            onClick={() => {
+                              const newChannels = (accountForm.config.channels || []).filter((_: any, i: number) => i !== index);
+                              setAccountForm({
+                                ...accountForm,
+                                config: { ...accountForm.config, channels: newChannels }
+                              });
+                            }}
+                            className="text-red-600 hover:text-red-700 text-sm"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-2 mt-3">
+                      <input
+                        type="text"
+                        placeholder="Channel Name"
+                        value={newChannelName}
+                        onChange={(e) => setNewChannelName(e.target.value)}
+                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
+                      />
+                      <input
+                        type="text"
+                        placeholder="@channel or -100xxxxxxxxxx"
+                        value={newChannelId}
+                        onChange={(e) => setNewChannelId(e.target.value)}
+                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
+                      />
+                      <button
+                        onClick={() => {
+                          if (newChannelName && newChannelId) {
+                            const newChannels = [...(accountForm.config.channels || []), {
+                              name: newChannelName,
+                              id: newChannelId,
+                              enabled: true,
+                            }];
+                            setAccountForm({
+                              ...accountForm,
+                              config: { ...accountForm.config, channels: newChannels }
+                            });
+                            setNewChannelName("");
+                            setNewChannelId("");
+                          }
+                        }}
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
 

@@ -61,10 +61,10 @@ export default function LoginPage() {
                 className="w-full max-w-md bg-white border border-gray-200 rounded-2xl p-8"
             >
                 <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
-                    Welcome Back
+                    Email Login
                 </h2>
                 <p className="text-gray-500 text-center mb-8">
-                    Log in to continue exploring properties
+                    Log in with your email address
                 </p>
 
                 <form className="space-y-4">
@@ -117,10 +117,26 @@ export default function LoginPage() {
 
                 </form>
 
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                    <p className="text-center text-gray-600 text-sm mb-3">
+                        Prefer mobile login?
+                    </p>
+                    <Link
+                        href="/mobile-login"
+                        className="block w-full bg-white border-2 border-green-600 text-green-600 py-2 rounded-lg font-medium hover:bg-green-50 transition text-center"
+                    >
+                        📱 Login with Mobile Number
+                    </Link>
+                </div>
+
                 <p className="text-center text-gray-600 mt-6 text-sm">
-                    Don’t have an account?{" "}
+                    Don't have an account?{" "}
                     <Link href="/signup" className="text-green-600 hover:underline font-medium">
-                        Sign up
+                        Email Signup
+                    </Link>
+                    {" or "}
+                    <Link href="/mobile-login" className="text-green-600 hover:underline font-medium">
+                        Mobile Signup
                     </Link>
                 </p>
             </motion.div>

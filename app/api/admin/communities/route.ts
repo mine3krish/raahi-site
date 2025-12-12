@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Community from "@/models/Community";
 import { verifyAdmin } from "@/lib/auth";
+import { getCDNDir, getCDNUrl } from "@/lib/cdn";
 import { connectDB } from "../../connect";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
     // Handle image upload
     let imageUrl = "";
     const imageFile = formData.get("image_file") as File;
-    const CDN_DIR = "/var/www/cdn";
+    const CDN_DIR = getCDNDir();
 
     if (imageFile) {
       const buffer = Buffer.from(await imageFile.arrayBuffer());
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
       const unique = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
       const filepath = path.join(CDN_DIR, unique);
       await writeFile(filepath, buffer);
-      imageUrl = `https://raahiauctions.cloud/cdn/${unique}`;
+      imageUrl = getCDNUrl(unique);
     }
 
     // Create community

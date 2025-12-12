@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/auth";
 
-const WAHA_API_KEY = "d0169ac6199f4681a46f191bce4dce94";
-
 // GET - Fetch QR code for session authentication
 export async function GET(req: NextRequest) {
   try {
@@ -11,6 +9,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const wahaBaseUrl = searchParams.get("wahaBaseUrl");
     const sessionName = searchParams.get("sessionName");
+    const wahaApiKey = searchParams.get("wahaApiKey");
 
     if (!wahaBaseUrl || !sessionName) {
       return NextResponse.json(
@@ -21,8 +20,11 @@ export async function GET(req: NextRequest) {
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      "X-Api-Key": WAHA_API_KEY,
     };
+    
+    if (wahaApiKey) {
+      headers["X-Api-Key"] = wahaApiKey;
+    }
 
     // Fetch QR code from WAHA
     const response = await fetch(

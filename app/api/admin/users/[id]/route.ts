@@ -5,13 +5,13 @@ import { connectDB } from "../../../connect";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     await verifyAdmin(req);
 
-    const { id } = params;
+    const { id } = await context.params;
     const body = await req.json();
     const { isAdmin } = body;
 
@@ -27,19 +27,20 @@ export async function PATCH(
 
     return NextResponse.json({ user });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 403 });
+    console.error("PATCH user error:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     await verifyAdmin(req);
 
-    const { id } = params;
+    const { id } = await context.params;
     
     const user = await User.findByIdAndDelete(id);
 
@@ -49,6 +50,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: "User deleted successfully" });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 403 });
+    console.error("DELETE user error:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

@@ -7,7 +7,10 @@ import { Search, UserCheck, UserX, Mail } from "lucide-react";
 interface User {
   _id: string;
   name: string;
-  email: string;
+  email?: string;
+  mobile?: string;
+  authMethod?: string;
+  isVerified?: boolean;
   isAdmin: boolean;
   createdAt: string;
 }
@@ -64,7 +67,8 @@ export default function UsersPage() {
   const filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase())
+      (user.email && user.email.toLowerCase().includes(search.toLowerCase())) ||
+      (user.mobile && user.mobile.includes(search))
   );
 
   if (loading) {
@@ -93,7 +97,7 @@ export default function UsersPage() {
           <Search size={18} className="text-gray-400 mr-2" />
           <input
             type="text"
-            placeholder="Search users by name or email..."
+            placeholder="Search users by name, email, or mobile..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="flex-1 bg-transparent text-sm focus:outline-none"
@@ -115,10 +119,13 @@ export default function UsersPage() {
                   Name
                 </th>
                 <th className="text-left px-6 py-3 text-xs font-semibold text-gray-600 uppercase">
-                  Email
+                  Contact
                 </th>
                 <th className="text-left px-6 py-3 text-xs font-semibold text-gray-600 uppercase">
                   Role
+                </th>
+                <th className="text-left px-6 py-3 text-xs font-semibold text-gray-600 uppercase">
+                  Status
                 </th>
                 <th className="text-left px-6 py-3 text-xs font-semibold text-gray-600 uppercase">
                   Joined
@@ -131,7 +138,7 @@ export default function UsersPage() {
             <tbody className="divide-y divide-gray-200">
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-10 text-gray-500">
+                  <td colSpan={6} className="text-center py-10 text-gray-500">
                     No users found
                   </td>
                 </tr>
@@ -147,9 +154,21 @@ export default function UsersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Mail size={14} />
-                        <span className="text-sm">{user.email}</span>
+                      <div className="flex flex-col gap-1">
+                        {user.email && (
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Mail size={14} />
+                            <span className="text-sm">{user.email}</span>
+                          </div>
+                        )}
+                        {user.mobile && (
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <span className="text-sm">📱 {user.mobile}</span>
+                          </div>
+                        )}
+                        <span className="text-xs text-gray-400">
+                          {user.authMethod === 'mobile' ? 'Mobile Login' : 'Email Login'}
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -160,6 +179,18 @@ export default function UsersPage() {
                       ) : (
                         <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
                           User
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {user.isVerified ? (
+                        <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full flex items-center gap-1 w-fit">
+                          <UserCheck size={12} />
+                          Verified
+                        </span>
+                      ) : (
+                        <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full flex items-center gap-1 w-fit">
+                          ⏳ Pending
                         </span>
                       )}
                     </td>

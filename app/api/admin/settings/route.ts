@@ -3,6 +3,7 @@ import { connectDB } from "@/app/api/connect";
 import SiteSettings from "@/models/SiteSettings";
 import Property from "@/models/Property";
 import { verifyAdmin } from "@/lib/auth";
+import { getCDNDir, getCDNUrl } from "@/lib/cdn";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
@@ -87,7 +88,8 @@ export async function PUT(request: NextRequest) {
       "aboutTitle", "aboutDescription", "missionStatement", "visionStatement",
       "facebookUrl", "twitterUrl", "instagramUrl", "linkedinUrl", "youtubeUrl",
       "adsenseClientId", "adsenseSlotHeader", "adsenseSlotSidebar", "adsenseSlotFooter",
-      "whatsappNumber", "footerText", "siteTitle", "siteDescription", "siteKeywords",
+      "whatsappNumber", "wahaBaseUrl", "wahaSessionName", "wahaApiKey",
+      "footerText", "siteTitle", "siteDescription", "siteKeywords",
       "heroImage", "heroTitle", "heroSubtitle", "propertyPlaceholderImage"
     ];
 
@@ -144,7 +146,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Handle file uploads (team member photos, partner logos)
-    const CDN_DIR = "/var/www/cdn";
+    const CDN_DIR = getCDNDir();
     
     try {
       await mkdir(CDN_DIR, { recursive: true });
@@ -164,7 +166,7 @@ export async function PUT(request: NextRequest) {
         const buffer = Buffer.from(bytes);
         await writeFile(filepath, buffer);
         
-        const imageUrl = `https://raahiauctions.cloud/cdn/${unique}`;
+        const imageUrl = getCDNUrl(unique);
         if (settings.teamMembers[index]) {
           settings.teamMembers[index].image = imageUrl;
         }
@@ -180,7 +182,7 @@ export async function PUT(request: NextRequest) {
         const buffer = Buffer.from(bytes);
         await writeFile(filepath, buffer);
         
-        const logoUrl = `https://raahiauctions.cloud/cdn/${unique}`;
+        const logoUrl = getCDNUrl(unique);
         if (settings.partners[index]) {
           settings.partners[index].logo = logoUrl;
         }

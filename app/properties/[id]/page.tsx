@@ -47,26 +47,6 @@ export default function PropertyDetailPage() {
     return template.visibleFields[field] === true;
   };
 
-  // Helper function to extract YouTube video ID from URL
-  const getYouTubeVideoId = (url: string): string | null => {
-    if (!url) return null;
-    
-    // Handle different YouTube URL formats
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-      /^([a-zA-Z0-9_-]{11})$/ // Direct video ID
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1]) {
-        return match[1];
-      }
-    }
-    
-    return null;
-  };
-
   // Initialize AdSense ads
   useEffect(() => {
     try {
@@ -252,46 +232,6 @@ export default function PropertyDetailPage() {
               )}
             </motion.div>
 
-            {/* YouTube Video */}
-            {isFieldVisible('youtubeVideo') && property.youtubeVideo && (() => {
-              let videoId = '';
-              const url = property.youtubeVideo;
-              
-              // Extract video ID from various YouTube URL formats
-              if (url.includes('youtube.com/watch?v=')) {
-                videoId = url.split('watch?v=')[1]?.split('&')[0] || '';
-              } else if (url.includes('youtu.be/')) {
-                videoId = url.split('youtu.be/')[1]?.split('?')[0] || '';
-              } else if (url.includes('youtube.com/embed/')) {
-                videoId = url.split('embed/')[1]?.split('?')[0] || '';
-              } else {
-                // Assume it's just the video ID
-                videoId = url;
-              }
-              
-              return videoId ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 }}
-                  className="bg-white rounded-2xl overflow-hidden mt-6"
-                >
-                  <div className="aspect-video">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src={`https://www.youtube.com/embed/${videoId}`}
-                      title="Property Video Tour"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                      className="w-full h-full"
-                    ></iframe>
-                  </div>
-                </motion.div>
-              ) : null;
-            })()}
-
             {/* Property Details */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -375,23 +315,40 @@ export default function PropertyDetailPage() {
                 </div>
               )}
 
-              {isFieldVisible('youtubeVideo') && property.youtubeVideo && getYouTubeVideoId(property.youtubeVideo) && (
-                <div className="border border-red-200 bg-red-50 p-4 rounded-lg mb-6">
-                  <div className="flex items-center text-red-700 mb-3">
-                    <span className="font-semibold text-lg">🎥 Property Video</span>
+              {isFieldVisible('youtubeVideo') && property.youtubeVideo && (() => {
+                let videoId = '';
+                const url = property.youtubeVideo;
+                
+                // Extract video ID from various YouTube URL formats
+                if (url.includes('youtube.com/watch?v=')) {
+                  videoId = url.split('watch?v=')[1]?.split('&')[0] || '';
+                } else if (url.includes('youtu.be/')) {
+                  videoId = url.split('youtu.be/')[1]?.split('?')[0] || '';
+                } else if (url.includes('youtube.com/embed/')) {
+                  videoId = url.split('embed/')[1]?.split('?')[0] || '';
+                } else {
+                  // Assume it's just the video ID
+                  videoId = url;
+                }
+                
+                return videoId ? (
+                  <div className="border border-red-200 bg-red-50 p-4 rounded-lg mb-6">
+                    <div className="flex items-center text-red-700 mb-3">
+                      <span className="font-semibold text-lg">🎥 Property Video</span>
+                    </div>
+                    <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                      <iframe
+                        className="absolute top-0 left-0 w-full h-full rounded-lg"
+                        src={`https://www.youtube.com/embed/${videoId}`}
+                        title="Property Video"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
                   </div>
-                  <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                    <iframe
-                      className="absolute top-0 left-0 w-full h-full rounded-lg"
-                      src={`https://www.youtube.com/embed/${getYouTubeVideoId(property.youtubeVideo)}`}
-                      title="Property Video"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-                </div>
-              )}
+                ) : null;
+              })()}
             </motion.div>
 
             {/* In-Article Ad */}

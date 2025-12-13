@@ -59,11 +59,15 @@ interface PropertyTemplate {
 }
 
 const INDIAN_STATES = [
+  // States
   'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
   'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
   'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
   'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
-  'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
+  'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+  // Union Territories
+  'Delhi', 'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu',
+  'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry'
 ];
 
 const FIELD_GROUPS = {
@@ -173,17 +177,39 @@ export default function TemplateManagerPage() {
       return;
     }
 
+    // Ensure all visibleFields keys are present
+    const allFields: (keyof VisibleFields)[] = [
+      'id', 'name', 'location', 'state', 'type', 'reservePrice', 'EMD', 'AuctionDate', 'area', 'images', 'status',
+      'description', 'note', 'inspectionDate', 'assetAddress', 'agentMobile', 'youtubeVideo',
+      'newListingId', 'schemeName', 'category', 'city', 'areaTown', 'date', 'emd', 'incrementBid', 'bankName', 'branchName',
+      'contactDetails', 'address', 'borrowerName', 'publishingDate', 'applicationSubmissionDate', 'auctionStartDate',
+      'auctionEndTime', 'auctionType', 'listingId', 'notice', 'source', 'url', 'fingerprint', 'assetCategory', 'assetCity', 'publicationDate'
+    ];
+    const completeVisibleFields = allFields.reduce((acc, field) => {
+      acc[field] = !!formData.visibleFields[field];
+      return acc;
+    }, {} as VisibleFields);
+
     setIsSaving(true);
     try {
       const url = '/api/admin/property-templates';
       const method = editingTemplate ? 'PUT' : 'POST';
       const body = editingTemplate
-        ? { id: editingTemplate._id, ...formData }
-        : formData;
+        ? { id: editingTemplate._id, ...formData, visibleFields: completeVisibleFields }
+        : { ...formData, visibleFields: completeVisibleFields };
+
+      // Get token from localStorage or context
+      let token = null;
+      if (typeof window !== 'undefined') {
+        token = localStorage.getItem('token');
+      }
+
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(body)
       });
 

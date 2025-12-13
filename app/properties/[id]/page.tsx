@@ -37,15 +37,28 @@ export default function PropertyDetailPage() {
 
   // Helper function to check if field should be visible
   const isFieldVisible = (field: string): boolean => {
-    // Default visibility when no template exists
     const defaultVisible = ['id', 'name', 'location', 'state', 'type', 'reservePrice', 'EMD', 'AuctionDate', 'area', 'images', 'status', 'description', 'address', 'note', 'inspectionDate', 'assetAddress', 'agentMobile', 'youtubeVideo'];
-    
     if (!template || !template.visibleFields) {
       return defaultVisible.includes(field);
     }
-    
     return template.visibleFields[field] === true;
   };
+
+  // Field groups for sections
+  const FIELD_GROUPS = {
+    'Core Details': [
+      'id', 'name', 'location', 'state', 'type', 'status', 'area', 'images', 'featured', 'category', 'assetCategory', 'assetCity', 'publicationDate', 'description', 'note', 'youtubeVideo', 'agentMobile', 'address', 'assetAddress', 'city', 'areaTown', 'contactDetails', 'source', 'url', 'fingerprint'
+    ],
+    'Auction Details': [
+      'reservePrice', 'EMD', 'AuctionDate', 'auctionStartDate', 'auctionEndTime', 'auctionType', 'applicationSubmissionDate', 'inspectionDate', 'publishingDate', 'listingId', 'newListingId', 'schemeName', 'incrementBid', 'notice', 'date'
+    ],
+    'Bank & Borrower': [
+      'bankName', 'branchName', 'borrowerName'
+    ]
+  };
+
+  // Helper to check if any field in a group is visible
+  const isSectionVisible = (fields: string[]) => fields.some(isFieldVisible);
 
   // Initialize AdSense ads
   useEffect(() => {
@@ -147,14 +160,16 @@ export default function PropertyDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-6">
-        {/* Back Button */}
-        <button
-          onClick={() => router.back()}
-          className="flex items-center text-gray-600 hover:text-gray-800 mb-6"
-        >
-          <ArrowLeft size={20} className="mr-2" />
-          Back
-        </button>
+        {/* Back Button: only show if there is navigation history */}
+        {typeof window !== 'undefined' && window.history.length > 1 && (
+          <button
+            onClick={() => router.back()}
+            className="flex items-center text-gray-600 hover:text-gray-800 mb-6"
+          >
+            <ArrowLeft size={20} className="mr-2" />
+            Back
+          </button>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Images */}
@@ -250,17 +265,9 @@ export default function PropertyDetailPage() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                {isFieldVisible('type') && (
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex items-center text-gray-600 mb-1">
-                      <Home size={16} className="mr-1" />
-                      <span className="text-xs">Type</span>
-                    </div>
-                    <p className="font-semibold text-gray-800">{property.type}</p>
-                  </div>
-                )}
 
+              {/* Field-by-field rendering, including contactDetails, source, url, etc. */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 {isFieldVisible('area') && property.area && (
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <div className="flex items-center text-gray-600 mb-1">
@@ -269,27 +276,45 @@ export default function PropertyDetailPage() {
                     <p className="font-semibold text-gray-800">{property.area.toLocaleString()} sq ft</p>
                   </div>
                 )}
-
-                {isFieldVisible('status') && (
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex items-center text-gray-600 mb-1">
-                      <span className="text-xs">Status</span>
-                    </div>
-                    <p className={`font-semibold ${
-                      property.status === "Active" ? "text-green-600" :
-                      property.status === "Sold" ? "text-red-600" : "text-yellow-600"
-                    }`}>
-                      {property.status}
-                    </p>
-                  </div>
-                )}
-
                 {property.featured && (
                   <div className="bg-green-50 p-4 rounded-lg">
                     <p className="text-xs text-green-600 mb-1">Featured</p>
                     <p className="font-semibold text-green-700">Premium</p>
                   </div>
                 )}
+                {isFieldVisible('contactDetails') && property.contactDetails && (
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <span className="text-xs">Contact Details</span>
+                    <p className="font-semibold text-gray-800">{property.contactDetails}</p>
+                  </div>
+                )}
+                {isFieldVisible('source') && property.source && (
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <span className="text-xs">Source</span>
+                    <p className="font-semibold text-gray-800">{property.source}</p>
+                  </div>
+                )}
+                {isFieldVisible('url') && property.url && (
+                  <div className="bg-gray-50 p-4 rounded-lg flex flex-col gap-1">
+                    <span className="text-xs font-semibold mb-1">Official Auction Link</span>
+                    <a
+                      href={property.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition shadow w-full max-w-full"
+                      style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}
+                      title={property.url}
+                    >
+                      <span className="truncate block" style={{ maxWidth: 180 }}>
+                        {property.url.replace(/^https?:\/\//, '')}
+                      </span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 flex-shrink-0">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H15.75A2.25 2.25 0 0 1 18 8.25v7.5A2.25 2.25 0 0 1 15.75 18h-7.5A2.25 2.25 0 0 1 6 15.75V13.5m6.75-6.75L18 6m0 0v6m0-6H12" />
+                      </svg>
+                    </a>
+                  </div>
+                )}
+                {/* Add more fields as needed */}
               </div>
 
               {(isFieldVisible('assetAddress')) && (

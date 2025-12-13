@@ -100,6 +100,8 @@ export default function SettingsPage() {
     partners: [] as Partner[],
     propertyBanners: [] as Banner[],
     testimonials: [] as Testimonial[],
+    telegramBotToken: "",
+    telegramChannels: [],
   });
 
   // Social Sharing State
@@ -666,7 +668,7 @@ export default function SettingsPage() {
 
       // Add all settings fields
       Object.entries(settings).forEach(([key, value]) => {
-        if (key === "teamMembers" || key === "partners" || key === "propertyBanners" || key === "testimonials") {
+        if (key === "teamMembers" || key === "partners" || key === "propertyBanners" || key === "testimonials" || key === "telegramChannels") {
           formData.append(key, JSON.stringify(value));
         } else {
           formData.append(key, String(value));
@@ -1098,6 +1100,108 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
+
+                {/* Telegram Global Configuration */}
+                <div className="mt-8 pt-8 border-t">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    💬 Telegram Global Configuration
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Configure a global Telegram Bot and channels for notifications or sharing.
+                  </p>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Telegram Bot Token
+                      </label>
+                      <input
+                        type="password"
+                        value={settings.telegramBotToken || ""}
+                        onChange={(e) => setSettings({ ...settings, telegramBotToken: e.target.value })}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Get from @BotFather on Telegram
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Channels/Groups
+                      </label>
+                      <div className="space-y-2">
+                        {Array.isArray(settings.telegramChannels) && settings.telegramChannels.map((channel, index) => (
+                          <div key={index} className="flex gap-2 items-center p-3 bg-gray-50 rounded-lg">
+                            <input
+                              type="checkbox"
+                              checked={channel.enabled}
+                              onChange={(e) => {
+                                const newChannels = [...settings.telegramChannels];
+                                newChannels[index].enabled = e.target.checked;
+                                setSettings({ ...settings, telegramChannels: newChannels });
+                              }}
+                              className="w-4 h-4 text-green-600"
+                            />
+                            <div className="flex-1">
+                              <p className="font-medium text-sm">{channel.name}</p>
+                              <p className="text-xs text-gray-500">{channel.id}</p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                const newChannels = settings.telegramChannels.filter((_, i) => i !== index);
+                                setSettings({ ...settings, telegramChannels: newChannels });
+                              }}
+                              className="text-red-600 hover:text-red-700 text-sm"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-2 mt-3">
+                        <input
+                          type="text"
+                          placeholder="Channel Name"
+                          value={settings._newTelegramChannelName || ""}
+                          onChange={(e) => setSettings({ ...settings, _newTelegramChannelName: e.target.value })}
+                          className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
+                        />
+                        <input
+                          type="text"
+                          placeholder="@channel or -100xxxxxxxxxx"
+                          value={settings._newTelegramChannelId || ""}
+                          onChange={(e) => setSettings({ ...settings, _newTelegramChannelId: e.target.value })}
+                          className="flex-1 border border-gray-300 rounded-lg px-3 py-2"
+                        />
+                        <button
+                          onClick={() => {
+                            if (settings._newTelegramChannelName && settings._newTelegramChannelId) {
+                              const prevChannels = Array.isArray(settings.telegramChannels) ? settings.telegramChannels : [];
+                              const newChannels = [
+                                ...prevChannels,
+                                {
+                                  name: settings._newTelegramChannelName,
+                                  id: settings._newTelegramChannelId,
+                                  enabled: true,
+                                },
+                              ];
+                              setSettings({
+                                ...settings,
+                                telegramChannels: newChannels,
+                                _newTelegramChannelName: "",
+                                _newTelegramChannelId: "",
+                              });
+                            }
+                          }}
+                          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                        >
+                          Add
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <MapPin size={16} className="inline mr-2" />
@@ -1307,7 +1411,7 @@ export default function SettingsPage() {
                       />
                     </div>
                   </div>
-                ))}
+                        ))}
               </div>
             )}
 

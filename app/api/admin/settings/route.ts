@@ -90,7 +90,8 @@ export async function PUT(request: NextRequest) {
       "adsenseClientId", "adsenseSlotHeader", "adsenseSlotSidebar", "adsenseSlotFooter",
       "whatsappNumber", "wahaBaseUrl", "wahaSessionName", "wahaApiKey",
       "footerText", "siteTitle", "siteDescription", "siteKeywords",
-      "heroImage", "heroTitle", "heroSubtitle", "propertyPlaceholderImage"
+      "heroImage", "heroTitle", "heroSubtitle", "propertyPlaceholderImage",
+      "telegramBotToken"
     ];
 
     fields.forEach((field) => {
@@ -102,6 +103,7 @@ export async function PUT(request: NextRequest) {
 
     // Update boolean fields
     settings.adsenseEnabled = formData.get("adsenseEnabled") === "true";
+
 
     // Handle team members
     const teamMembersJson = formData.get("teamMembers");
@@ -125,6 +127,16 @@ export async function PUT(request: NextRequest) {
     const testimonialsJson = formData.get("testimonials");
     if (testimonialsJson) {
       settings.testimonials = JSON.parse(testimonialsJson as string);
+    }
+
+    // Handle telegram channels
+    const telegramChannelsJson = formData.get("telegramChannels");
+    if (telegramChannelsJson) {
+      try {
+        settings.telegramChannels = JSON.parse(telegramChannelsJson as string);
+      } catch (e) {
+        settings.telegramChannels = [];
+      }
     }
 
     // Check if placeholder image was updated and update properties
@@ -187,6 +199,35 @@ export async function PUT(request: NextRequest) {
           settings.partners[index].logo = logoUrl;
         }
       }
+    }
+
+
+    // --- Sync global Telegram config to SocialConfig (for property sharing) ---
+    if (settings.telegramBotToken && Array.isArray(settings.telegramChannels) && settings.telegramChannels.length > 0) {
+      // Lazy import to avoid circular deps if any
+      const SocialConfig = (await import("@/models/SocialConfig")).default;
+      let socialConfig = await SocialConfig.findOne();
+      if (!socialConfig) {
+        socialConfig = await SocialConfig.create({ accounts: [], templates: [] });
+      }
+      // Find existing global telegram account (by a special name or flag)
+      const GLOBAL_TG_NAME = "Global Telegram";
+      const idx = socialConfig.accounts.findIndex((a: any) => a.platform === "telegram" && a.name === GLOBAL_TG_NAME);
+      const tgAccount = {
+        platform: "telegram",
+        name: GLOBAL_TG_NAME,
+        enabled: true,
+        config: {
+          botToken: settings.telegramBotToken,
+          channels: settings.telegramChannels,
+        },
+      };
+      if (idx >= 0) {
+        socialConfig.accounts[idx] = tgAccount;
+      } else {
+        socialConfig.accounts.push(tgAccount);
+      }
+      await socialConfig.save();
     }
 
     await settings.save();

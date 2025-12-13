@@ -29,7 +29,7 @@ export default function PropertyDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [relatedProperties, setRelatedProperties] = useState<any[]>([]);
   const [communities, setCommunities] = useState<any[]>([]);
-  const [defaultPhone, setDefaultPhone] = useState("+91 848 884 8874");
+  const [defaultPhone, setDefaultPhone] = useState("+91 8488 8488 74");
   const [template, setTemplate] = useState<any>(null);
 
   const { isInWishlist, toggleWishlist, loading: wishlistLoading } = useWishlist();

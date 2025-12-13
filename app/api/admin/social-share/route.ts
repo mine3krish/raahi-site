@@ -7,6 +7,7 @@ import { formatIndianPrice } from "@/lib/constants";
 import sharp from "sharp";
 import path from "path";
 import { writeFile, mkdir } from "fs/promises";
+import { getCDNDir } from "@/lib/cdn";
 
 // Helper to resize image for Instagram and save to CDN
 async function resizeImageForInstagram(imageUrl: string, propertyId: string): Promise<string> {

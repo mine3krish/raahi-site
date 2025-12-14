@@ -23,6 +23,27 @@ export async function POST(req: NextRequest) {
       headers["X-Api-Key"] = wahaApiKey;
     }
 
+    const chatsResponse = await fetch(
+      `${wahaBaseUrl}/api/${sessionName}/chats`,
+      {
+        method: "GET",
+        headers,
+      }
+    )
+
+    if (!chatsResponse.ok) {
+      const error = await chatsResponse.text();
+      throw new Error(`WAHA API error: ${error}`);
+    }
+
+    const chatsData = await chatsResponse.json();
+
+    const chats = chatsData.map((chat: any) => ({
+      id: chat.id,
+      name: chat.name || (chat.contact ? chat.contact.pushname : "Unknown"),
+      isGroup: chat.isGroup,
+    }));
+
     // Fetch groups from WAHA
     const groupsResponse = await fetch(
       `${wahaBaseUrl}/api/${sessionName}/groups`,

@@ -3,11 +3,9 @@ export const SITE_CONFIG = {
   name: "Raahi Auction",
   description: "India's leading real estate auction platform. Discover properties, join communities, and connect with trusted agents across all states and union territories.",
   url: "https://raahiauction.com",
-  ogImage: "/image.png",
+  ogImage: "https://raahiauctions.cloud/cdn/1765120597356-rxpr0b.jpg",
   links: {
-    twitter: "https://twitter.com/raahiauction",
-    facebook: "https://facebook.com/raahiauction",
-    instagram: "https://instagram.com/raahiauction",
+    facebook: "https://www.facebook.com/profile.php?id=100092437418480",
   },
 };
 
@@ -107,16 +105,14 @@ export function generateOrganizationSchema() {
     "@type": "Organization",
     name: SITE_CONFIG.name,
     url: SITE_CONFIG.url,
-    logo: `${SITE_CONFIG.url}/image.png`,
+    logo: SITE_CONFIG.ogImage,
     description: SITE_CONFIG.description,
     sameAs: [
-      SITE_CONFIG.links.twitter,
       SITE_CONFIG.links.facebook,
-      SITE_CONFIG.links.instagram,
     ],
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+91-98765-43210",
+      telephone: "+91-8488-8488-74",
       contactType: "Customer Service",
       areaServed: "IN",
       availableLanguage: ["English", "Hindi"],

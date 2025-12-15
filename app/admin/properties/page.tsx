@@ -1,4 +1,43 @@
+
 "use client";
+// Utility: parse AuctionDate in various formats (DD/MM/YYYY, YYYY-MM-DD, DD-MM-YYYY, etc.)
+function parseAuctionDate(dateStr: string): Date | null {
+  if (!dateStr) return null;
+  // Try ISO first
+  let d = new Date(dateStr);
+  if (!isNaN(d.getTime())) return d;
+  // Try DD/MM/YYYY
+  const dmY = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (dmY) {
+    const [_, dd, mm, yyyy] = dmY;
+    d = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
+    if (!isNaN(d.getTime())) return d;
+  }
+  // Try MM/DD/YYYY
+  const mdY = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (mdY) {
+    const [_, mm, dd, yyyy] = mdY;
+    d = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
+    if (!isNaN(d.getTime())) return d;
+  }
+  // Try YYYY/MM/DD
+  const ymd = dateStr.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  if (ymd) {
+    const [_, yyyy, mm, dd] = ymd;
+    d = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
+    if (!isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+
+function isToday(date: Date) {
+  const now = new Date();
+  return (
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate()
+  );
+}
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -12,6 +51,11 @@ export default function Properties() {
   const searchParams = useSearchParams();
   
   const [properties, setProperties] = useState<any[]>([]);
+  // Compute today's auctions (after properties is defined)
+  const todaysAuctions = properties.filter(p => {
+    const d = parseAuctionDate(p.AuctionDate);
+    return d && isToday(d);
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   
@@ -20,6 +64,9 @@ export default function Properties() {
   const [stateFilter, setStateFilter] = useState(searchParams.get("state") || "");
   const [typeFilter, setTypeFilter] = useState(searchParams.get("type") || "");
   const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "");
+  const [premiumFilter, setPremiumFilter] = useState(searchParams.get("premium") || "");
+  const [featuredFilter, setFeaturedFilter] = useState(searchParams.get("featured") || "");
+  const [bestDealFilter, setBestDealFilter] = useState(searchParams.get("bestDeal") || "");
   const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
   const [total, setTotal] = useState(0);
   
@@ -54,8 +101,10 @@ export default function Properties() {
     if (filters.state) params.set("state", filters.state);
     if (filters.type) params.set("type", filters.type);
     if (filters.status) params.set("status", filters.status);
+    if (filters.premium) params.set("premium", filters.premium);
+    if (filters.featured) params.set("featured", filters.featured);
+    if (filters.bestDeal) params.set("bestDeal", filters.bestDeal);
     if (filters.page > 1) params.set("page", filters.page.toString());
-    
     const queryString = params.toString();
     router.push(`/admin/properties${queryString ? `?${queryString}` : ""}`, { scroll: false });
   };
@@ -65,7 +114,6 @@ export default function Properties() {
     const fetchProperties = async () => {
       setLoading(true);
       setError("");
-      
       try {
         const params = new URLSearchParams();
         if (search) params.set("search", search);
@@ -74,6 +122,9 @@ export default function Properties() {
         if (statusFilter) params.set("status", statusFilter);
         params.set("page", page.toString());
         params.set("limit", PAGE_SIZE.toString());
+        if (premiumFilter) params.set("premium", premiumFilter);
+        if (featuredFilter) params.set("featured", featuredFilter);
+        if (bestDealFilter) params.set("bestDeal", bestDealFilter);
 
         const token = localStorage.getItem("token");
         const response = await fetch(`/api/admin/properties?${params.toString()}`, {
@@ -97,9 +148,8 @@ export default function Properties() {
         setLoading(false);
       }
     };
-
     fetchProperties();
-  }, [search, stateFilter, typeFilter, statusFilter, page]);
+  }, [search, stateFilter, typeFilter, statusFilter, page, premiumFilter, featuredFilter, bestDealFilter]);
 
   // Handle status change
   const handleStatusChange = async (propertyId: string, newStatus: string) => {
@@ -155,8 +205,25 @@ export default function Properties() {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    updateURL({ search, state: stateFilter, type: typeFilter, status: statusFilter, page: newPage });
+    updateURL({ search, state: stateFilter, type: typeFilter, status: statusFilter, premium: premiumFilter, featured: featuredFilter, bestDeal: bestDealFilter, page: newPage });
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // New filter handlers
+  const handlePremiumFilterChange = (value: string) => {
+    setPremiumFilter(value);
+    setPage(1);
+    updateURL({ search, state: stateFilter, type: typeFilter, status: statusFilter, premium: value, featured: featuredFilter, bestDeal: bestDealFilter, page: 1 });
+  };
+  const handleFeaturedFilterChange = (value: string) => {
+    setFeaturedFilter(value);
+    setPage(1);
+    updateURL({ search, state: stateFilter, type: typeFilter, status: statusFilter, premium: premiumFilter, featured: value, bestDeal: bestDealFilter, page: 1 });
+  };
+  const handleBestDealFilterChange = (value: string) => {
+    setBestDealFilter(value);
+    setPage(1);
+    updateURL({ search, state: stateFilter, type: typeFilter, status: statusFilter, premium: premiumFilter, featured: featuredFilter, bestDeal: value, page: 1 });
   };
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -610,7 +677,7 @@ export default function Properties() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white border border-gray-200 rounded-xl p-4 mb-6"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
           <input
             type="text"
             placeholder="Search by name, ID, location..."
@@ -648,6 +715,42 @@ export default function Properties() {
               <option key={status} value={status}>{status}</option>
             ))}
           </select>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={premiumFilter === "true"}
+              onChange={e => {
+                const value = e.target.checked ? "true" : "";
+                handlePremiumFilterChange(value);
+              }}
+              className="accent-green-600"
+            />
+            <span>Premium Only</span>
+          </label>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={featuredFilter === "true"}
+              onChange={e => {
+                const value = e.target.checked ? "true" : "";
+                handleFeaturedFilterChange(value);
+              }}
+              className="accent-green-600"
+            />
+            <span>Featured Only</span>
+          </label>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={bestDealFilter === "true"}
+              onChange={e => {
+                const value = e.target.checked ? "true" : "";
+                handleBestDealFilterChange(value);
+              }}
+              className="accent-green-600"
+            />
+            <span>Best Deal Only</span>
+          </label>
         </div>
         {(search || stateFilter || typeFilter || statusFilter) && (
           <div className="mt-3 text-sm text-gray-600">

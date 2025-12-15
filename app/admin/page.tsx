@@ -1,7 +1,16 @@
+
 "use client";
+import React, { useEffect, useState } from "react";
+interface Auction {
+  id: string;
+  name: string;
+  AuctionDate: string;
+  location: string;
+  state: string;
+  status: string;
+}
 
 import { Building2, Users, Star, Home, MessageSquare, Mail, Briefcase, UserCheck } from "lucide-react";
-import { useEffect, useState } from "react";
 import Link from "next/link";
 
 interface Stats {
@@ -17,6 +26,28 @@ interface Stats {
 }
 
 export default function AdminDashboard() {
+    const [auctionsToday, setAuctionsToday] = useState<Auction[]>([]);
+    const [auctionsLoading, setAuctionsLoading] = useState(true);
+
+    useEffect(() => {
+      const fetchAuctions = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch("/api/admin/auctions-today", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setAuctionsToday(data.auctions || []);
+          }
+        } catch (err) {
+          // ignore
+        } finally {
+          setAuctionsLoading(false);
+        }
+      };
+      fetchAuctions();
+    }, []);
   const [stats, setStats] = useState<Stats>({
     totalProperties: 0,
     featuredProperties: 0,
@@ -66,6 +97,16 @@ export default function AdminDashboard() {
   ];
 
   if (loading) {
+      if (auctionsLoading) {
+        return (
+          <section>
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-yellow-600"></div>
+            </div>
+          </section>
+        );
+      }
     return (
       <section>
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
@@ -79,7 +120,6 @@ export default function AdminDashboard() {
   return (
     <section>
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
-
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {statCards.map((item) => (
@@ -135,13 +175,125 @@ export default function AdminDashboard() {
         </Link>
       </div>
 
-      {/* Recent Properties */}
-      <div className="mt-10">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Recent Properties</h2>
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
-          <p className="text-gray-600 text-sm">View recent property listings in the Properties section.</p>
+      {/* Today's Auctions (IST) */}
+      <div className="mb-8 mt-10">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+          <div className="text-lg font-semibold text-yellow-900 mb-2">
+            🏷️ Auctions Today (IST): <span className="text-yellow-800">{auctionsToday.length}</span>
+          </div>
+          {auctionsToday.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-yellow-100 border border-yellow-200 rounded-lg">
+                <thead>
+                  <tr className="text-yellow-900 text-left">
+                    <th className="py-2 px-3 font-semibold">ID</th>
+                    <th className="py-2 px-3 font-semibold">Name</th>
+                    <th className="py-2 px-3 font-semibold">Auction Date</th>
+                    <th className="py-2 px-3 font-semibold">Location</th>
+                    <th className="py-2 px-3 font-semibold">State</th>
+                    <th className="py-2 px-3 font-semibold">Status</th>
+                    <th className="py-2 px-3 font-semibold">View</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {auctionsToday.map((a) => (
+                    <tr key={a.id} className="border-t border-yellow-200 hover:bg-yellow-50 transition">
+                      <td className="py-2 px-3 text-xs text-gray-700">{a.id}</td>
+                      <td className="py-2 px-3 font-medium text-yellow-900">{a.name || a.id}</td>
+                      <td className="py-2 px-3">{a.AuctionDate}</td>
+                      <td className="py-2 px-3">{a.location}</td>
+                      <td className="py-2 px-3">{a.state}</td>
+                      <td className="py-2 px-3">{a.status}</td>
+                      <td className="py-2 px-3">
+                        <a
+                          href={`/properties/${a.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline hover:text-blue-800 text-sm"
+                        >
+                          View
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-yellow-800 text-sm">No auctions scheduled for today.</div>
+          )}
         </div>
       </div>
+
+      {/* Today's Inspections (IST) */}
+      <InspectionsTodayTable />
     </section>
+  );
+}
+
+function InspectionsTodayTable() {
+  const [inspections, setInspections] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    fetch("/api/admin/inspections-today", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setInspections(data.inspections || []);
+        setLoading(false);
+      });
+  }, []);
+  if (loading) return null;
+  return (
+    <div className="mb-8 mt-10">
+      <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+        <div className="text-lg font-semibold text-green-900 mb-2">
+          🕵️ Inspections Today (IST): <span className="text-green-800">{inspections.length}</span>
+        </div>
+        {inspections.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-green-100 border border-green-200 rounded-lg">
+              <thead>
+                <tr className="text-green-900 text-left">
+                  <th className="py-2 px-3 font-semibold">ID</th>
+                  <th className="py-2 px-3 font-semibold">Name</th>
+                  <th className="py-2 px-3 font-semibold">Inspection Date</th>
+                  <th className="py-2 px-3 font-semibold">Location</th>
+                  <th className="py-2 px-3 font-semibold">State</th>
+                  <th className="py-2 px-3 font-semibold">Status</th>
+                  <th className="py-2 px-3 font-semibold">View</th>
+                </tr>
+              </thead>
+              <tbody>
+                {inspections.map((a) => (
+                  <tr key={a.id} className="border-t border-green-200 hover:bg-green-50 transition">
+                    <td className="py-2 px-3 text-xs text-gray-700">{a.id}</td>
+                    <td className="py-2 px-3 font-medium text-green-900">{a.name || a.id}</td>
+                    <td className="py-2 px-3">{a.inspectionDate}</td>
+                    <td className="py-2 px-3">{a.location}</td>
+                    <td className="py-2 px-3">{a.state}</td>
+                    <td className="py-2 px-3">{a.status}</td>
+                    <td className="py-2 px-3">
+                      <a
+                        href={`/properties/${a.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline hover:text-blue-800 text-sm"
+                      >
+                        View
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-green-800 text-sm">No inspections scheduled for today.</div>
+        )}
+      </div>
+    </div>
   );
 }

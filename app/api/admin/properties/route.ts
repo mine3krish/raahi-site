@@ -18,10 +18,13 @@ export async function GET(req: Request) {
     const status = searchParams.get("status") || "";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
+    // New filters
+    const premium = searchParams.get("premium");
+    const featured = searchParams.get("featured");
+    const bestDeal = searchParams.get("bestDeal");
 
     // Build query
-    const query: any = {};
-    
+    const query: Record<string, unknown> = {};
     if (search) {
       query.$or = [
         { id: { $regex: search, $options: "i" } },
@@ -29,10 +32,16 @@ export async function GET(req: Request) {
         { location: { $regex: search, $options: "i" } },
       ];
     }
-    
     if (state) query.state = state;
     if (type) query.type = type;
     if (status) query.status = status;
+    // Add boolean filters if present (only filter if explicitly set to 'true' or 'false')
+    if (premium === "true") query.premium = true;
+    if (premium === "false") query.premium = false;
+    if (featured === "true") query.featured = true;
+    if (featured === "false") query.featured = false;
+    if (bestDeal === "true") query.bestDeal = true;
+    if (bestDeal === "false") query.bestDeal = false;
 
     // Get total count
     const total = await Property.countDocuments(query);
@@ -50,8 +59,10 @@ export async function GET(req: Request) {
       limit,
       totalPages: Math.ceil(total / limit),
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 403 });
+  } catch (err: unknown) {
+    let message = 'Unknown error';
+    if (err instanceof Error) message = err.message;
+    return NextResponse.json({ error: message }, { status: 403 });
   }
 }
 
@@ -79,7 +90,6 @@ export async function POST(req: NextRequest) {
       status: formData.get("status") as string || "Active",
       youtubeVideo: formData.get("youtubeVideo") as string || "",
       // Excel import fields
-      newListingId: formData.get("newListingId") as string || "",
       schemeName: formData.get("schemeName") as string || "",
       category: formData.get("category") as string || "",
       city: formData.get("city") as string || "",
@@ -117,7 +127,7 @@ export async function POST(req: NextRequest) {
     
     try {
       await mkdir(CDN_DIR, { recursive: true });
-    } catch (err) {
+    } catch {
       // Directory might already exist
     }
 
@@ -142,7 +152,7 @@ export async function POST(req: NextRequest) {
     if (noticeFile && noticeFile.size > 0) {
       try {
         await mkdir(getCDNDir(), { recursive: true });
-      } catch (err) {
+      } catch {
         // Directory might already exist
       }
       
@@ -170,8 +180,10 @@ export async function POST(req: NextRequest) {
       property: newProperty 
     }, { status: 201 });
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Property creation error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    let message = 'Unknown error';
+    if (err instanceof Error) message = err.message;
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

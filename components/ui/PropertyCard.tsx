@@ -30,7 +30,7 @@ export default function PropertyCard({
   };
 
   return (
-    <Link href={`/properties/${id}`} target="_blank" rel="noopener noreferrer" className="block w-full">
+    <Link href={`/properties/${id}`} className="block w-full">
       <div className="w-full max-w-sm border border-gray-200 rounded-xl bg-white transition hover:border-green-400">
         {/* Image Section */}
         <div className="relative w-full h-48">

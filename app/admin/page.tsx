@@ -16,6 +16,8 @@ import Link from "next/link";
 interface Stats {
   totalProperties: number;
   featuredProperties: number;
+  bestDealProperties: number;
+  premiumProperties: number;
   activeProperties: number;
   soldProperties: number;
   totalCommunities: number;
@@ -28,12 +30,16 @@ interface Stats {
 export default function AdminDashboard() {
     const [auctionsToday, setAuctionsToday] = useState<Auction[]>([]);
     const [auctionsLoading, setAuctionsLoading] = useState(true);
+    const [selectedAuctionDate, setSelectedAuctionDate] = useState(() => {
+      const now = new Date();
+      return now.toISOString().split('T')[0]; // YYYY-MM-DD
+    });
 
     useEffect(() => {
       const fetchAuctions = async () => {
         try {
           const token = localStorage.getItem("token");
-          const response = await fetch("/api/admin/auctions-today", {
+          const response = await fetch(`/api/admin/auctions-today?date=${selectedAuctionDate}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (response.ok) {
@@ -47,10 +53,12 @@ export default function AdminDashboard() {
         }
       };
       fetchAuctions();
-    }, []);
+    }, [selectedAuctionDate]);
   const [stats, setStats] = useState<Stats>({
     totalProperties: 0,
     featuredProperties: 0,
+    bestDealProperties: 0,
+    premiumProperties: 0,
     activeProperties: 0,
     soldProperties: 0,
     totalCommunities: 0,
@@ -86,14 +94,16 @@ export default function AdminDashboard() {
   }, []);
 
   const statCards = [
-    { name: "Total Properties", value: stats.totalProperties, icon: Building2, color: "blue" },
-    { name: "Featured Properties", value: stats.featuredProperties, icon: Star, color: "yellow" },
-    { name: "Active Properties", value: stats.activeProperties, icon: Home, color: "green" },
-    { name: "Communities", value: stats.totalCommunities, icon: Users, color: "purple" },
-    { name: "Total Contacts", value: stats.totalContacts, icon: MessageSquare, color: "indigo" },
-    { name: "New Contacts", value: stats.newContacts, icon: Mail, color: "pink" },
-    { name: "Agent Applications", value: stats.totalAgents, icon: Briefcase, color: "teal" },
-    { name: "Pending Agents", value: stats.pendingAgents, icon: UserCheck, color: "orange" },
+    { name: "Total Properties", value: stats.totalProperties, icon: Building2, color: "blue", link: "/admin/properties" },
+    { name: "Featured Properties", value: stats.featuredProperties, icon: Star, color: "yellow", link: "/admin/properties?featured=true" },
+    { name: "Best Deals", value: stats.bestDealProperties, icon: Home, color: "green", link: "/admin/properties?bestDeal=true" },
+    { name: "Premium", value: stats.premiumProperties, icon: Star, color: "purple", link: "/admin/properties?premium=true" },
+    { name: "Active Properties", value: stats.activeProperties, icon: Home, color: "green", link: "/admin/properties?status=Active" },
+    { name: "Communities", value: stats.totalCommunities, icon: Users, color: "purple", link: "/admin/communities" },
+    { name: "Total Contacts", value: stats.totalContacts, icon: MessageSquare, color: "indigo", link: "/admin/contacts" },
+    { name: "New Contacts", value: stats.newContacts, icon: Mail, color: "pink", link: "/admin/contacts?status=new" },
+    { name: "Agent Applications", value: stats.totalAgents, icon: Briefcase, color: "teal", link: "/admin/agents" },
+    { name: "Pending Agents", value: stats.pendingAgents, icon: UserCheck, color: "orange", link: "/admin/agents?status=pending" },
   ];
 
   if (loading) {
@@ -123,16 +133,15 @@ export default function AdminDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {statCards.map((item) => (
-          <div
-            key={item.name}
-            className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl p-5 transition"
-          >
-            <div>
-              <p className="text-gray-600 text-sm">{item.name}</p>
-              <h3 className="text-3xl font-bold text-gray-900 mt-1">{item.value}</h3>
+          <Link key={item.name} href={item.link || "#"}>
+            <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl p-5 transition hover:bg-gray-100 cursor-pointer">
+              <div>
+                <p className="text-gray-600 text-sm">{item.name}</p>
+                <h3 className="text-3xl font-bold text-gray-900 mt-1">{item.value}</h3>
+              </div>
+              <item.icon className={`w-10 h-10 text-${item.color}-600`} />
             </div>
-            <item.icon className={`w-10 h-10 text-${item.color}-600`} />
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -178,8 +187,16 @@ export default function AdminDashboard() {
       {/* Today's Auctions (IST) */}
       <div className="mb-8 mt-10">
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-          <div className="text-lg font-semibold text-yellow-900 mb-2">
-            🏷️ Auctions Today (IST): <span className="text-yellow-800">{auctionsToday.length}</span>
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-lg font-semibold text-yellow-900">
+              🏷️ Auctions on {new Date(selectedAuctionDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} (IST): <span className="text-yellow-800">{auctionsToday.length}</span>
+            </div>
+            <input
+              type="date"
+              value={selectedAuctionDate}
+              onChange={(e) => setSelectedAuctionDate(e.target.value)}
+              className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+            />
           </div>
           {auctionsToday.length > 0 ? (
             <div className="overflow-x-auto">
@@ -234,9 +251,13 @@ export default function AdminDashboard() {
 function InspectionsTodayTable() {
   const [inspections, setInspections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedInspectionDate, setSelectedInspectionDate] = useState(() => {
+    const now = new Date();
+    return now.toISOString().split('T')[0]; // YYYY-MM-DD
+  });
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("/api/admin/inspections-today", {
+    fetch(`/api/admin/inspections-today?date=${selectedInspectionDate}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -244,13 +265,21 @@ function InspectionsTodayTable() {
         setInspections(data.inspections || []);
         setLoading(false);
       });
-  }, []);
+  }, [selectedInspectionDate]);
   if (loading) return null;
   return (
     <div className="mb-8 mt-10">
       <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-        <div className="text-lg font-semibold text-green-900 mb-2">
-          🕵️ Inspections Today (IST): <span className="text-green-800">{inspections.length}</span>
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-lg font-semibold text-green-900">
+            🕵️ Inspections on {new Date(selectedInspectionDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} (IST): <span className="text-green-800">{inspections.length}</span>
+          </div>
+          <input
+            type="date"
+            value={selectedInspectionDate}
+            onChange={(e) => setSelectedInspectionDate(e.target.value)}
+            className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+          />
         </div>
         {inspections.length > 0 ? (
           <div className="overflow-x-auto">

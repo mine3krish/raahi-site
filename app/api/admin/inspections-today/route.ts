@@ -39,14 +39,11 @@ function parseDate(dateStr: string): Date | null {
   return null;
 }
 
-function isTodayIST(date: Date) {
-  const now = new Date();
-  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-  const istTime = new Date(utc + 5.5 * 60 * 60 * 1000);
+function isSameDateIST(date: Date, target: Date) {
   return (
-    date.getFullYear() === istTime.getFullYear() &&
-    date.getMonth() === istTime.getMonth() &&
-    date.getDate() === istTime.getDate()
+    date.getFullYear() === target.getFullYear() &&
+    date.getMonth() === target.getMonth() &&
+    date.getDate() === target.getDate()
   );
 }
 
@@ -54,14 +51,28 @@ export async function GET(req: NextRequest) {
   try {
     await connectDB();
     await verifyAdmin(req);
+    const { searchParams } = new URL(req.url);
+    const dateParam = searchParams.get('date');
+    let targetDate: Date;
+    if (dateParam) {
+      targetDate = new Date(dateParam);
+      if (isNaN(targetDate.getTime())) {
+        return NextResponse.json({ error: 'Invalid date format' }, { status: 400 });
+      }
+    } else {
+      // Default to today IST
+      const now = new Date();
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+      targetDate = new Date(utc + 5.5 * 60 * 60 * 1000);
+    }
     const allProperties = await Property.find({});
-    const todaysInspections = allProperties.filter((p: any) => {
+    const inspectionsOnDate = allProperties.filter((p: any) => {
       const d = parseDate(p.inspectionDate);
-      return d && isTodayIST(d);
+      return d && isSameDateIST(d, targetDate);
     });
     return NextResponse.json({
-      count: todaysInspections.length,
-      inspections: todaysInspections.map((p: any) => ({
+      count: inspectionsOnDate.length,
+      inspections: inspectionsOnDate.map((p: any) => ({
         id: p.id,
         name: p.name,
         inspectionDate: p.inspectionDate,

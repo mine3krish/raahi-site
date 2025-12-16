@@ -107,7 +107,12 @@ export default function PropertyDetailPage() {
         }
 
         // Fetch related properties
-        const relatedRes = await fetch(`/api/properties?state=${data.property.state}&type=${data.property.type}&limit=4`);
+        const extractCity = (location: string): string => {
+          const parts = location.split(',').map(p => p.trim());
+          return parts.length >= 2 ? parts[parts.length - 2] : location;
+        };
+        const city = extractCity(data.property.location);
+        const relatedRes = await fetch(`/api/properties?location=${encodeURIComponent(city)}&limit=4`);
         if (relatedRes.ok) {
           const relatedData = await relatedRes.json();
           // Filter out current property and limit to 4

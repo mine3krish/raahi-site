@@ -14,6 +14,8 @@ export async function GET(req: Request) {
     // Get property counts
     const totalProperties = await Property.countDocuments();
     const featuredProperties = await Property.countDocuments({ featured: true });
+    const bestDealProperties = await Property.countDocuments({ bestDeal: true });
+    const premiumProperties = await Property.countDocuments({ premium: true });
     const activeProperties = await Property.countDocuments({ status: "Active" });
     const soldProperties = await Property.countDocuments({ status: "Sold" });
     
@@ -31,6 +33,8 @@ export async function GET(req: Request) {
     return NextResponse.json({
       totalProperties,
       featuredProperties,
+      bestDealProperties,
+      premiumProperties,
       activeProperties,
       soldProperties,
       totalCommunities,

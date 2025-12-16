@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search") || "";
     const state = searchParams.get("state") || "";
     const type = searchParams.get("type") || "";
+    const location = searchParams.get("location") || "";
     const status = searchParams.get("status") || "Active"; // Default to Active only
     const featured = searchParams.get("featured");
     const page = parseInt(searchParams.get("page") || "1");
@@ -28,6 +29,7 @@ export async function GET(req: NextRequest) {
     
     if (state) query.state = state;
     if (type) query.type = type;
+    if (location) query.location = { $regex: location, $options: "i" };
     if (status) query.status = status; // Allow filtering by status
     if (featured === "true") query.featured = true;
     

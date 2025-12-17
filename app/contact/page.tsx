@@ -20,6 +20,7 @@ export default function ContactPage() {
     contactPhone: "+91 84888 48874",
     contactAddress: "BG Tower, A/701, Delhi Darwaja Gate, Hatisingwadi, Bardolpura, Madhupura, Ahmedabad, Gujarat 380016",
     officeHours: "Mon - Sat: 9:00 AM - 6:00 PM",
+    branches: [],
   });
 
   useEffect(() => {
@@ -36,6 +37,7 @@ export default function ContactPage() {
           contactPhone: data.contactPhone || settings.contactPhone,
           contactAddress: data.contactAddress || settings.contactAddress,
           officeHours: data.officeHours || settings.officeHours,
+          branches: data.branches || [],
         });
       }
     } catch (error) {
@@ -320,6 +322,69 @@ export default function ContactPage() {
                 business days. For urgent matters, please call us directly.
               </p>
             </div>
+
+            {settings.branches && settings.branches.length > 0 && (
+              <div className="bg-white rounded-2xl p-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-6">
+                  Our Branches
+                </h3>
+                <div className="space-y-6">
+                  {settings.branches
+                    .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+                    .map((branch: any, index: number) => (
+                      <motion.div
+                        key={branch._id || index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="p-3 bg-blue-100 rounded-xl">
+                            <MapPin className="text-blue-600" size={24} />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900 mb-2">
+                              {branch.name}
+                              {branch.isMain && (
+                                <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                                  Main Office
+                                </span>
+                              )}
+                            </h4>
+                            <div className="space-y-2 text-gray-600">
+                              <p>{branch.address}</p>
+                              {branch.city && branch.state && (
+                                <p>{branch.city}, {branch.state}</p>
+                              )}
+                              {branch.phone && (
+                                <p>
+                                  <a
+                                    href={`tel:${branch.phone.replace(/\s/g, "")}`}
+                                    className="hover:text-green-600 transition"
+                                  >
+                                    {branch.phone}
+                                  </a>
+                                </p>
+                              )}
+                              {branch.email && (
+                                <p>
+                                  <a
+                                    href={`mailto:${branch.email}`}
+                                    className="hover:text-green-600 transition"
+                                  >
+                                    {branch.email}
+                                  </a>
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                </div>
+              </div>
+            )}
           </motion.div>
         </div>
       </div>

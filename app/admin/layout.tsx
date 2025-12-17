@@ -45,6 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <AdminLink href="/admin/properties">Properties</AdminLink>
             <AdminLink href="/admin/templates">Templates</AdminLink>
             <AdminLink href="/admin/communities">Communities</AdminLink>
+            <AdminLink href="/admin/branches">Manage Branches</AdminLink>
             <AdminLink href="/admin/contacts">Contacts</AdminLink>
             <AdminLink href="/admin/agents">Agents</AdminLink>
             <AdminLink href="/admin/users">Users</AdminLink>

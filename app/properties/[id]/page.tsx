@@ -450,7 +450,7 @@ export default function PropertyDetailPage() {
                       {formatIndianPrice(property.reservePrice)}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xl text-gray-500 font-bold mt-1">
                     ₹{property.reservePrice.toLocaleString('en-IN')}
                   </p>
                 </div>

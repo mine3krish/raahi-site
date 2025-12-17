@@ -65,6 +65,23 @@ export default function Home() {
           </div>
         </div>
       </section>
+      {/* Google Reviews Widget */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+              What Our Customers Say
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Read genuine reviews from our satisfied customers across Google
+            </p>
+          </div>
+          <div className="max-w-4xl mx-auto">
+            <div className="sk-ww-google-reviews" data-embed-id="25634330"></div>
+            <script src="https://widgets.sociablekit.com/google-reviews/widget.js" defer></script>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

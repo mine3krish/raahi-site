@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
       heroTitle: settings.heroTitle,
       heroSubtitle: settings.heroSubtitle,
       propertyPlaceholderImage: settings.propertyPlaceholderImage,
+      branches: settings.branches || [],
     });
   } catch (error) {
     console.error("Settings fetch error:", error);

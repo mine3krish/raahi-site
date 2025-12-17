@@ -177,6 +177,12 @@ export default function AdminDashboard() {
           Agent Applications
         </Link>
         <Link
+          href="/admin/branches"
+          className="bg-gray-100 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-200 transition font-medium"
+        >
+          Manage Branches
+        </Link>
+        <Link
           href="/admin/users"
           className="bg-gray-100 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-200 transition font-medium"
         >

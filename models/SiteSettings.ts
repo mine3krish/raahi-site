@@ -16,6 +16,17 @@ const PartnerSchema = new Schema({
   order: { type: Number, default: 0 },
 });
 
+const BranchSchema = new Schema({
+  name: { type: String, required: true },
+  address: { type: String, required: true },
+  phone: { type: String },
+  email: { type: String },
+  city: { type: String },
+  state: { type: String },
+  isMain: { type: Boolean, default: false },
+  order: { type: Number, default: 0 },
+});
+
 const BannerSchema = new Schema({
   image: { type: String, required: true },
   link: { type: String, default: "" },
@@ -74,6 +85,9 @@ const SiteSettingsSchema = new Schema(
     
     // Partners
     partners: [PartnerSchema],
+    
+    // Branches
+    branches: [BranchSchema],
     
     // Property Page Banners
     propertyBanners: [BannerSchema],

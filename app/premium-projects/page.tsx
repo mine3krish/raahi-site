@@ -1,14 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import PremiumProjectGrid from "@/components/ui/PremiumProjectGrid";
 import PremiumProjectFilters from "@/components/ui/PremiumProjectFilters";
 import { formatIndianPrice } from "@/lib/constants";
+import PremiumProjectGrid from "@/components/ui/PremiumProjectGrid";
 
 const PAGE_SIZE = 12;
 
+
 export default function PremiumProjectsPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center py-20"><div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-300 border-t-green-600"></div></div>}>
+      <PremiumProjectsPageContent />
+    </Suspense>
+  );
+}
+
+function PremiumProjectsPageContent() {
   const searchParams = useSearchParams();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -93,9 +102,11 @@ export default function PremiumProjectsPage() {
                       } else {
                         pageNum = currentPage - 2 + i;
                       }
+                      // Ensure key is always unique and not undefined/null
+                      const key = `page-btn-${pageNum}`;
                       return (
                         <button
-                          key={pageNum}
+                          key={key}
                           onClick={() => handlePageChange(pageNum)}
                           className={`px-2.5 sm:px-3 py-2 rounded-lg font-medium text-xs sm:text-sm transition whitespace-nowrap ${
                             currentPage === pageNum

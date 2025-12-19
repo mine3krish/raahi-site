@@ -49,6 +49,7 @@ export async function GET(request: NextRequest) {
       instagramUrl: settings.instagramUrl,
       linkedinUrl: settings.linkedinUrl,
       youtubeUrl: settings.youtubeUrl,
+      telegramUrl: settings.telegramUrl,
       teamMembers: settings.teamMembers,
       partners: settings.partners,
       propertyBanners: settings.propertyBanners,

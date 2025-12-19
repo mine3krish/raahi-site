@@ -1678,15 +1678,17 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      YouTube URL
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">YouTube URL</label>
+                    <input type="url" value={settings.youtubeUrl} onChange={(e) => setSettings({ ...settings, youtubeUrl: e.target.value })} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="https://youtube.com/..." />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Telegram URL</label>
                     <input
                       type="url"
-                      value={settings.youtubeUrl}
-                      onChange={(e) => setSettings({ ...settings, youtubeUrl: e.target.value })}
+                      value={settings.telegramUrl || ""}
+                      onChange={(e) => setSettings({ ...settings, telegramUrl: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                      placeholder="https://youtube.com/..."
+                      placeholder="https://t.me/yourchannel"
                     />
                   </div>
                 </div>

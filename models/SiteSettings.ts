@@ -109,18 +109,8 @@ const SiteSettingsSchema = new Schema(
     wahaSessionName: { type: String, default: "" },
     wahaApiKey: { type: String, default: "" },
 
-    // Telegram Global Config
-    telegramBotToken: { type: String, default: "" },
-    telegramChannels: {
-      type: [
-        {
-          name: { type: String, required: true },
-          id: { type: String, required: true },
-          enabled: { type: Boolean, default: true },
-        },
-      ],
-      default: [],
-    },
+    // Telegram Social Link
+    telegramUrl: { type: String, default: "" },
   },
   { timestamps: true }
 );

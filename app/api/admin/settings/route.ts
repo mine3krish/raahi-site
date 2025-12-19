@@ -40,6 +40,7 @@ export async function GET(request: NextRequest) {
           instagramUrl: settings.instagramUrl,
           linkedinUrl: settings.linkedinUrl,
           youtubeUrl: settings.youtubeUrl,
+          telegramUrl: settings.telegramUrl,
           teamMembers: settings.teamMembers,
           partners: settings.partners,
           testimonials: settings.testimonials,
@@ -86,12 +87,11 @@ export async function PUT(request: NextRequest) {
     const fields = [
       "contactEmail", "contactPhone", "contactAddress", "officeHours",
       "aboutTitle", "aboutDescription", "missionStatement", "visionStatement",
-      "facebookUrl", "twitterUrl", "instagramUrl", "linkedinUrl", "youtubeUrl",
+      "facebookUrl", "twitterUrl", "instagramUrl", "linkedinUrl", "youtubeUrl", "telegramUrl",
       "adsenseClientId", "adsenseSlotHeader", "adsenseSlotSidebar", "adsenseSlotFooter",
       "whatsappNumber", "wahaBaseUrl", "wahaSessionName", "wahaApiKey",
       "footerText", "siteTitle", "siteDescription", "siteKeywords",
-      "heroImage", "heroTitle", "heroSubtitle", "propertyPlaceholderImage",
-      "telegramBotToken"
+      "heroImage", "heroTitle", "heroSubtitle", "propertyPlaceholderImage"
     ];
 
     fields.forEach((field) => {
@@ -130,14 +130,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Handle telegram channels
-    const telegramChannelsJson = formData.get("telegramChannels");
-    if (telegramChannelsJson) {
-      try {
-        settings.telegramChannels = JSON.parse(telegramChannelsJson as string);
-      } catch (e) {
-        settings.telegramChannels = [];
-      }
-    }
+    // (No longer handling telegramChannels array)
 
     // Check if placeholder image was updated and update properties
     const newPlaceholderImage = formData.get("propertyPlaceholderImage") as string;

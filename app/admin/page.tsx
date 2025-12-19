@@ -18,6 +18,7 @@ interface Stats {
   featuredProperties: number;
   bestDealProperties: number;
   premiumProperties: number;
+  totalPremiumProjects: number;
   activeProperties: number;
   soldProperties: number;
   totalCommunities: number;
@@ -59,6 +60,7 @@ export default function AdminDashboard() {
     featuredProperties: 0,
     bestDealProperties: 0,
     premiumProperties: 0,
+    totalPremiumProjects: 0,
     activeProperties: 0,
     soldProperties: 0,
     totalCommunities: 0,
@@ -98,6 +100,7 @@ export default function AdminDashboard() {
     { name: "Featured Properties", value: stats.featuredProperties, icon: Star, color: "yellow", link: "/admin/properties?featured=true" },
     { name: "Best Deals", value: stats.bestDealProperties, icon: Home, color: "green", link: "/admin/properties?bestDeal=true" },
     { name: "Premium", value: stats.premiumProperties, icon: Star, color: "purple", link: "/admin/properties?premium=true" },
+    { name: "Premium Projects", value: stats.totalPremiumProjects, icon: Building2, color: "emerald", link: "/admin/premium-projects" },
     { name: "Active Properties", value: stats.activeProperties, icon: Home, color: "green", link: "/admin/properties?status=Active" },
     { name: "Communities", value: stats.totalCommunities, icon: Users, color: "purple", link: "/admin/communities" },
     { name: "Total Contacts", value: stats.totalContacts, icon: MessageSquare, color: "indigo", link: "/admin/contacts" },

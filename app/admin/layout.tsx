@@ -43,6 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <nav className="space-y-2">
             <AdminLink href="/admin">Dashboard</AdminLink>
             <AdminLink href="/admin/properties">Properties</AdminLink>
+            <AdminLink href="/admin/premium-projects">Premium Projects</AdminLink>
             <AdminLink href="/admin/templates">Templates</AdminLink>
             <AdminLink href="/admin/communities">Communities</AdminLink>
             <AdminLink href="/admin/branches">Manage Branches</AdminLink>

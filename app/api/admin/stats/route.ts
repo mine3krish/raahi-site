@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import Property from "@/models/Property";
+import PremiumProject from "@/models/PremiumProject";
 import Community from "@/models/Community";
 import Contact from "@/models/Contact";
 import Agent from "@/models/Agent";
@@ -19,6 +20,9 @@ export async function GET(req: Request) {
     const activeProperties = await Property.countDocuments({ status: "Active" });
     const soldProperties = await Property.countDocuments({ status: "Sold" });
     
+    // Get premium projects count
+    const totalPremiumProjects = await PremiumProject.countDocuments();
+    
     // Get community count
     const totalCommunities = await Community.countDocuments();
     
@@ -35,6 +39,7 @@ export async function GET(req: Request) {
       featuredProperties,
       bestDealProperties,
       premiumProperties,
+      totalPremiumProjects,
       activeProperties,
       soldProperties,
       totalCommunities,

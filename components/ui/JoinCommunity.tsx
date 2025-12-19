@@ -49,7 +49,24 @@ export default function JoinCommunity() {
         </motion.div>
 
         {/* Social Media Links */}
-        {settings && (settings.facebookUrl || settings.instagramUrl || settings.linkedinUrl || settings.youtubeUrl || settings.snapchatUrl || settings.whatsappNumber) && (
+        {settings && (
+          settings.facebookUrl || settings.instagramUrl || settings.linkedinUrl || settings.youtubeUrl || settings.snapchatUrl || settings.whatsappNumber || (Array.isArray(settings.telegramChannels) && settings.telegramChannels.some((ch:any) => ch.enabled))
+        ) && (
+                      {/* Telegram Channels */}
+                      {Array.isArray(settings.telegramChannels) && settings.telegramChannels.filter((ch:any) => ch.enabled).map((channel:any, idx:number) => (
+                        <a
+                          key={channel.id || idx}
+                          href={`https://t.me/${channel.id.replace(/^@/,"")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-white hover:bg-gray-100 p-3 rounded-full transition shadow-lg"
+                          aria-label="Telegram"
+                        >
+                          <svg className="w-6 h-6 text-[#0088cc]" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0C5.371 0 0 5.371 0 12c0 6.629 5.371 12 12 12s12-5.371 12-12c0-6.629-5.371-12-12-12zm5.707 7.293l-2.829 10.607c-.213.803-.646.998-1.309.623l-2.063-1.523-1.001.964c-.11.11-.203.203-.417.203l.149-2.115 7.693-6.949c.334-.297-.073-.463-.518-.166l-9.51 5.998-2.051-.641c-.446-.139-.455-.446.093-.659l16.012-6.174c.373-.139.699.09.579.646z"/>
+                          </svg>
+                        </a>
+                      ))}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

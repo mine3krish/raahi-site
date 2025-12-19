@@ -14,9 +14,9 @@ interface NavLink {
 const Links: NavLink[] = [
   { name: "Home", href: "/" },
   { name: "Properties", href: "/properties" },
+  { name: "Premium Projects", href: "/premium-projects" },
   { name: "About Us", href: "/about" },
   { name: "Communities", href: "/communities" },
-  { name: "Newspaper", href: "/newspaper" },
   { name: "Join as Member", href: "/join" },
   { name: "Contact Us", href: "/contact" },
 ];
@@ -189,6 +189,13 @@ export default function Navbar() {
                 className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-white rounded-xl transition-all"
               >
                 Properties
+              </Link>
+              <Link
+                href="/premium-projects"
+                onClick={closeMenu}
+                className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-white rounded-xl transition-all"
+              >
+                Premium Projects
               </Link>
               <Link
                 href="/about"

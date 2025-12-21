@@ -54,6 +54,10 @@ export async function PUT(
       status: formData.get("status") as string || "Active",
       featured: formData.get("featured") === "true",
       agentNumber: formData.get("agentNumber") as string || "",
+      variants: formData.get("variants") ? JSON.parse(formData.get("variants") as string) : [],
+      whyBuy: formData.get("whyBuy") ? JSON.parse(formData.get("whyBuy") as string) : [],
+      features: formData.get("features") ? JSON.parse(formData.get("features") as string) : [],
+      ytVideoLink: formData.get("ytVideoLink") as string || "",
     };
 
     // Handle image uploads
@@ -109,11 +113,16 @@ export async function PUT(
       ...(brochureUrl && { brochure: brochureUrl }),
     };
 
-    const project = await PremiumProject.findByIdAndUpdate(
-      projectId,
-      updateData,
-      { new: true }
-    );
+    // Find the project first (by _id or custom id)
+    let project = null;
+    try {
+      project = await PremiumProject.findById(projectId);
+    } catch (e) {
+      // Ignore cast error
+    }
+    if (!project) {
+      project = await PremiumProject.findOne({ id: projectId });
+    }
 
     if (!project) {
       return NextResponse.json(
@@ -121,6 +130,12 @@ export async function PUT(
         { status: 404 }
       );
     }
+
+    const updatedProject = await PremiumProject.findByIdAndUpdate(
+      project._id,
+      updateData,
+      { new: true }
+    );
 
     return NextResponse.json({ project });
   } catch (err: any) {

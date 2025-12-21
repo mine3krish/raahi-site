@@ -71,6 +71,10 @@ export async function POST(req: NextRequest) {
       status: formData.get("status") as string || "Active",
       featured: formData.get("featured") === "true",
       agentNumber: formData.get("agentNumber") as string || "",
+      variants: formData.get("variants") ? JSON.parse(formData.get("variants") as string) : [],
+      whyBuy: formData.get("whyBuy") ? JSON.parse(formData.get("whyBuy") as string) : [],
+      features: formData.get("features") ? JSON.parse(formData.get("features") as string) : [],
+      ytVideoLink: formData.get("ytVideoLink") as string || "",
     };
 
     // Handle image uploads
@@ -122,6 +126,101 @@ export async function POST(req: NextRequest) {
     await project.save();
 
     return NextResponse.json({ project }, { status: 201 });
+  } catch (err: unknown) {
+    let message = 'Unknown error';
+    if (err instanceof Error) message = err.message;
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    await connectDB();
+    await verifyAdmin(req);
+
+    const url = new URL(req.url);
+    const projectId = url.pathname.split('/').pop();
+
+    if (!projectId) {
+      return NextResponse.json({ error: "Project ID required" }, { status: 400 });
+    }
+
+    const formData = await req.formData();
+
+    // Extract text fields
+    const projectData = {
+      id: formData.get("id") as string,
+      name: formData.get("name") as string,
+      location: formData.get("location") as string,
+      description: formData.get("description") as string,
+      price: formData.get("price") as string,
+      builder: formData.get("builder") as string || "",
+      status: formData.get("status") as string || "Active",
+      featured: formData.get("featured") === "true",
+      agentNumber: formData.get("agentNumber") as string || "",
+      variants: formData.get("variants") ? JSON.parse(formData.get("variants") as string) : [],
+      whyBuy: formData.get("whyBuy") ? JSON.parse(formData.get("whyBuy") as string) : [],
+      features: formData.get("features") ? JSON.parse(formData.get("features") as string) : [],
+      ytVideoLink: formData.get("ytVideoLink") as string || "",
+    };
+
+    // Handle existing images
+    const existingImages = formData.get("existingImages") ? JSON.parse(formData.get("existingImages") as string) : [];
+    const imageUrls: string[] = [...existingImages];
+
+    const CDN_DIR = getCDNDir();
+
+    try {
+      await mkdir(CDN_DIR, { recursive: true });
+    } catch {
+      // Directory might already exist
+    }
+
+    // Process new image files
+    for (const [key, value] of formData.entries()) {
+      if (key.startsWith("image_") && value instanceof File) {
+        const file = value;
+        const unique = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+        const filepath = path.join(CDN_DIR, unique);
+
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        await writeFile(filepath, buffer);
+
+        imageUrls.push(getCDNUrl(unique));
+      }
+    }
+
+    // Handle brochure
+    let brochureUrl = formData.get("existingBrochure") as string || "";
+    const brochureFile = formData.get("brochure") as File;
+    if (brochureFile && brochureFile.size > 0) {
+      const unique = `${Date.now()}-${Math.random().toString(36).substring(7)}.pdf`;
+      const filepath = path.join(CDN_DIR, unique);
+
+      const bytes = await brochureFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      await writeFile(filepath, buffer);
+
+      brochureUrl = getCDNUrl(unique);
+    }
+
+    // Update project
+    const updatedProject = await PremiumProject.findByIdAndUpdate(
+      projectId,
+      {
+        ...projectData,
+        images: imageUrls,
+        brochure: brochureUrl || undefined,
+      },
+      { new: true }
+    );
+
+    if (!updatedProject) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ project: updatedProject }, { status: 200 });
   } catch (err: unknown) {
     let message = 'Unknown error';
     if (err instanceof Error) message = err.message;

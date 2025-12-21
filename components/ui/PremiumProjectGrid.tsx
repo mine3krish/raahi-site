@@ -18,6 +18,26 @@ interface PremiumProject {
   images: string[];
   brochure?: string;
 }
+  interface Variant {
+    type: string;
+    propertyType: string;
+    area: string;
+    areaSqm?: string;
+    price: string;
+    priceNote?: string;
+  }
+
+  interface PremiumProject {
+    id: string;
+    name: string;
+    location: string;
+    description: string;
+    price: string;
+    images: string[];
+    brochure?: string;
+    variants?: Variant[];
+    whyBuy?: string[];
+  }
 
 interface PremiumProjectGridProps {
   projects: PremiumProject[];
@@ -70,7 +90,8 @@ export default function PremiumProjectGrid({ projects, total }: PremiumProjectGr
                     price={project.price}
                     images={project.images}
                     brochure={project.brochure}
-                  />
+                    variants={project.variants}
+                    />
                 </div>
                 {/* Insert ad after every 10 projects */}
                 {(index + 1) % 10 === 0 && index !== projects.length - 1 && (

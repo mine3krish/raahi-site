@@ -68,6 +68,19 @@ function PremiumProjectsPageContent() {
 
   return (
     <div>
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-green-600 to-green-800 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Premium Projects</h1>
+          <p className="text-xl md:text-2xl mb-8 text-green-100">Discover exclusive premium properties in prime locations</p>
+          <div className="flex flex-wrap justify-center gap-4 text-sm">
+            <div className="bg-white/10 px-4 py-2 rounded-full">✓ Verified Projects</div>
+            <div className="bg-white/10 px-4 py-2 rounded-full">✓ Direct from Builders</div>
+            <div className="bg-white/10 px-4 py-2 rounded-full">✓ Best Price Guarantee</div>
+          </div>
+        </div>
+      </div>
+
       <PremiumProjectFilters />
       {loading ? (
         <div className="flex justify-center items-center py-20">

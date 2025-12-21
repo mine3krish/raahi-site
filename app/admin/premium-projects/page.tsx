@@ -13,6 +13,10 @@ interface PremiumProject {
   description: string;
   price: string;
   images: string[];
+  variants: any[];
+  whyBuy: string[];
+  features: string[];
+  ytVideoLink?: string;
   brochure?: string;
   status: string;
   featured: boolean;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Upload, X } from "lucide-react";
@@ -12,6 +12,15 @@ export default function AddPremiumProjectPage() {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [brochureFile, setBrochureFile] = useState<File | null>(null);
 
+  // New states for arrays
+  const [variants, setVariants] = useState<any[]>([]);
+  const [whyBuy, setWhyBuy] = useState<string[]>([]);
+  const [features, setFeatures] = useState<string[]>([]);
+
+  // Refs for textareas
+  const featuresRef = useRef<HTMLTextAreaElement>(null);
+  const whyBuyRef = useRef<HTMLTextAreaElement>(null);
+
   const [formData, setFormData] = useState({
     id: "",
     name: "",
@@ -22,6 +31,10 @@ export default function AddPremiumProjectPage() {
     status: "Active",
     featured: false,
     agentNumber: "",
+    variants: [] as any[],
+    whyBuy: [] as string[],
+    features: [] as string[],
+    ytVideoLink: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -58,6 +71,18 @@ export default function AddPremiumProjectPage() {
       Object.entries(formData).forEach(([key, value]) => {
         submitData.append(key, value.toString());
       });
+
+      // Get current values from refs
+      const featuresValue = featuresRef.current ? featuresRef.current.value : '';
+      const featuresArray = featuresValue === '' ? [] : featuresValue.split('\n').map(line => line.trim()).filter(line => line);
+
+      const whyBuyValue = whyBuyRef.current ? whyBuyRef.current.value : '';
+      const whyBuyArray = whyBuyValue === '' ? [] : whyBuyValue.split('\n').map(line => line.trim()).filter(line => line);
+
+      // Add arrays as JSON
+      submitData.append("variants", JSON.stringify(variants));
+      submitData.append("whyBuy", JSON.stringify(whyBuyArray));
+      submitData.append("features", JSON.stringify(featuresArray));
 
       // Add images
       imageFiles.forEach((file, index) => {
@@ -238,6 +263,135 @@ export default function AddPremiumProjectPage() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               placeholder="Enter agent's contact number"
             />
+          </div>
+
+          {/* YouTube Video Link */}
+          <div className="mb-4">
+            <label htmlFor="ytVideoLink" className="block text-sm font-medium text-gray-700 mb-1">YouTube Video Link</label>
+            <input
+              type="url"
+              name="ytVideoLink"
+              id="ytVideoLink"
+              value={formData.ytVideoLink}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+          </div>
+
+          {/* Features */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Features (one per line)</label>
+            <textarea
+              ref={featuresRef}
+              defaultValue={features.join('\n')}
+              onBlur={() => {
+                const value = featuresRef.current?.value || '';
+                if (value === '') {
+                  setFeatures([]);
+                } else {
+                  setFeatures(value.split('\n').map(line => line.trim()).filter(line => line));
+                }
+              }}
+              rows={4}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              placeholder="Swimming Pool
+Gym
+Parking
+..."
+            />
+          </div>
+
+          {/* Why Buy */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Why You Should Buy (one per line)</label>
+            <textarea
+              ref={whyBuyRef}
+              defaultValue={whyBuy.join('\n')}
+              onBlur={() => {
+                const value = whyBuyRef.current?.value || '';
+                if (value === '') {
+                  setWhyBuy([]);
+                } else {
+                  setWhyBuy(value.split('\n').map(line => line.trim()).filter(line => line));
+                }
+              }}
+              rows={4}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              placeholder="Prime location
+Modern amenities
+Investment potential
+..."
+            />
+          </div>
+
+          {/* Variants */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Variable Products (Variants)</label>
+            {variants.map((variant, index) => (
+              <div key={index} className="border border-gray-300 rounded-lg p-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <input
+                    type="text"
+                    placeholder="Type (e.g., 2 BHK)"
+                    value={variant.type || ''}
+                    onChange={(e) => {
+                      const newVariants = [...variants];
+                      newVariants[index].type = e.target.value;
+                      setVariants(newVariants);
+                    }}
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Property Type (e.g., Apartment)"
+                    value={variant.propertyType || ''}
+                    onChange={(e) => {
+                      const newVariants = [...variants];
+                      newVariants[index].propertyType = e.target.value;
+                      setVariants(newVariants);
+                    }}
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Area (e.g., 1200 sq.ft.)"
+                    value={variant.area || ''}
+                    onChange={(e) => {
+                      const newVariants = [...variants];
+                      newVariants[index].area = e.target.value;
+                      setVariants(newVariants);
+                    }}
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Price (e.g., ₹ 50 Lac)"
+                    value={variant.price || ''}
+                    onChange={(e) => {
+                      const newVariants = [...variants];
+                      newVariants[index].price = e.target.value;
+                      setVariants(newVariants);
+                    }}
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setVariants(variants.filter((_, i) => i !== index))}
+                  className="text-red-600 hover:text-red-800 text-sm"
+                >
+                  Remove Variant
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setVariants([...variants, { type: '', propertyType: '', area: '', price: '' }])}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            >
+              + Add Variant
+            </button>
           </div>
 
           {/* Image Upload */}

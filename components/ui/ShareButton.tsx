@@ -24,6 +24,7 @@ interface ShareButtonProps {
   area?: string;
   assetAddress?: string;
   agentMobile?: string;
+  isPremium?: boolean;
 }
 
 export default function ShareButton({
@@ -40,6 +41,7 @@ export default function ShareButton({
   area = "",
   assetAddress = "",
   agentMobile = "+91 848 884 8874",
+  isPremium = false,
 }: ShareButtonProps) {
   const [showShareModal, setShowShareModal] = useState(false);
   
@@ -73,7 +75,7 @@ export default function ShareButton({
 🌐 For more details, visit: www.raahiauction.com`;
   };
 
-  const shareUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/properties/${propertyId}`;
+  const shareUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}${isPremium ? '/premium-projects' : '/properties'}/${propertyId}`;
   const caption = generateCaption();
 
   const handleShareClick = async () => {
@@ -89,7 +91,7 @@ export default function ShareButton({
             e.stopPropagation();
             handleShareClick();
           }}
-          className="p-2 rounded-full bg-white/90 text-gray-600 hover:bg-green-500 hover:text-white transition-all"
+          className="p-2 rounded-full bg-white/90 text-gray-600 hover:bg-green-500 hover:text-white transition-colors duration-200 ease-in-out"
           title="Share Property"
         >
           <Share2 size={18} strokeWidth={2} />
@@ -157,7 +159,7 @@ export default function ShareButton({
                         }}
                         className="flex flex-col items-center gap-2"
                       >
-                        <div className="hover:scale-110 transition">
+                        <div className="hover:scale-110 transition-transform duration-200 ease-in-out">
                           <WhatsappIcon size={56} round />
                         </div>
                         <span className="text-xs text-gray-600">WhatsApp</span>
@@ -172,7 +174,7 @@ export default function ShareButton({
                         }}
                         className="flex flex-col items-center gap-2"
                       >
-                        <div className="hover:scale-110 transition">
+                        <div className="hover:scale-110 transition-transform duration-200 ease-in-out">
                           <FacebookIcon size={56} round />
                         </div>
                         <span className="text-xs text-gray-600">Facebook</span>
@@ -187,7 +189,7 @@ export default function ShareButton({
                         }}
                         className="flex flex-col items-center gap-2"
                       >
-                        <div className="hover:scale-110 transition">
+                        <div className="hover:scale-110 transition-transform duration-200 ease-in-out">
                           <TwitterIcon size={56} round />
                         </div>
                         <span className="text-xs text-gray-600">Twitter</span>
@@ -202,7 +204,7 @@ export default function ShareButton({
                         }}
                         className="flex flex-col items-center gap-2"
                       >
-                        <div className="hover:scale-110 transition">
+                        <div className="hover:scale-110 transition-transform duration-200 ease-in-out">
                           <LinkedinIcon size={56} round />
                         </div>
                         <span className="text-xs text-gray-600">LinkedIn</span>
@@ -219,7 +221,7 @@ export default function ShareButton({
                         }}
                         className="flex flex-col items-center gap-2"
                       >
-                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 flex items-center justify-center hover:scale-110 transition">
+                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 flex items-center justify-center hover:scale-110 transition-transform duration-200 ease-in-out">
                           <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
                             <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" strokeWidth="2"/>
                             <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="2"/>

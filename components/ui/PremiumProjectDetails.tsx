@@ -81,20 +81,19 @@ export default function PremiumProjectDetails({ project }: { project: any }) {
                     
                     {/* Action Buttons with Refined Style */}
                     <div className="flex gap-2 md:gap-3 md:ml-6">
-                      <div className="transform hover:scale-105 transition-transform">
-                        <ShareButton
-                          propertyId={project.id}
-                          propertyName={project.name}
-                          location={project.location}
-                          price={project.price}
-                          image={mainImage}
-                          compact
-                        />
-                      </div>
+                      <ShareButton
+                        propertyId={project.id}
+                        propertyName={project.name}
+                        location={project.location}
+                        price={project.price}
+                        image={mainImage}
+                        compact
+                        isPremium
+                      />
                       <button
                         onClick={handleWishlistClick}
                         disabled={loading}
-                        className={`p-2.5 md:p-3.5 rounded-xl transition-all transform hover:scale-105 ${
+                        className={`p-2.5 md:p-3.5 rounded-xl transition-colors duration-200 ease-in-out ${
                           inWishlist 
                             ? "bg-gradient-to-br from-red-500 to-red-600 text-white" 
                             : "bg-white text-gray-400 hover:bg-gradient-to-br hover:from-red-500 hover:to-red-600 hover:text-white"}

@@ -76,11 +76,12 @@ export default function PremiumProjectCard({
               price={price}
               image={mainImage}
               compact
+              isPremium
             />
             <button
               onClick={handleWishlistClick}
               disabled={loading}
-              className={`p-2 rounded-full transition-all ${
+              className={`p-2 rounded-full transition-colors duration-200 ease-in-out ${
                 inWishlist 
                   ? "bg-red-500 text-white" 
                   : "bg-white/90 text-gray-600 hover:bg-red-500 hover:text-white"

@@ -921,7 +921,8 @@ export default function EditPropertyPage() {
               <option value="Commercial">Commercial</option>
               <option value="Land">Land</option>
               <option value="Industrial">Industrial</option>
-              <option value="Others">Others</option>
+              <option value="Vehicle">Vehicle</option>
+              <option value="Gold">Gold</option>
             </select>
           </div>
 

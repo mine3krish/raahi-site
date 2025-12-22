@@ -291,12 +291,6 @@ async function parseExcelFile(
       const reservePriceRaw = row.reservePrice || row.price || row.ReservePrice;
       const auctionDate = row.date;
       
-      // Filter out "Others" category
-      if (type && String(type).trim().toLowerCase() === 'others') {
-        console.log(`⊘ Row ${rowNum}: Skipped - "Others" category filtered out`);
-        continue;
-      }
-      
       // Validate required fields
       if (!type || type === "" || String(type).trim() === "") {
         errors.push(`Row ${rowNum}: Missing required field - type`);

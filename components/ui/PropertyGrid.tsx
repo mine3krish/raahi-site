@@ -15,6 +15,7 @@ interface Property {
   location: string;
   price: string;
   image: string;
+  auctionDate?: string;
 }
 
 interface PropertyGridProps {
@@ -65,6 +66,7 @@ export default function PropertyGrid({ properties, total }: PropertyGridProps) {
                     location={property.location}
                     price={property.price}
                     image={property.image}
+                    auctionDate={property.AuctionDate || property.auctionDate}
                   />
                 </div>
                 {/* Insert ad after every 10 properties */}

@@ -90,6 +90,7 @@ function PropertiesContent() {
       location: locationParts.length > 0 ? locationParts.join(', ') : 'Location not specified',
       price: formatIndianPrice(p.reservePrice),
       image: p.images[0] || placeholderImage,
+      auctionDate: p.AuctionDate || p.auctionDate,
     };
   });
 

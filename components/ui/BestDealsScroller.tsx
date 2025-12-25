@@ -10,6 +10,7 @@ interface Property {
   reservePrice: number;
   images: string[];
   state: string;
+  AuctionDate?: string;
 }
 
 export default function BestDealsScroller() {
@@ -106,6 +107,7 @@ export default function BestDealsScroller() {
                       location={`${p.location}, ${p.state}`}
                       price={formatIndianPrice(p.reservePrice)}
                       image={p.images[0] || "/image.png"}
+                      auctionDate={p.AuctionDate || p.auctionDate}
                     />
                   </div>
                 ))}

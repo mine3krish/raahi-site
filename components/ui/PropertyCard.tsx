@@ -11,6 +11,7 @@ interface PropertyCardProps {
   location: string;
   price: string;
   image: string;
+  auctionDate?: string;
 }
 
 export default function PropertyCard({
@@ -19,6 +20,7 @@ export default function PropertyCard({
   location,
   price,
   image,
+  auctionDate,
 }: PropertyCardProps) {
   const { isInWishlist, toggleWishlist, loading } = useWishlist();
   const inWishlist = isInWishlist(id);
@@ -44,6 +46,12 @@ export default function PropertyCard({
           <div className="absolute top-3 left-3 bg-white/95 text-green-700 text-xs font-semibold px-3 py-1 rounded-full border-2 border-green-600">
             #{id}
           </div>
+          {/* Auction Date Badge (inside image area) */}
+          {auctionDate && (
+            <div className="absolute bottom-3 left-3 bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full border border-blue-400 shadow-sm z-10">
+              <span role="img" aria-label="Auction Date">📅</span> Auction: {auctionDate}
+            </div>
+          )}
           {/* Action Buttons */}
           <div className="absolute top-3 right-3 flex gap-2">
             <ShareButton
@@ -72,9 +80,8 @@ export default function PropertyCard({
             </button>
           </div>
         </div>
-
         {/* Content */}
-        <div className="p-4">
+        <div className="p-4 pt-6">
           <h3 className="text-gray-800 font-semibold text-lg truncate">
             {title}
           </h3>

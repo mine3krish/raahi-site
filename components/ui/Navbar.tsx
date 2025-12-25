@@ -15,6 +15,7 @@ const Links: NavLink[] = [
   { name: "Home", href: "/" },
   { name: "Properties", href: "/properties" },
   { name: "Premium Projects", href: "/premium-projects" },
+  { name: "Newspaper", href: "/newspaper" },
   { name: "About Us", href: "/about" },
   { name: "Communities", href: "/communities" },
   { name: "Join as Member", href: "/join" },
@@ -203,6 +204,13 @@ export default function Navbar() {
                 className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-white rounded-xl transition-all"
               >
                 About Us
+              </Link>
+              <Link
+                href="/newspaper"
+                onClick={closeMenu}
+                className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-white rounded-xl transition-all"
+              >
+                Newspaper
               </Link>
               <Link
                 href="/communities"

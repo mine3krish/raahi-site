@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     const settings = await SiteSettings.findOne();
     
     if (!settings) {
+      // Note: teamMembers now supports a 'linkedin' field for each member
       return NextResponse.json({
         contactPhone: "+91 848 884 8874",
         contactEmail: "contact@raahiauction.com",
@@ -24,7 +25,7 @@ export async function GET(request: NextRequest) {
         instagramUrl: "",
         linkedinUrl: "",
         youtubeUrl: "",
-        teamMembers: [],
+        teamMembers: [], // Each member: { name, role, image, email, phone, bio, linkedin, order }
         partners: [],
         testimonials: [],
         whatsappNumber: "+918488848874",

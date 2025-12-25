@@ -16,6 +16,7 @@ interface TeamMember {
   email: string;
   phone: string;
   bio: string;
+  linkedin?: string;
   order: number;
 }
 
@@ -699,7 +700,7 @@ export default function SettingsPage() {
       ...settings,
       teamMembers: [
         ...settings.teamMembers,
-        { name: "", role: "", image: "", email: "", phone: "", bio: "", order: settings.teamMembers.length },
+        { name: "", role: "", image: "", email: "", phone: "", bio: "", linkedin: "", order: settings.teamMembers.length },
       ],
     });
   };
@@ -1322,6 +1323,16 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                              <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
+                                              <input
+                                                type="text"
+                                                value={member.linkedin || ""}
+                                                onChange={(e) => updateTeamMember(index, "linkedin", e.target.value)}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="https://linkedin.com/in/username"
+                                              />
+                                            </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                         <input

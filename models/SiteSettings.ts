@@ -7,6 +7,7 @@ const TeamMemberSchema = new Schema({
   email: { type: String },
   phone: { type: String },
   bio: { type: String },
+  linkedin: { type: String, default: "" },
   order: { type: Number, default: 0 },
 });
 

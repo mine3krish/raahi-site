@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Target, Eye, Award, Users, Mail, Phone, User } from "lucide-react";
+import { Target, Eye, Award, Users, Mail, Phone, User, Linkedin } from "lucide-react";
 import Loading from "@/components/ui/Loading";
 
-interface TeamMember {
   name: string;
   role: string;
   image: string;
   email: string;
   phone: string;
   bio: string;
+  linkedin?: string;
   order: number;
 }
 
@@ -267,6 +267,17 @@ export default function AboutPage() {
                           >
                             <Phone size={16} />
                             <span>{member.phone}</span>
+                          </a>
+                        )}
+                        {member.linkedin && (
+                          <a
+                            href={member.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-700 transition"
+                          >
+                            <Linkedin size={16} />
+                            <span>LinkedIn</span>
                           </a>
                         )}
                       </div>

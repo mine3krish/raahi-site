@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Target, Eye, Award, Users, Mail, Phone, User, Linkedin } from "lucide-react";
 import Loading from "@/components/ui/Loading";
 
+interface TeamMember {
   name: string;
   role: string;
   image: string;

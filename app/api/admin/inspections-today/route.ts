@@ -53,6 +53,7 @@ export async function GET(req: NextRequest) {
     await verifyAdmin(req);
     const { searchParams } = new URL(req.url);
     const dateParam = searchParams.get('date');
+    const stateParam = searchParams.get('state');
     let targetDate: Date;
     if (dateParam) {
       targetDate = new Date(dateParam);
@@ -68,7 +69,9 @@ export async function GET(req: NextRequest) {
     const allProperties = await Property.find({});
     const inspectionsOnDate = allProperties.filter((p: any) => {
       const d = parseDate(p.inspectionDate);
-      return d && isSameDateIST(d, targetDate);
+      const matchesDate = d && isSameDateIST(d, targetDate);
+      const matchesState = !stateParam || (p.state && p.state.toLowerCase() === stateParam.toLowerCase());
+      return matchesDate && matchesState;
     });
     return NextResponse.json({
       count: inspectionsOnDate.length,

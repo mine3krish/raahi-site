@@ -35,12 +35,13 @@ export default function AdminDashboard() {
       const now = new Date();
       return now.toISOString().split('T')[0]; // YYYY-MM-DD
     });
+    const [selectedAuctionState, setSelectedAuctionState] = useState('Gujarat');
 
     useEffect(() => {
       const fetchAuctions = async () => {
         try {
           const token = localStorage.getItem("token");
-          const response = await fetch(`/api/admin/auctions-today?date=${selectedAuctionDate}`, {
+          const response = await fetch(`/api/admin/auctions-today?date=${selectedAuctionDate}&state=${encodeURIComponent(selectedAuctionState)}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (response.ok) {
@@ -54,7 +55,7 @@ export default function AdminDashboard() {
         }
       };
       fetchAuctions();
-    }, [selectedAuctionDate]);
+    }, [selectedAuctionDate, selectedAuctionState]);
   const [stats, setStats] = useState<Stats>({
     totalProperties: 0,
     featuredProperties: 0,
@@ -193,19 +194,35 @@ export default function AdminDashboard() {
         </Link>
       </div>
 
+
       {/* Today's Auctions (IST) */}
       <div className="mb-8 mt-10">
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2 gap-2">
             <div className="text-lg font-semibold text-yellow-900">
               🏷️ Auctions on {new Date(selectedAuctionDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} (IST): <span className="text-yellow-800">{auctionsToday.length}</span>
             </div>
-            <input
-              type="date"
-              value={selectedAuctionDate}
-              onChange={(e) => setSelectedAuctionDate(e.target.value)}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm"
-            />
+            <div className="flex gap-2 items-center">
+              <input
+                type="date"
+                value={selectedAuctionDate}
+                onChange={(e) => setSelectedAuctionDate(e.target.value)}
+                className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+              />
+              <select
+                value={selectedAuctionState}
+                onChange={e => setSelectedAuctionState(e.target.value)}
+                className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+              >
+                <option value="Gujarat">Gujarat</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
           </div>
           {auctionsToday.length > 0 ? (
             <div className="overflow-x-auto">
@@ -264,9 +281,10 @@ function InspectionsTodayTable() {
     const now = new Date();
     return now.toISOString().split('T')[0]; // YYYY-MM-DD
   });
+  const [selectedInspectionState, setSelectedInspectionState] = useState('Gujarat');
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch(`/api/admin/inspections-today?date=${selectedInspectionDate}`, {
+    fetch(`/api/admin/inspections-today?date=${selectedInspectionDate}&state=${encodeURIComponent(selectedInspectionState)}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -274,21 +292,36 @@ function InspectionsTodayTable() {
         setInspections(data.inspections || []);
         setLoading(false);
       });
-  }, [selectedInspectionDate]);
+  }, [selectedInspectionDate, selectedInspectionState]);
   if (loading) return null;
   return (
     <div className="mb-8 mt-10">
       <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2 gap-2">
           <div className="text-lg font-semibold text-green-900">
             🕵️ Inspections on {new Date(selectedInspectionDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} (IST): <span className="text-green-800">{inspections.length}</span>
           </div>
-          <input
-            type="date"
-            value={selectedInspectionDate}
-            onChange={(e) => setSelectedInspectionDate(e.target.value)}
-            className="px-3 py-1 border border-gray-300 rounded-md text-sm"
-          />
+          <div className="flex gap-2 items-center">
+            <input
+              type="date"
+              value={selectedInspectionDate}
+              onChange={(e) => setSelectedInspectionDate(e.target.value)}
+              className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+            />
+            <select
+              value={selectedInspectionState}
+              onChange={e => setSelectedInspectionState(e.target.value)}
+              className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+            >
+              <option value="Gujarat">Gujarat</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
         </div>
         {inspections.length > 0 ? (
           <div className="overflow-x-auto">

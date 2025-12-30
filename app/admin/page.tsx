@@ -29,33 +29,36 @@ interface Stats {
 }
 
 export default function AdminDashboard() {
-    const [auctionsToday, setAuctionsToday] = useState<Auction[]>([]);
-    const [auctionsLoading, setAuctionsLoading] = useState(true);
-    const [selectedAuctionDate, setSelectedAuctionDate] = useState(() => {
-      const now = new Date();
-      return now.toISOString().split('T')[0]; // YYYY-MM-DD
-    });
-    const [selectedAuctionState, setSelectedAuctionState] = useState('Gujarat');
+  const [activeTab, setActiveTab] = useState<'auctions' | 'inspections'>('auctions');
+  // ...existing code...
+  const [auctionsToday, setAuctionsToday] = useState<Auction[]>([]);
+  const [auctionsLoading, setAuctionsLoading] = useState(true);
+  const [selectedAuctionDate, setSelectedAuctionDate] = useState(() => {
+    const now = new Date();
+    return now.toISOString().split('T')[0]; // YYYY-MM-DD
+  });
+  const [selectedAuctionState, setSelectedAuctionState] = useState('Gujarat');
 
-    useEffect(() => {
-      const fetchAuctions = async () => {
-        try {
-          const token = localStorage.getItem("token");
-          const response = await fetch(`/api/admin/auctions-today?date=${selectedAuctionDate}&state=${encodeURIComponent(selectedAuctionState)}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setAuctionsToday(data.auctions || []);
-          }
-        } catch (err) {
-          // ignore
-        } finally {
-          setAuctionsLoading(false);
+  useEffect(() => {
+    if (activeTab !== 'auctions') return;
+    const fetchAuctions = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`/api/admin/auctions-today?date=${selectedAuctionDate}&state=${encodeURIComponent(selectedAuctionState)}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setAuctionsToday(data.auctions || []);
         }
-      };
-      fetchAuctions();
-    }, [selectedAuctionDate, selectedAuctionState]);
+      } catch (err) {
+        // ignore
+      } finally {
+        setAuctionsLoading(false);
+      }
+    };
+    fetchAuctions();
+  }, [selectedAuctionDate, selectedAuctionState, activeTab]);
   const [stats, setStats] = useState<Stats>({
     totalProperties: 0,
     featuredProperties: 0,
@@ -195,81 +198,103 @@ export default function AdminDashboard() {
       </div>
 
 
-      {/* Today's Auctions (IST) */}
-      <div className="mb-8 mt-10">
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2 gap-2">
-            <div className="text-lg font-semibold text-yellow-900">
-              🏷️ Auctions on {new Date(selectedAuctionDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} (IST): <span className="text-yellow-800">{auctionsToday.length}</span>
-            </div>
-            <div className="flex gap-2 items-center">
-              <input
-                type="date"
-                value={selectedAuctionDate}
-                onChange={(e) => setSelectedAuctionDate(e.target.value)}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm"
-              />
-              <select
-                value={selectedAuctionState}
-                onChange={e => setSelectedAuctionState(e.target.value)}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm"
-              >
-                <option value="Gujarat">Gujarat</option>
-                <option value="Maharashtra">Maharashtra</option>
-                <option value="Rajasthan">Rajasthan</option>
-                <option value="Madhya Pradesh">Madhya Pradesh</option>
-                <option value="Delhi">Delhi</option>
-                <option value="Karnataka">Karnataka</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-          </div>
-          {auctionsToday.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-yellow-100 border border-yellow-200 rounded-lg">
-                <thead>
-                  <tr className="text-yellow-900 text-left">
-                    <th className="py-2 px-3 font-semibold">ID</th>
-                    <th className="py-2 px-3 font-semibold">Name</th>
-                    <th className="py-2 px-3 font-semibold">Auction Date</th>
-                    <th className="py-2 px-3 font-semibold">Location</th>
-                    <th className="py-2 px-3 font-semibold">State</th>
-                    <th className="py-2 px-3 font-semibold">Status</th>
-                    <th className="py-2 px-3 font-semibold">View</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {auctionsToday.map((a) => (
-                    <tr key={a.id} className="border-t border-yellow-200 hover:bg-yellow-50 transition">
-                      <td className="py-2 px-3 text-xs text-gray-700">{a.id}</td>
-                      <td className="py-2 px-3 font-medium text-yellow-900">{a.name || a.id}</td>
-                      <td className="py-2 px-3">{a.AuctionDate}</td>
-                      <td className="py-2 px-3">{a.location}</td>
-                      <td className="py-2 px-3">{a.state}</td>
-                      <td className="py-2 px-3">{a.status}</td>
-                      <td className="py-2 px-3">
-                        <a
-                          href={`/properties/${a.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline hover:text-blue-800 text-sm"
-                        >
-                          View
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="text-yellow-800 text-sm">No auctions scheduled for today.</div>
-          )}
-        </div>
+      {/* Tabs for Auctions and Inspections */}
+      <div className="flex gap-2 mt-10 mb-4">
+        <button
+          className={`px-4 py-2 rounded-t-lg font-semibold border-b-2 transition ${activeTab === 'auctions' ? 'border-yellow-500 bg-yellow-50 text-yellow-900' : 'border-transparent bg-gray-100 text-gray-500'}`}
+          onClick={() => setActiveTab('auctions')}
+        >
+          Auctions
+        </button>
+        <button
+          className={`px-4 py-2 rounded-t-lg font-semibold border-b-2 transition ${activeTab === 'inspections' ? 'border-green-500 bg-green-50 text-green-900' : 'border-transparent bg-gray-100 text-gray-500'}`}
+          onClick={() => setActiveTab('inspections')}
+        >
+          Inspections
+        </button>
       </div>
 
-      {/* Today's Inspections (IST) */}
-      <InspectionsTodayTable />
+      {/* Auctions Viewer */}
+      {activeTab === 'auctions' && (
+        <div className="mb-8">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2 gap-2">
+              <div className="text-lg font-semibold text-yellow-900">
+                🏷️ Auctions on {new Date(selectedAuctionDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} (IST): <span className="text-yellow-800">{auctionsToday.length}</span>
+              </div>
+              <div className="flex gap-2 items-center">
+                <input
+                  type="date"
+                  value={selectedAuctionDate}
+                  onChange={(e) => setSelectedAuctionDate(e.target.value)}
+                  className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+                />
+                <select
+                  value={selectedAuctionState}
+                  onChange={e => setSelectedAuctionState(e.target.value)}
+                  className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+                >
+                  <option value="Gujarat">Gujarat</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                  <option value="Madhya Pradesh">Madhya Pradesh</option>
+                  <option value="Delhi">Delhi</option>
+                  <option value="Karnataka">Karnataka</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            {auctionsLoading ? (
+              <div className="flex justify-center items-center py-10">
+                <div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-yellow-600"></div>
+              </div>
+            ) : auctionsToday.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-yellow-100 border border-yellow-200 rounded-lg">
+                  <thead>
+                    <tr className="text-yellow-900 text-left">
+                      <th className="py-2 px-3 font-semibold">ID</th>
+                      <th className="py-2 px-3 font-semibold">Name</th>
+                      <th className="py-2 px-3 font-semibold">Auction Date</th>
+                      <th className="py-2 px-3 font-semibold">Location</th>
+                      <th className="py-2 px-3 font-semibold">State</th>
+                      <th className="py-2 px-3 font-semibold">Status</th>
+                      <th className="py-2 px-3 font-semibold">View</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {auctionsToday.map((a) => (
+                      <tr key={a.id} className="border-t border-yellow-200 hover:bg-yellow-50 transition">
+                        <td className="py-2 px-3 text-xs text-gray-700">{a.id}</td>
+                        <td className="py-2 px-3 font-medium text-yellow-900">{a.name || a.id}</td>
+                        <td className="py-2 px-3">{a.AuctionDate}</td>
+                        <td className="py-2 px-3">{a.location}</td>
+                        <td className="py-2 px-3">{a.state}</td>
+                        <td className="py-2 px-3">{a.status}</td>
+                        <td className="py-2 px-3">
+                          <a
+                            href={`/properties/${a.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline hover:text-blue-800 text-sm"
+                          >
+                            View
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-yellow-800 text-sm">No auctions scheduled for today.</div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Inspections Viewer */}
+      {activeTab === 'inspections' && <InspectionsTodayTable />}
     </section>
   );
 }

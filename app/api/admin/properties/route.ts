@@ -30,7 +30,7 @@ export async function GET(req: Request) {
         { id: { $regex: search, $options: "i" } },
         { name: { $regex: search, $options: "i" } },
         { location: { $regex: search, $options: "i" } },
-        { oldListingId: { $regex: search, $options: "i" } },
+        { listingId: { $regex: search, $options: "i" } },
       ];
     }
     if (state) query.state = state;
